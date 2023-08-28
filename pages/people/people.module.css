@@ -10,7 +10,7 @@
     width: 100%;
     height: 250px;
     background-color: rgb(228, 236, 239);
-    background-image: url(../../public/images/bckg1.jpg);
+    background-image: url(/images/bckg1.jpg);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -43,7 +43,7 @@
     padding-left: 50px;
     padding-right: 15px;
     margin: 20px 0px 0px 50px;
-    background-image: url(../../public/images/icons/search.png);
+    background-image: url(/images/icons/search.png);
     background-size: 25px 25px;
     background-position: 13px 13px;
     background-repeat: no-repeat;

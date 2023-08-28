@@ -1,5 +1,5 @@
-const HOST = "http://localhost:3000"
-const API = "http://localhost:3000/api"
+const HOST = process.env.APP_HOST
+const API = process.env.API_HOST
 
 const AppConfig = { HOST, API }
 

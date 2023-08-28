@@ -4,7 +4,7 @@
     background-color: rgb(228, 236, 239);
     border-radius: 5px;
     margin-top: 20px;
-    background-image: url(../../public/images/settings.jpg);
+    background-image: url(/images/settings.jpg);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;

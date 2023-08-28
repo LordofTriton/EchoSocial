@@ -59,7 +59,7 @@
     height: 50px;
     border-radius: 40px;
     background-color: var(--base);
-    background-image: url(../../../public/images/bckg1.jpg);
+    background-image: url(/images/bckg1.jpg);
     background-size: cover;
     background-position: center;
     float: left;
@@ -171,7 +171,7 @@
     height: 80px;
     border-radius: 40px;
     background-color: var(--base);
-    background-image: url(../../../public/images/bckg1.jpg);
+    background-image: url(/images/bckg1.jpg);
     background-size: cover;
     background-position: center;
     margin: 10px 0px;

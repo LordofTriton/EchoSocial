@@ -30,7 +30,7 @@
     padding-right: 90px;
     color: var(--surface);
     background-color: transparent;
-    background-image: url(../../../public/images/icons/search.png);
+    background-image: url(/images/icons/search.png);
     background-size: 25px 25px;
     background-position-x: right;
     background-position: 90% 23px;
