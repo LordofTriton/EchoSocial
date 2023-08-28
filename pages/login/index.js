@@ -24,6 +24,7 @@ export default function Login() {
     const handleSubmit = async (event) => {
         event.preventDefault()
         setLoginLoader(true)
+        console.log(AppConfig.HOST)
 
         if (loginDetails.email.trim().length > 2 && loginDetails.password.trim().length >= 8) {
             const authResult = (await APIClient.post("/auth/login", loginDetails)).data;
@@ -55,7 +56,7 @@ export default function Login() {
             { activeUser ? <link rel="stylesheet" href={`/styles/themes/${activeUser.dark ? 'classic-dark.css' : 'classic-light.css'}`} /> : null}
         </Head>
             <div className={styles.loginHeader}>
-                <img src={`${AppConfig.HOST}/images/logo.png`} alt="logo" className={styles.loginHeaderLogo} />
+                <img src={`/images/logo.png`} alt="logo" className={styles.loginHeaderLogo} />
                 <span className={styles.loginHeaderTitle}>echo</span>
             </div>
             <div className={styles.loginContainer}>
