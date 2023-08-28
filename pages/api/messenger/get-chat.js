@@ -14,8 +14,6 @@ function parseParams(params, data) {
     return result;
 }
 
-const { db } = await getDB();
-
 export default async (request, response) => {
     let params = parseParams([
         "chatID"

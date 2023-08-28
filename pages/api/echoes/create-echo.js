@@ -22,9 +22,8 @@ function parseParams(params, data) {
     return result;
 }
 
-const { db } = await getDB();
-
-export default async function CreateEcho(params) {
+export default async function CreateEcho(params, io) {
+    const { db } = await getDB();
     params = parseParams([
         "accountID",
         "communityID",
@@ -74,6 +73,7 @@ export default async function CreateEcho(params) {
 }
 
 export async function CreateEchoCallback(params, io) {
+    const { db } = await getDB();
     if (params.communityID) {
         await db.collection("communities").updateOne({ communityID: params.communityID }, { $set: { lastUpdated: Date.now() } })
     }

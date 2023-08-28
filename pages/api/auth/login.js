@@ -15,10 +15,8 @@ function parseParams(params, data) {
     return result;
 }
 
-const { db } = await getDB();
-
 export default async (request, response) => {
-    let io = response.socket.server.io;
+    const { db } = await getDB();
     let params = parseParams([
         "email",
         "password"

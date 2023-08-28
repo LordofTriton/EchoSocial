@@ -22,9 +22,8 @@ function parseParams(params, data) {
     return result;
 }
 
-const { db } = await getDB();
-
-export default async function CreateCommunity(params) {
+export default async function CreateCommunity(params, io) {
+    const { db } = await getDB();
     params = parseParams([
         "accountID",
         "name",
@@ -87,6 +86,7 @@ export default async function CreateCommunity(params) {
 }
 
 export async function CreateCommunityCallback(params, io, communityData) {
+    const { db } = await getDB();
     await db.collection("members").insertOne({
         memberID: IDGenerator.GenerateMemberID(),
         accountID: params.accountID,

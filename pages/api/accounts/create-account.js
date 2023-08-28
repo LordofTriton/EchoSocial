@@ -27,9 +27,8 @@ function parseParams(params, data) {
     return result;
 }
 
-const { db } = await getDB();
-
 export default async (request, response) => {
+    const { db } = await getDB();
     let params = parseParams([
         "firstName", 
         "lastName", 

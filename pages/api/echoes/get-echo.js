@@ -15,9 +15,8 @@ function parseParams(params, data) {
     return result;
 }
 
-const { db } = await getDB();
-
-export default async function GetEcho(params) {
+export default async function GetEcho(params, io) {
+    const { db } = await getDB();
     params = parseParams([
         "accountID",
         "echoID",

@@ -17,9 +17,8 @@ function parseParams(data) {
     return { accountID, echoID, content, repliedTo };
 }
 
-const { db } = await getDB();
-
-export default async function ChangePassword(params) {
+export default async function ChangePassword(params, io) {
+    const { db } = await getDB();
     params = {
         accountID: request.body.accountID,
         oldPassword: request.body.oldPassword,

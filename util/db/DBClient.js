@@ -1,7 +1,5 @@
 import { getDB } from "../../../util/db/mongodb";
 
-const { db } = await getDB();
-
 async function Find(collection, filters, page, pageSize) {
     const skip = (pagination.page - 1) * pagination.pageSize;
     const result = await db.collection(collection).find(filters).skip(skip).limit(pageSize).toArray();

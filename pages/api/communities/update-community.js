@@ -28,9 +28,8 @@ function parseParams(params, data) {
     return result;
 }
 
-const { db } = await getDB();
-
-export default async function UpdateCommunity(params) {
+export default async function UpdateCommunity(params, io) {
+    const { db } = await getDB();
     params = parseParams([
         "communityID",
         "name",
@@ -69,6 +68,7 @@ export default async function UpdateCommunity(params) {
 }
 
 export async function UpdateCommunityCallback(params, io) {
+    const { db } = await getDB();
     if (params.nodes) {
         for (let node of params.nodes) {
             const accountNodeCount = await db.collection("accounts").countDocuments({ nodes: { $elemMatch: { nodeID: node.nodeID } } })

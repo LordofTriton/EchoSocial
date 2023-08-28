@@ -19,9 +19,8 @@ function parseParams(params, data) {
     return result;
 }
 
-const { db } = await getDB();
-
 export default async function CreateApplication(params, io) {
+    const { db } = await getDB();
     params = parseParams([
         "accountID",
         "communityID"
@@ -66,6 +65,7 @@ export default async function CreateApplication(params, io) {
 }
 
 export async function CreateApplicationCallback(params, io) {
+    const { db } = await getDB();
     const user = await db.collection("accounts").findOne({ accountID: params.accountID });
     const admins = await db.collection("members").find({ 
         communityID: params.communityID, 

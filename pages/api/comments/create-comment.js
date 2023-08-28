@@ -22,9 +22,8 @@ function parseParams(params, data) {
     return result;
 }
 
-const { db } = await getDB();
-
 export default async function CreateComment(params, io) {
+    const { db } = await getDB();
     params = parseParams([
         "accountID",
         "echoID",
@@ -81,6 +80,7 @@ export default async function CreateComment(params, io) {
 }
 
 export async function CreateCommentCallback(params, io) {
+    const { db } = await getDB();
     const echo = (await db.collection("echoes").findOne({ echoID: params.echoID }))
     const commentUser = (await db.collection("accounts").findOne({ accountID: params.accountID }))
 

@@ -14,6 +14,7 @@ import MemberSocket from '../community-members/socket';
 
 export default async (request, response) => {
     if (!response.socket.server.io) {
+    const { db } = await getDB();
         console.log("Socket: Initialized.")
         const io = new Server(response.socket.server, { path: "/api/socket", addTrailingSlash: false, cors: {
                 origin: "/",

@@ -17,9 +17,8 @@ function parseParams(params, data) {
     return result;
 }
 
-const { db } = await getDB();
-
 export default async function PingComment(params, io) {
+    const { db } = await getDB();
     params = parseParams([
         "accountID",
         "commentID",
@@ -50,6 +49,7 @@ export default async function PingComment(params, io) {
 }
 
 export async function PingCommentCallback(params, io) {
+    const { db } = await getDB();
     if (params.addHeart) await db.collection("accounts").updateOne({ accountID: comment.value.accountID }, { $inc: { hearts: 1 } })
     if (params.removeHeart) await db.collection("accounts").updateOne({ accountID: comment.value.accountID }, { $inc: { hearts: -1 } })
 }

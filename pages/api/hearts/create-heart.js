@@ -20,9 +20,8 @@ function parseParams(params, data) {
     return result;
 }
 
-const { db } = await getDB();
-
 export default async function CreateHeart(params, io) {
+    const { db } = await getDB();
     params = parseParams([
         "accountID",
         "echoID",
@@ -64,6 +63,7 @@ export default async function CreateHeart(params, io) {
 }
 
 export async function CreateHeartCallback(params, io) {
+    const { db } = await getDB();
     if (params.echoID) {
         const echo = await db.collection("echoes").findOne({ echoID: params.echoID })
         if (params.accountID !== echo.accountID) {

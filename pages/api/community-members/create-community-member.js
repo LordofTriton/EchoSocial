@@ -19,9 +19,8 @@ function parseParams(params, data) {
     return result;
 }
 
-const { db } = await getDB();
-
 export default async function CreateMember(params, io) {
+    const { db } = await getDB();
     params = parseParams([
         "accountID",
         "communityID"
@@ -64,6 +63,7 @@ export default async function CreateMember(params, io) {
 }
 
 export async function CreateMemberCallback(params, io) {
+    const { db } = await getDB();
     const user = await db.collection("accounts").findOne({ accountID: params.accountID });
     const community = await db.collection("communities").findOne({ communityID: params.communityID });
     await CreateNotification({

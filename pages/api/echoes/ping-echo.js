@@ -17,9 +17,8 @@ function parseParams(params, data) {
     return result;
 }
 
-const { db } = await getDB();
-
-export default async function PingEcho(params) {
+export default async function PingEcho(params, io) {
+    const { db } = await getDB();
     params = parseParams([
         "accountID",
         "echoID",
@@ -50,6 +49,7 @@ export default async function PingEcho(params) {
 }
 
 export async function PingEchoCallback(params, io) {
+    const { db } = await getDB();
     const echo = await db.collection("echoes").findOne({ echoID: params.echoID })
     if (params.addHeart) await db.collection("accounts").updateOne({ accountID: echo.accountID }, { $inc: { hearts: 1 } })
     if (params.removeHeart) await db.collection("accounts").updateOne({ accountID: echo.accountID }, { $inc: { hearts: -1 } })

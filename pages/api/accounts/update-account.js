@@ -32,9 +32,8 @@ function parseParams(params, data) {
     return result;
 }
 
-const { db } = await getDB();
-
-export default async function UpdateAccount(params) {
+export default async function UpdateAccount(params, io) {
+    const { db } = await getDB();
     params = parseParams([
         "accountID",
         "firstName", 
@@ -83,6 +82,7 @@ export default async function UpdateAccount(params) {
 }
 
 export async function UpdateAccountCallback(params, io) {
+    const { db } = await getDB();
     if (params.nodes) {
         for (let node of params.nodes) {
             const accountNodeCount = await db.collection("accounts").countDocuments({ nodes: { $elemMatch: { nodeID: node.nodeID } } })

@@ -14,9 +14,8 @@ function parseParams(params, data) {
     return result;
 }
 
-const { db } = await getDB();
-
 export default async function DeleteMember(params, io) {
+    const { db } = await getDB();
     params = parseParams([
         "accountID",
         "userID"

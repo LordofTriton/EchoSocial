@@ -21,9 +21,8 @@ function parseParams(params, data) {
     return result;
 }
 
-const { db } = await getDB();
-
-export default async function PingAccount(params) {
+export default async function PingAccount(params, io) {
+    const { db } = await getDB();
     params = parseParams([
         "accountID",
         "follow",
@@ -56,6 +55,7 @@ export default async function PingAccount(params) {
 }
 
 export async function PingAccountCallback(params, io) {
+    const { db } = await getDB();
     const userAccount = await db.collection("accounts").findOne({ accountID: params.accountID })
     if (params.follow) {
         await db.collection("accounts").updateOne({ accountID: params.follow }, { $push: { followers: params.accountID } })

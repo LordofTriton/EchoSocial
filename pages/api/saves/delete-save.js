@@ -15,9 +15,8 @@ function parseParams(params, data) {
     return result;
 }
 
-const { db } = await getDB();
-
-export default async function DeleteSave(params) {
+export default async function DeleteSave(params, io) {
+    const { db } = await getDB();
     params = parseParams([
         "accountID",
         "communityID"

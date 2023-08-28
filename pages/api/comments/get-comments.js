@@ -16,9 +16,8 @@ function parseParams(params, data) {
     return result;
 }
 
-const { db } = await getDB();
-
 export default async function GetComments(params, io) {
+    const { db } = await getDB();
     params = parseParams([
         "accountID",
         "commentID",
