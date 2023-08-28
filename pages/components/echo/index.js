@@ -80,7 +80,7 @@ export default function Echo({ data, page, fullText=false }) {
                 { 
                     echoData.content.media && echoData.content.media.length > 0 ?
                     <div className={styles.echoMedia} onClick={() => page.setShowMediaViewer(echoData)}>
-                        { Helpers.getFileType(getCurrentMedia()) === "image" ? <img className={styles.echoMediaImage} src={getCurrentMedia()} /> : null }
+                        { Helpers.getFileType(getCurrentMedia()) === "image" ? <img className={styles.echoMediaImage} src={getCurrentMedia()} alt="media" /> : null }
                         { Helpers.getFileType(getCurrentMedia()) === "video" ? <video className={styles.echoMediaVideo} src={getCurrentMedia()} /> : null }
                         { Helpers.getFileType(getCurrentMedia()) === "unknown" ? <div className={styles.echoMediaUnknown}><span>Unknown File Type</span></div> : null }
                         

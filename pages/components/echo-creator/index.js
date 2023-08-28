@@ -120,7 +120,7 @@ export default function EchoCreator({toggle, control, page}) {
                 {
                     echoMedia.map((media, index) => 
                         <div key={index} className={styles.echoCreatorFileThumb}>
-                            { media.type.startsWith('image/') ? <img src={URL.createObjectURL(media)} /> : null }
+                            { media.type.startsWith('image/') ? <img src={URL.createObjectURL(media)} alt="media" /> : null }
                             { media.type.startsWith('video/') ? <video src={URL.createObjectURL(media)} controls /> : null }
 
                             <span className={styles.echoCreatorFileThumbClose} onClick={() => handleFileRemove(index)}><SVGServer.CloseIcon color="var(--secondary)" width="20px" height="20px" /></span>

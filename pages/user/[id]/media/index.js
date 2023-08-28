@@ -215,7 +215,7 @@ export default function UserMedia() {
                         userMediaEchoes.map((echo) => 
                             echo.content.media.map((media, index) => 
                                 <>
-                                { Helpers.getFileType(media.url) === "image" ? <img className={styles.userMediaImage} src={media.url} onClick={() => modalControl.setShowEchoViewer(echo)} /> : null }
+                                { Helpers.getFileType(media.url) === "image" ? <img className={styles.userMediaImage} src={media.url} onClick={() => modalControl.setShowEchoViewer(echo)} alt="media" /> : null }
                                 { Helpers.getFileType(media.url) === "video" ? <video className={styles.userMediaImage} src={media.url} onClick={() => modalControl.setShowEchoViewer(echo)} /> : null }
                                 </>
                             )

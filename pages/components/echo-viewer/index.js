@@ -164,7 +164,7 @@ export default function EchoViewer({ data, control, page }) {
                         {
                             newCommentMedia ?
                                 <div className={styles.echoViewerCommentEditorFileThumb}>
-                                    <img src={URL.createObjectURL(newCommentMedia)} />
+                                    <img src={URL.createObjectURL(newCommentMedia)} alt="thumb" />
                                     <span className={styles.echoViewerCommentEditorFileThumbClose} onClick={() => setNewCommentMedia(null)}><SVGServer.CloseIcon color="var(--secondary)" width="20px" height="20px" /></span>
                                 </div> :
                                 <>

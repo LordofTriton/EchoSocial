@@ -59,7 +59,7 @@ export default function EchoComment({ data, page }) {
                         {
                             commentData.content.media ?
                             <div className={styles.echoCommentBodyContentMedia}>
-                                { Helpers.getFileType(commentData.content.media) === "image" ? <img className={styles.echoCommentBodyContentMediaImage} src={commentData.content.media} /> : null }
+                                { Helpers.getFileType(commentData.content.media) === "image" ? <img className={styles.echoCommentBodyContentMediaImage} src={commentData.content.media} alt="media" /> : null }
                                 { Helpers.getFileType(commentData.content.media) === "unknown" ? <div className={styles.echoCommentBodyContentMediaUnknown}><span>Unknown File Type</span></div> : null }
                             </div> : null
                         }

@@ -62,7 +62,7 @@ export default function MediaViewer({ data, control, page }) {
                     { 
                         mediaData.content.media && mediaData.content.media.length > 0 ?
                         <div className={styles.media}>
-                            { Helpers.getFileType(getCurrentMedia()) === "image" ? <img className={styles.mediaImage} src={getCurrentMedia()} /> : null }
+                            { Helpers.getFileType(getCurrentMedia()) === "image" ? <img className={styles.mediaImage} src={getCurrentMedia()} alt="media" /> : null }
                             { Helpers.getFileType(getCurrentMedia()) === "video" ? <video className={styles.mediaVideo} controls src={getCurrentMedia()} autoPlay /> : null }
                             { Helpers.getFileType(getCurrentMedia()) === "unknown" ? <div className={styles.mediaUnknown}><span>Unknown File Type</span></div> : null }
                             

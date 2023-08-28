@@ -28,7 +28,7 @@ function Message({ data, page }) {
                         {
                             data.content.media ?
                                 <div className={styles.messengerChatMessageBodyContentMedia}>
-                                    {Helpers.getFileType(data.content.media) === "image" ? <img className={styles.messengerChatMessageBodyContentMediaImage} src={data.content.media} /> : null}
+                                    {Helpers.getFileType(data.content.media) === "image" ? <img className={styles.messengerChatMessageBodyContentMediaImage} src={data.content.media} alt="media" /> : null}
                                     {Helpers.getFileType(data.content.media) === "unknown" ? <div className={styles.messengerChatMessageBodyContentMediaUnknown}><span>Unknown File Type</span></div> : null}
                                 </div> : null
                         }
