@@ -45,11 +45,11 @@ export default async function CreateCommunity(params) {
             displayName: params.name,
             profileImage: {
                 publicID: null,
-                url: `${AppConfig.HOST}/images/profile.jpg`
+                url: `/images/profile.jpg`
             },
             profileCover: {
                 publicID: null,
-                url: `${AppConfig.HOST}/images/bckg1.jpg`
+                url: `/images/bckg1.jpg`
             },
             description: params.description,
             nodes: params.nodes,
@@ -98,7 +98,7 @@ export async function CreateCommunityCallback(params, io, communityData) {
     await CreateNotification({
         accountID: params.accountID,
         content: `You created a new community! Send an echo to spread the word.`,
-        image: `${AppConfig.HOST}/images/profile.jpg`,
+        image: `/images/profile.jpg`,
         clickable: true,
         redirect: `${AppConfig.HOST}/communities/${communityData.communityID}`
     }, io)

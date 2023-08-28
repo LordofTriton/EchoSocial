@@ -52,15 +52,15 @@ export default async (request, response) => {
             email: params.email,
             profileImage: {
                 publicID: null,
-                url: `${AppConfig.HOST}/images/profile.jpg`
+                url: `/images/profile.jpg`
             },
             profileCover: {
                 publicID: null,
-                url: `${AppConfig.HOST}/images/bckg1.jpg`
+                url: `/images/bckg1.jpg`
             },
             bio: "",
             badges: [{
-                badgeIcon: `${AppConfig.HOST}/images/badges/joined.png`,
+                badgeIcon: `/images/badges/joined.png`,
                 name: "Joined"
             }],
             fSocial: "",
