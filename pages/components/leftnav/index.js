@@ -51,8 +51,8 @@ export default function LeftNav({ page }) {
             <hr style={{margin: "30px 20px", borderBottom: "2px solid var(--alt)"}} />
             {
                 userCommunities && userCommunities.length ?
-                    userCommunities.map((community) => 
-                        <div className={styles.leftnavCommunityButton}>
+                    userCommunities.map((community, index) => 
+                        <div key={index} className={styles.leftnavCommunityButton}>
                             <div className={styles.leftnavCommunityButtonProfile} style={{backgroundImage: `url(${community.profileImage.url})`}} onClick={() => page.router.push(`/communities/${community.communityID}`)}>
                                 <div className={styles.leftnavMenuButtonLabel}>
                                     <span>{community.displayName}</span>

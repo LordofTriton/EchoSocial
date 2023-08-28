@@ -71,7 +71,7 @@ export default function Login() {
                             <Link href="/fyp"><span className={styles.loginContainerFormFYP}>Forgot password?</span></Link>
 
                             <Form.Submit text="SIGN IN" loader={loginLoader} />
-                            <span className={styles.loginContainerSignUp}>Don't have an account? <Link href="/signup"><span>Sign Up</span></Link>!</span>
+                            <span className={styles.loginContainerSignUp}>Don`t have an account? <Link href="/signup"><span>Sign Up</span></Link>!</span>
                         </form>
                     </div>
                 </div>
