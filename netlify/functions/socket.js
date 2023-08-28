@@ -18,7 +18,7 @@ const server = Express();
 const httpServer = http.createServer(server);
 
 const io = new Server(httpServer, { addTrailingSlash: false, cors: {
-        origin: "*",
+        origin: "/",
         methods: ["GET", "POST"],
         transports: ['websocket', 'polling'],
         credentials: true

@@ -24,7 +24,6 @@ export default function Login() {
     const handleSubmit = async (event) => {
         event.preventDefault()
         setLoginLoader(true)
-        console.log(AppConfig.HOST)
 
         if (loginDetails.email.trim().length > 2 && loginDetails.password.trim().length >= 8) {
             const authResult = (await APIClient.post("/auth/login", loginDetails)).data;
