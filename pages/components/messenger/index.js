@@ -182,7 +182,7 @@ export default function Messenger({ toggle, control, page }) {
             accountID: page.activeUser.accountID,
             content: {
                 text: "I'm good!",
-                media: "http://localhost:3000/images/bckg1.jpg",
+                media: `${process.env.APP_HOST}/images/bckg1.jpg`,
                 link: null
             },
             datetime: Date.now(),
@@ -200,7 +200,7 @@ export default function Messenger({ toggle, control, page }) {
             repliedTo: {
                 accountID: page.activeUser.accountID,
                 text: "I'm good!",
-                media: "http://localhost:3000/images/bckg1.jpg",
+                media: `${process.env.APP_HOST}/images/bckg1.jpg`,
                 link: null
             }
         },
