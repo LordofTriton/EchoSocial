@@ -16,9 +16,10 @@ const useSocket = () => {
     const connectSocket = async () => {
         if (!socketInstance) {
             console.log("Connecting to Socket.")
-            await fetch('/api/socket')
+            await fetch(process.env.SOCKET_URL)
+
             socketInstance = io(undefined, {
-                path: `/api/socket`
+                path: process.env.SOCKET_URL
             });
 
             socketInstance.on('connect', () => {
@@ -44,7 +45,7 @@ const useSocket = () => {
 
     const socketRequest = (event, data, callback) => {
         if (!socketInstance) return;
-        const serial = String(Math.random() * 10000);
+        const serial = String(Math.random() * 100000000);
         socketInstance.emit(`${event}_REQ`, JSON.stringify({...data, serial: serial}))
         socketInstance.on(`${event}_RES_${serial}`, (data) => {
             callback(JSON.parse(data))
