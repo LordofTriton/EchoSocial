@@ -1,0 +1,39 @@
+.alertContainer {
+    width: 100%;
+    height: 40px;
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    overflow: hidden;
+    opacity: 0.8;
+}
+
+.alertContent {
+    width: fit-content;
+    height: 100%;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0px);
+}
+
+.alertIcon {
+    width: 30px;
+    height: 30px;
+    margin: 7px 10px;
+    float: left;
+}
+
+.alertMessage {
+    color: var(--surface);
+    font-size: 15px;
+    float: left;
+    padding-top: 10px;
+}
+
+.alertClose {
+    display: block;
+    width: 15px;
+    height: 15px;
+    float: right;
+    cursor: pointer;
+}

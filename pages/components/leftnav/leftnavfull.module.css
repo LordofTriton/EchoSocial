@@ -1,0 +1,47 @@
+.leftnavContainer {
+    width: 300px;
+    height: 100%;
+    background-color: var(--surface);
+    position: fixed;
+    top: 0px;
+    left: -300px;
+    box-shadow: 0 0 34px 0 rgba(63,66,87,.1);
+    overflow: hidden;
+}
+
+.leftnavContainerHead {
+    width: 100%;
+    height: 70px;
+    background-color: var(--surface);
+    padding: 5px 10px;
+    margin-bottom: 30px;
+}
+
+.leftnavContainerHead img {
+    height: 100%;
+    float: left;
+}
+
+.leftnavTitle {
+    color: var(--primary);
+    font-family: Title;
+    font-size: 50px;
+    font-weight: 700;
+    float: left;
+    margin: 0px 0px 0px 10px;
+}
+
+.leftnavTitle span {
+    font-size: 13px;
+    color: var(--primary);
+    font-weight: 200;
+}
+
+.leftnavMenuButton {
+    width: 100%;
+    height: 70px;
+    padding: 15px;
+    color: var(--primary);
+    cursor: pointer;
+    opacity: 0.7;
+}

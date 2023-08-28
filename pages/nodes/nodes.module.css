@@ -1,0 +1,185 @@
+.nodePage {
+    width: 100%;
+    height: 100%;
+    background-color: var(--base);
+    position: absolute;
+    /* background-image: url(../../public/images/bckg1.jpg);
+    background-size: cover; */
+}
+
+.nodeHeader {
+    width: 100%;
+    height: 70px;
+    background-color: var(--primary);
+    padding: 0px 5%;
+    overflow: hidden;
+}
+
+.nodeHeaderLogo {
+    width: 60px;
+    height: 60px;
+    margin: 5px 10px 5px 0px;
+    float: left;
+}
+
+.nodeHeaderTitle {
+    color: var(--surface);
+    font-family: Title;
+    font-size: 40px;
+    font-weight: 700;
+    float: left;
+    margin: 10px 0px 0px 0px;
+}
+
+.nodeContainer {
+    background-color: var(--surface);
+    width: 1000px;
+    height: 450px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 10px;
+    box-shadow: 0 0 34px 0 rgba(63,66,87,.1);
+    overflow: hidden;
+}
+
+.nodeContainerNodeBox {
+    width: 60%;
+    height: 100%;
+    float: left;
+    padding: 20px;
+    overflow: hidden;
+    position: relative;
+}
+
+.nodeContainerSearch {
+    width: 100%;
+    height: 50px;
+}
+
+.nodeContainerTrayBox {
+    width: 100%;
+    height: calc(100% - 50px);
+    float: left;
+    padding: 30px 0px;
+}
+
+.nodeContainerNodeList {
+    width: 100%;
+    height: 70px;
+    background-color: var(--base);
+    border-radius: 5px;
+    float: left;
+    padding-left: 20px;
+    padding-right: 20px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    overflow-x: auto;
+    white-space: nowrap;
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+}
+
+.nodeContainerSelectedNode {
+    background-color: var(--primary);
+    padding: 10px 40px 10px 10px;
+    border-radius: 5px;
+    color: var(--surface);
+    display: inline-block;
+    margin: 18px 5px 5px 5px;
+    font-size: 13px;
+    cursor: pointer;
+    position: relative;
+}
+
+.nodeContainerSelectedNode span {
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.nodeContainerNullNode {
+    color: var(--primary);
+    font-size: 15px;
+    font-weight: 600;
+    margin-top: 25px;
+    display: block;
+}
+
+.nodeContainerFormBox {
+    width: 40%;
+    height: 100%;
+    float: right;
+    padding: 30px 50px 30px 30px;
+}
+
+.nodeContainerHead {
+    width: 100%;
+    height: 80px;
+    overflow: hidden;
+}
+
+.nodeContainerTitle {
+    color: var(--primary);
+    font-size: 30px;
+    padding: 0px;
+    margin: 0px 0px 0px 0px;
+}
+
+.nodeContainerTitleText {
+    color: var(--primary);
+    font-size: 13px;
+    padding: 0px;
+    margin: 10px 0px 10px 0px;
+    display: block;
+}
+
+.nodeContainerBody {
+    width: 100%;
+    height: calc(100% - 80px);
+    position: relative;
+}
+
+.nodeContainerNodes {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+.node {
+    background-color: var(--accent);
+    padding: 10px 20px;
+    border-radius: 20px;
+    color: var(--surface);
+    display: block;
+    float: left;
+    margin: 5px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.node:hover { background-color: var(--primary); }
+
+.nodeContainerBodyButton {
+    width: 100%;
+    height: 50px;
+    background-color: var(--primary);
+    border-radius: 5px;
+    color: var(--surface);
+    margin-top: 20px;
+    cursor: pointer;
+    position: absolute;
+    bottom: 20px;
+}
+
+.nodeContainerBodyButton:hover {
+    background-color: var(--accent);
+}

@@ -1,0 +1,264 @@
+.settingsHead {
+    width: 100%;
+    height: 300px;
+    background-color: rgb(228, 236, 239);
+    border-radius: 5px;
+    margin-top: 20px;
+    background-image: url(../../public/images/settings.jpg);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.settingsBody {
+    width: 100%;
+    height: fit-content;
+    margin-top: 30px;
+    overflow: hidden;
+}
+
+.settingsBodyNav {
+    width: 300px;
+    height: fit-content;
+    background-color: var(--surface);
+    border-radius: 5px;
+    float: left;
+    padding-bottom: 50px;
+}
+
+.settingsBodyNavTitle {
+    color: var(--primary);
+    font-size: 13px;
+    font-size: 200;
+    display: block;
+    width: 100%;
+    padding: 10px 15px;
+    border-bottom: 1px solid var(--alt);
+    margin-bottom: 20px;
+}
+
+.settingsBodyNavButton {
+    display: block;
+    width: 100%;
+    padding: 10px 15px;
+    overflow: hidden;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+.settingsBodyNavButton:hover {background-color: var(--base);}
+
+.settingsBodyNavButtonIcon {
+    width: 30px;
+    height: 30px;
+    display: block;
+    float: left;
+}
+
+.settingsBodyNavButtonText {
+    color: var(--primary);
+    font-size: 15px;
+    font-weight: 500;
+    display: block;
+    float: left;
+    margin: 5px 0px 0px 10px;
+}
+
+.settingsBodyNavButtonArrow {
+    display: block;
+    float: right;
+    margin-top: 5px;
+}
+
+.settingsBodySubNavButton {
+    display: block;
+    width: 100%;
+    color: var(--primary);
+    padding: 10px 10px 10px 55px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 5px;
+    cursor: pointer;
+}
+
+.settingsBodyContent {
+    width: calc(100% - 320px);
+    height: fit-content;
+    background-color: var(--surface);
+    border-radius: 5px;
+    float: right;
+}
+
+.formContainer {
+    width: 100%;
+    height: fit-content;
+}
+
+.formContainerTitle {
+    display: block;
+    width: 100%;
+    color: var(--primary);
+    font-size: 15px;
+    font-weight: 600;
+    padding: 20px 20px;
+    border-bottom: 1px solid var(--alt);
+}
+
+.formContainerForm {
+    width: 100%;
+    height: fit-content;
+    padding: 20px;
+    overflow: hidden;
+}
+
+.formContainerFormSwitchBar {
+    width: 100%;
+    height: 50px;
+    margin-top: 20px;
+    overflow: hidden;
+}
+
+.formContainerFormSwitchBarText {
+    color: var(--primary);
+    font-size: 15px;
+    font-weight: 600;
+    display: block;
+    float: left;
+    margin: 0px 20px 0px 20px;
+    transform: translate(0px, -5px);
+}
+
+.formContainerFormSwitchBarText span {
+    color: var(--primary);
+    font-size: 10px;
+    font-weight: 200;
+    display: block;
+    float: left;
+    margin: 3px 0px;
+}
+
+.formContainerFormNodeList {
+    width: 100%;
+    height: 70px;
+    background-color: var(--base);
+    border-radius: 5px;
+    float: left;
+    padding-left: 20px;
+    padding-right: 20px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.formContainerFormSelectedNode {
+    background-color: var(--primary);
+    padding: 10px 40px 10px 10px;
+    border-radius: 5px;
+    color: var(--surface);
+    display: inline-block;
+    margin: 18px 5px 5px 5px;
+    font-size: 13px;
+    cursor: pointer;
+    position: relative;
+}
+
+.formContainerFormSelectedNode span {
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.formContainerFormNodeSelector {
+    width: 100%;
+    height: fit-content;
+    float: right;
+}
+
+.formContainerFormNodeSelectorNodeBox {
+    width: 100%;
+    height: fit-content;
+    padding: 10px 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.formContainerFormSelectorNodes {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+.formContainerFormSelectorNode {
+    background-color: var(--accent);
+    padding: 10px 20px;
+    border-radius: 20px;
+    color: var(--surface);
+    display: block;
+    float: left;
+    margin: 5px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.formContainerFormSelectorNode:hover { background-color: var(--primary); }
+
+.formContainerFormAddNode {
+    display: block;
+    text-align: center;
+    color: var(--primary);
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 50px;
+    margin-top: 40px;
+}
+
+.formContainerFormButtons {
+    width: 100%;
+    height: fit-content;
+    overflow: hidden;
+    padding-top: 50px;
+}
+
+.formContainerFormRevertHalf {
+    width: calc(50% - 10px);
+    height: 50px;
+    background-color: var(--alt);
+    border-radius: 5px;
+    color: var(--surface);
+    cursor: pointer;
+    float: left;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.formContainerFormSubmitHalf {
+    width: calc(50% - 10px);
+    height: 50px;
+    background-color: var(--accent);
+    border-radius: 5px;
+    color: var(--surface);
+    cursor: pointer;
+    float: right;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.formContainerFormSubmitFull {
+    width: 100%;
+    height: 50px;
+    background-color: var(--accent);
+    border-radius: 5px;
+    color: var(--surface);
+    cursor: pointer;
+    float: right;
+    font-size: 15px;
+    font-weight: 600;
+}

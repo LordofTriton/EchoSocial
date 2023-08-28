@@ -1,0 +1,230 @@
+.echo {
+    width: 100%;
+    height: fit-content;
+    background-color: var(--surface);
+    border-radius: 5px;
+    margin: 10px 0px;
+    /* border: 1px solid var(--secondary); */
+    box-shadow: 0 0 8px 0 rgba(63,66,87,.1);
+    padding: 25px 25px 25px 25px;
+    overflow: hidden;
+    display: inline-block;
+    width: 100%;
+    margin-bottom: 10px; /* Adjust the space between items */
+    break-inside: avoid; /* Prevent items from being split across columns */
+}
+
+.echoHead {
+    width: 100%;
+    height: 50px;
+}
+
+.echoHeadProfile {
+    width: 50px;
+    height: 50px;
+    float: left;
+    border-radius: 50px;
+    display: block;
+    background-size: cover;
+    background-position: center;
+    cursor: pointer;
+}
+
+.echoHeadData {
+    display: block;
+    width: calc(100% - 80px);
+    height: 100%;
+    float: left;
+    padding: 5px 12px;
+    cursor: pointer;
+}
+
+.echoHeadDataUser {
+    color: var(--primary);
+    font-size: 15px;
+    font-weight: 700;
+    display: block;
+    opacity: 0.9;
+}
+
+.echoHeadDataUser:hover { color: var(--accent); }
+
+.echoHeadDataDateTime {
+    color: var(--primary);
+    opacity: 0.7;
+    font-size: 13px;
+    font-weight: 200;
+    display: block;
+}
+
+.echoHeadDataDateTime span {
+    font-weight: 500;
+    color: var(--accent);
+    opacity: 1 !important;
+}
+
+.echoHeadDataDateTime span span {
+    width: 5px;
+    height: 5px;
+    background-color: var(--primary) !important;
+    border-radius: 10px;
+    display: inline-block;
+    margin: 0px 7px;
+    transform: translate(0px, -2px);
+}
+
+.echoHeadOptionIcon {
+    display: block;
+    width: 30px;
+    height: 100%;
+    float: right;
+    padding: 12.5px 2.5px;
+    cursor: pointer;
+    position: relative;
+}
+
+.echoHeadOptionIcon:hover .echoHeadOptionBox { display: block; }
+
+.echoHeadOptionBox {
+    display: none;
+    position: absolute;
+    width: 200px;
+    height: fit-content;
+    background-color: var(--surface);
+    border-radius: 5px;
+    top: 0px;
+    right: 0px;
+    z-index: 2;
+    box-shadow: 0 0 34px 0 rgba(63,66,87,.1);
+    padding: 10px 0px;
+}
+
+.echoHeadOptionBox:hover { display: block; }
+
+.echoHeadOption {
+    color: var(--primary);
+    font-size: 15px;
+    font-weight: 500;
+    display: block;
+    padding: 7px 25px;
+}
+
+.echoHeadOption:hover { color: var(--accent); }
+
+.echoText {
+    color: var(--primary);
+    font-size: 15px;
+    opacity: 0.8;
+    display: block;
+    margin: 20px 0px 25px 0px;
+    width: 100%;
+    white-space: pre-wrap;
+}
+
+.echoText span {
+    color: var(--accent);
+    cursor: pointer;
+}
+
+.echoMedia {
+    width: 100%;
+    height: fit-content;
+    overflow: hidden;
+    position: relative;
+    margin-top: 20px;
+}
+
+.echoMedia:hover .echoMediaControlLeft { display: block; }
+.echoMedia:hover .echoMediaControlRight { display: block; }
+
+.echoMediaImage {
+    width: 100%;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.echoMediaVideo {
+    width: 100%;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.echoMediaControlLeft {
+    position: absolute;
+    display: none;
+    width: 35px;
+    height: 35px;
+    background-color: #FFFFFF60;
+    top: 50%;
+    left: 0px;
+    transform: translate(0px, -50%) rotate(180deg);
+    padding: 5px;
+    cursor: pointer;
+}
+
+.echoMediaControlRight {
+    position: absolute;
+    display: none;
+    width: 35px;
+    height: 35px;
+    background-color: #FFFFFF60;
+    top: 50%;
+    right: 0px;
+    transform: translate(0px, -50%);
+    padding: 5px;
+    cursor: pointer;
+}
+
+.echoMediaCount {
+    width: fit-content;
+    height: 20px;
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 0px 15px;
+    position: absolute;
+    bottom: 10px;
+    border-radius: 0px 5px 5px 0px;
+}
+
+.echoMediaCount span {
+    width: 10px;
+    height: 10px;
+    border-radius: 10px;
+    background-color: var(--surface);
+    display: block;
+    float: left;
+    margin-right: 10px;
+    margin-top: 5px;
+}
+
+.echoFooter {
+    width: 100%;
+    height: 35px;
+    /* border-top: 1px solid var(--alt); */
+    margin-top: 20px;
+}
+
+.echoFooterData {
+    overflow: hidden;
+    margin: 0px 10px 0px 0px;
+    background-color: var(--base);
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.echoFooterIcon {
+    display: block;
+    float: left;
+    width: 30px;
+    height: 30px;
+    padding: 2.5px;
+}
+
+.echoFooterNumber {
+    display: block;
+    float: left;
+    font-size: 13px;
+    color: var(--primary);
+    opacity: 0.5;
+    margin: 5px 5px;
+}

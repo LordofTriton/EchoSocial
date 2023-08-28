@@ -1,0 +1,146 @@
+.echoComment {
+    width: 100%;
+    height: fit-content;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.echoCommentData {
+    width: 100%;
+    height: fit-content;
+    overflow: hidden;
+    background-color: var(--surface);
+    border-radius: 5px;
+}
+
+.echoCommentProfile {
+    width: 40px;
+    height: 40px;
+    border-radius: 50px;
+    background-color: blueviolet;
+    float: left;
+    background-size: cover;
+    background-position: center;
+    cursor: pointer;
+}
+
+.echoCommentBody {
+    width: fit-content;
+    min-width: 100px;
+    max-width: calc(100% - 60px);
+    height: fit-content;
+    min-height: 50px;
+    float: left;
+    margin-left: 10px;
+}
+
+.echoCommentBodyHead {
+    display: block;
+    width: 100%;
+    padding: 5px 15px;
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.echoCommentBodyHead span {
+    color: var(--primary);
+    font-size: 10px;
+    float: right;
+    font-weight: 200;
+    transform: translate(0px, 2px);
+    margin-left: 20px;
+}
+
+.echoCommentBodyContent {
+    width: 100%;
+    height: fit-content;
+    padding: 0px 15px 10px 15px;
+}
+
+.echoCommentBodyContentReply {
+    width: fit-content;
+    height: 50px;
+    background-color: var(--base);
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.echoCommentBodyContentReplyMedia {
+    width: 50px;
+    height: 50px;
+    float: left;
+    background-size: cover;
+    background-position: center;
+}
+
+.echoCommentBodyContentReplyBody {
+    width: fit-content;
+    float: right;
+    height: 100%;
+}
+
+.echoCommentBodyContentReplyBody .echoCommentBodyHead {
+    color: dimgray;
+}
+
+.echoCommentBodyContentReplyBodyContent {
+    width: 100%;
+    height: fit-content;
+    padding: 0px 15px 10px 15px;
+}
+
+.echoCommentReplyBodyContentText {
+    display: block;
+    width: 100%;
+    color: var(--primary);
+    font-size: 13px;
+}
+
+.echoCommentBodyContentMedia {
+    min-width: 100%;
+    margin-top: 3px;
+}
+
+.echoCommentBodyContentMediaImage {
+    max-width: 100%;
+    border-radius: 5px;
+    margin-bottom: 3px;
+}
+
+.echoCommentBodyContentText {
+    display: block;
+    width: 100%;
+    color: var(--primary);
+    font-size: 15px;
+    white-space: pre-wrap;
+}
+
+.echoCommentBody:hover .echoCommentData { border-radius: 5px 5px 0px 0px; }
+.echoCommentBody:hover .echoCommentButtons { display: block; }
+
+.echoCommentButtons {
+    display: none;
+    width: 100%;
+    height: fit-content;
+    overflow: hidden;
+    background-color: var(--primary);
+    border-radius: 0px 0px 5px 5px;
+}
+
+.echoCommentButton {
+    display: block;
+    padding: 7px 15px 3px 15px;
+    float: right;
+    cursor: pointer;
+}
+
+.echoCommentButton span {
+    color: var(--surface);
+    display: inline-block;
+    transform: translate(0px, -6px);
+    font-size: 12px;
+    margin-right: 5px;
+}

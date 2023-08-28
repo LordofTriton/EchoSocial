@@ -1,0 +1,97 @@
+.communityThumb {
+    width: 100%;
+    height: fit-content;
+    background-color: var(--surface);
+    border-radius: 5px;
+    float: left;
+    margin: 20px 0px 0px 0px;
+    position: relative;
+    padding-bottom: 15px;
+    overflow: hidden;
+}
+
+.communityThumbCover {
+    width: 100%;
+    height: 150px;
+    background-color: var(--alt);
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.communityThumbCover span {
+    display: block;
+    border-radius: 5px;
+    background-color: var(--base);
+    color: var(--alt);
+    padding: 5px 10px;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 10px;
+    text-transform: capitalize;
+}
+
+.communityThumbProfile {
+    width: 70px;
+    height: 70px;
+    background-color: aqua;
+    border-radius: 10px;
+    background-color: var(--base);
+    background-size: cover;
+    background-position: center;
+    position: absolute;
+    top: 105px;
+    left: 15px;
+    border: 5px solid var(--surface);
+    cursor: pointer;
+}
+
+.communityThumbTitle {
+    color: var(--primary);
+    font-size: 18px;
+    font-weight: 650;
+    display: block;
+    margin: 32px 15px 0px 15px;
+    cursor: pointer;
+}
+
+.communityThumbTitle span {
+    width: 20px;
+    height: 20px;
+    background-color: var(--primary);
+    border-radius: 20px;
+    display: inline-block;
+    margin-right: 10px;
+    transform: translate(0px, 3px);
+}
+
+.communityThumbDesc {
+    color: var(--primary);
+    font-size: 12px;
+    font-weight: 400;
+    display: block;
+    margin: 10px 15px 10px 15px;
+}
+
+.communityThumbStat {
+    color: var(--primary);
+    font-size: 12px;
+    margin: 15px 0px 0px 15px;
+    display: block;
+    float: left;
+}
+
+.communityThumbJoin {
+    display: block;
+    color: var(--surface);
+    background-color: var(--primary);
+    border-radius: 5px;
+    padding: 7px 10px;
+    font-size: 12px;
+    float: right;
+    margin: 10px 15px 0px 0px;
+    cursor: pointer;
+}
+
+.communityThumbJoin:hover { background-color: var(--accent); color: white; }

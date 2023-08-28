@@ -1,0 +1,136 @@
+.notificationsContainer {
+    width: 500px;
+    height: calc(100% - 70px);
+    background-color: var(--base);
+    position: fixed;
+    top: 70px;
+    right: 70px;
+    box-shadow: 0 0 34px 0 rgba(63,66,87,.1);
+    padding: 20px;
+    overflow: hidden;
+    overflow-y: auto;
+}
+
+.notificationsContainerHead {
+    width: 100%;
+    height: fit-content;
+    overflow: hidden;
+    margin-bottom: 20px;
+    padding: 0px 5px 0px 5px;
+}
+
+.notificationsContainerTitle {
+    color: var(--primary);
+    font-size: 25px;
+    font-weight: 700;
+    overflow: hidden;
+    display: block;
+    float: left;
+}
+
+.notificationsContainerClose {
+    width: fit-content;
+    height: fit-content;
+    float: right;
+    display: block;
+    margin: 8px 0px 0px 10px;
+    cursor: pointer;
+}
+
+.notificationsContainerClose:hover { transform: rotate(90deg); }
+
+.notificationsContainerButtons {
+    width: 100%;
+    height: fit-content;
+    overflow: hidden;
+}
+
+.notificationsContainerFilter {
+    background-color: var(--surface);
+    color: var(--primary);
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 20px;
+    padding: 10px 20px;
+    margin-right: 10px;
+    cursor: pointer;
+    float: left;
+}
+
+.notificationsContainerMarkAll {
+    background-color: var(--surface);
+    color: var(--primary);
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 20px;
+    padding: 10px 20px;
+    margin-right: 10px;
+    cursor: pointer;
+    float: right;
+}
+
+.notificationsBox {
+    width: 100%;
+    height: fit-content;
+    margin-top: 30px;
+}
+
+.notificationsBoxEntry {
+    width: 100%;
+    height: 80px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    padding: 10px;
+    overflow: hidden;
+    background-color: var(--surface);
+}
+
+.notificationsBoxEntryImage {
+    height: 100%;
+    aspect-ratio: 1;
+    float: left;
+    border-radius: 100%;
+    background-color: var(--surface);
+    background-position: center;
+    background-size: cover;
+}
+
+.notificationsBoxEntryContent {
+    width: calc(100% - 100px);
+    height: 100%;
+    float: left;
+    padding-left: 15px;
+    position: relative;
+    cursor: pointer;
+}
+
+.notificationsBoxEntryContentText {
+    display: block;
+    font-size: 15px;
+    padding-right: 20px;
+    color: var(--surface);
+}
+
+.notificationsBoxEntryContentTime {
+    display: block;
+    font-size: 10px;
+    color: dimgray;
+    position: absolute;
+    bottom: 0px;
+}
+
+.notificationsBoxEntryClose {
+    width: 40px;
+    height: 100%;
+    float: right;
+    padding: 22px 10px;
+    cursor: pointer;
+}
+
+.nullNotifications {
+    color: var(--primary);
+    font-size: 15px;
+    font-style: italic;
+    margin-top: 50px;
+    display: block;
+}

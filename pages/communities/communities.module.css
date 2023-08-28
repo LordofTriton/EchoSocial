@@ -1,0 +1,113 @@
+.communitiesHead {
+    width: 100%;
+    height: fit-content;
+    overflow: hidden;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+
+.communitiesHeadBanner {
+    width: 100%;
+    height: 250px;
+    background-color: rgb(228, 236, 239);
+    background-image: url(../../public/images/bckg1.jpg);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    overflow: hidden;
+}
+
+.communitiesHeadBannerTitle {
+    color: white;
+    font-size: 30px;
+    font-weight: 700;
+    display: block;
+    margin: 50px 0px 0px 50px;
+}
+
+.communitiesHeadBannerSubTitle {
+    color: white;
+    font-size: 12px;
+    font-weight: 300;
+    display: block;
+    width: 500px;
+    margin: 10px 0px 20px 50px;
+}
+
+.communitiesHeadBannerSearch {
+    width: 400px;
+    height: 50px;
+    background-color: white;
+    border-radius: 5px;
+    color: var(--surface);
+    padding-left: 50px;
+    padding-right: 15px;
+    margin: 20px 0px 0px 50px;
+    background-image: url(../../public/images/icons/search.png);
+    background-size: 25px 25px;
+    background-position: 13px 13px;
+    background-repeat: no-repeat;
+}
+
+.communitiesHeadNav {
+    width: 100%;
+    height: 70px;
+    background-color: var(--surface);
+    padding-left: 50px;
+}
+
+.communitiesHeadNavButton {
+    display: block;
+    color: var(--primary);
+    float: left;
+    font-size: 17px;
+    font-weight: 600;
+    margin: 25px 50px 0px 0px;
+    cursor: pointer;
+}
+
+.communitiesHeadNavButton:hover { color: var(--accent); }
+
+.communitiesBody {
+    width: 100%;
+    height: fit-content;
+    margin-top: 30px;
+    overflow: hidden;
+}
+
+.communitiesBodyNav {
+    width: 300px;
+    height: fit-content;
+    min-height: 500px;
+    background-color: var(--surface);
+    border-radius: 5px;
+    float: left;
+    padding-bottom: 50px;
+}
+
+.communitiesBodyRecs {
+    width: calc(100% - 320px);
+    height: fit-content;
+    min-height: 500px;
+    background-color: transparent;
+    border-radius: 5px;
+    float: right;
+}
+
+.communitiesBodyRecsTitle {
+    display: block;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--primary);
+    padding: 20px 25px;
+    background-color: var(--surface);
+    border-radius: 5px;
+}
+
+.communitiesBodyRecBox {
+    width: 100%;
+    height: fit-content;
+    padding: 0px 0px;
+    overflow: hidden;
+}
+

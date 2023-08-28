@@ -1,0 +1,127 @@
+.signupPage {
+    width: 100%;
+    height: 100%;
+    background-color: var(--base);
+    position: absolute;
+}
+
+.signupHeader {
+    width: 100%;
+    height: 70px;
+    background-color: var(--primary);
+    padding: 0px 5%;
+    overflow: hidden;
+    box-shadow: 0 0 34px 0 rgba(63,66,87,.1);
+}
+
+.signupHeaderLogo {
+    width: 60px;
+    height: 60px;
+    margin: 5px 10px 5px 0px;
+    float: left;
+}
+
+.signupHeaderTitle {
+    color: var(--surface);
+    font-family: Title;
+    font-size: 40px;
+    font-weight: 700;
+    float: left;
+    margin: 10px 0px 0px 0px;
+}
+
+.signupContainer {
+    background-color: var(--surface);
+    width: 900px;
+    height: 450px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 34px 0 rgba(63,66,87,.1);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.signupContainerVectorBox {
+    width: 40%;
+    height: 100%;
+    float: left;
+}
+
+.signupContainerVector {
+    height: 100%;
+}
+
+.signupContainerFormBox {
+    width: 50%;
+    height: 100%;
+    float: right;
+    padding: 30px 50px 30px 30px;
+}
+
+.signupContainerFormBoxTitle {
+    color: var(--primary);
+    font-size: 30px;
+    padding: 0px;
+    margin: 0px 0px 30px 0px;
+}
+
+.signupContainerFormFieldHalf {
+    width: calc(50% - 10px);
+    height: 50px;
+    background-color: var(--base);
+    border-radius: 5px;
+    padding-left: 50px;
+    padding-right: 15px;
+    border: 0px;
+    outline: 0px;
+    color: var(--primary);
+    margin-bottom: 20px;
+    background-size: 25px 25px;
+    background-position: 13px 13px;
+    background-repeat: no-repeat;
+}
+
+.signupContainerFormFieldFull {
+    width: 100%;
+    height: 50px;
+    background-color: var(--base);
+    border-radius: 5px;
+    padding-left: 50px;
+    padding-right: 15px;
+    border: 0px;
+    outline: 0px;
+    color: var(--primary);
+    margin-bottom: 20px;
+    background-size: 25px 25px;
+    background-position: 13px 13px;
+    background-repeat: no-repeat;
+}
+
+.signupContainerFormSubmit {
+    width: 100%;
+    height: 50px;
+    background-color: var(--primary);
+    border-radius: 5px;
+    color: var(--surface);
+    margin-top: 20px;
+    cursor: pointer;
+}
+
+.signupContainerFormSubmit:hover {
+    background-color: var(--accent);
+}
+
+.signupContainerLogIn {
+    display: block;
+    text-align: center;
+    font-size: 13px;
+    color: var(--primary);
+    margin-top: 15px;
+}
+
+.signupContainerLogIn span {
+    color: var(--accent);
+    cursor: pointer;
+}

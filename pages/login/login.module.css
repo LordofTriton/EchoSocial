@@ -1,0 +1,123 @@
+.loginPage {
+    width: 100%;
+    height: 100%;
+    background-color: var(--base);
+    position: absolute;
+    /* background-image: url(../../public/images/bckg1.jpg);
+    background-size: cover; */
+}
+
+.loginHeader {
+    width: 100%;
+    height: 70px;
+    background-color: var(--primary);
+    padding: 0px 5%;
+    overflow: hidden;
+}
+
+.loginHeaderLogo {
+    width: 60px;
+    height: 60px;
+    margin: 5px 10px 5px 0px;
+    float: left;
+}
+
+.loginHeaderTitle {
+    color: var(--surface);
+    font-family: Title;
+    font-size: 40px;
+    font-weight: 700;
+    float: left;
+    margin: 10px 0px 0px 0px;
+}
+
+.loginContainer {
+    background-color: var(--surface);
+    width: 900px;
+    height: 450px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 10px;
+    box-shadow: 0 0 34px 0 rgba(63,66,87,.1);
+    overflow: hidden;
+}
+
+.loginContainerVectorBox {
+    width: 40%;
+    height: 100%;
+    float: left;
+}
+
+.loginContainerVector {
+    height: 100%;
+}
+
+.loginContainerFormBox {
+    width: 50%;
+    height: 100%;
+    float: right;
+    padding: 30px 50px 30px 30px;
+}
+
+.loginContainerFormBoxTitle {
+    color: var(--primary);
+    font-size: 30px;
+    padding: 0px;
+    margin: 0px 0px 80px 0px;
+}
+
+.loginContainerFormField {
+    width: 100%;
+    height: 50px;
+    background-color: var(--base);
+    border-radius: 5px;
+    padding-left: 50px;
+    border: 0px;
+    outline: 0px;
+    color: var(--primary);
+    margin-bottom: 20px;
+    background-size: 25px 25px;
+    background-position: 13px 13px;
+    background-repeat: no-repeat;
+}
+
+.loginContainerFormFYP {
+    font-size: 13px;
+    display: block;
+    float: right;
+    color: var(--primary);
+    cursor: pointer;
+}
+
+.loginContainerFormFYP:hover {
+    color: var(--accent);
+}
+
+.loginContainerFormSubmit {
+    width: 100%;
+    height: 50px;
+    background-color: var(--primary);
+    border-radius: 5px;
+    color: var(--surface);
+    margin-top: 20px;
+    cursor: pointer;
+}
+
+.loginContainerFormSubmit:hover {
+    background-color: var(--accent);
+}
+
+.loginContainerSignUp {
+    display: block;
+    text-align: center;
+    font-size: 13px;
+    color: var(--primary);
+    margin-top: 15px;
+}
+
+.loginContainerSignUp span {
+    color: var(--accent);
+    cursor: pointer;
+}

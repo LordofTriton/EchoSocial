@@ -1,0 +1,174 @@
+.formTextInputField {
+    background-color: transparent;
+    padding: 10px;
+    border-radius: 5px;
+    border: 2px solid var(--base);
+}
+
+.formTextInputFieldLabel {
+    color: var(--accent);
+    font-size: 10px;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.formTextInputFieldInput {
+    width: 100%;
+    height: 20px;
+    font-size: 15px;
+    background-color: transparent;
+    color: var(--primary);
+    padding: 0px;
+}
+
+.formSelectInputField {
+    background-color: transparent;
+    padding: 10px;
+    border-radius: 5px;
+    border: 2px solid var(--base);
+    position: relative;
+}
+
+.formTextAreaFieldInput {
+    height: 100px;
+    width: 100%;
+    background-color: transparent;
+    color: var(--primary);
+    padding: 0px;
+    border-radius: 5px;
+    font-size: 15px;
+    resize: none;
+}
+
+.formSelectSingleSelected {
+    cursor: pointer;
+    padding-right: 50px;
+    position: relative;
+}
+
+.formSelectSingleSelectedItem {
+    font-size: 15px;
+    color: var(--primary);
+    text-transform: capitalize;
+}
+
+.formSelectSingleSelectedArrow {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    top: 50%;
+    right: 0px;
+    transform: translate(0px, -50%) rotate(90deg);
+}
+
+.formSelectMultipleSelected {
+    width: 100%;
+    height: 50px;
+    border-radius: 5px;
+    float: left;
+    padding-top: 3px;
+    overflow: hidden;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.formSelectMultipleSelectedItem {
+    background-color: var(--primary);
+    padding: 10px 40px 10px 10px;
+    border-radius: 5px;
+    color: var(--surface);
+    display: inline-block;
+    margin: 0px 5px 0px 5px;
+    font-size: 13px;
+    cursor: pointer;
+    position: relative;
+}
+
+.formSelectMultipleSelectedItem span {
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.formSelectMultipleSelectClose {
+    width: 30px;
+    height: 30px;
+    display: block;
+    position: absolute;
+    top: 7px;
+    right: 0px;
+}
+
+.formSelectDropDown {
+    width: 100%;
+    height: fit-content;
+    position: absolute;
+    top: 100%;
+    left: 0px;
+    background-color: var(--surface);
+    border-radius: 0px 0px 5px 5px;
+    outline: 1px solid var(--base);
+    z-index: 2;
+}
+
+.formSelectOption {
+    color: var(--primary);
+    font-size: 15px;
+    display: block;
+    width: 100%;
+    padding: 5px 15px;
+    cursor: pointer;
+}
+
+.formSelectOption:hover {
+    background-color: var(--accent);
+    color: var(--surface);
+}
+
+.formSwitch {
+    width: 60px;
+    height: 30px;
+    border-radius: 30px;
+    background-color: var(--accent);
+    border: 2px solid var(--base);
+    position: relative;
+    cursor: pointer;
+}
+
+.formSwitchKey {
+    height: calc(100% - 10px);
+    aspect-ratio: 1;
+    border-radius: 50px;
+    float: left;
+    background-color: var(--surface);
+    margin: 5px;
+}
+
+.formSwitchState {
+    display: block;
+    position: absolute;
+    top: 50%;
+    transform: translate(0px, -50%);
+    font-size: 15px;
+    color: var(--surface);
+    font-size: 10px;
+}
+
+.formSubmit {
+    width: 100%;
+    height: 50px;
+    background-color: var(--primary);
+    border-radius: 5px;
+    color: var(--surface);
+    margin-top: 20px;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.formSubmit:hover {
+    background-color: var(--accent);
+}

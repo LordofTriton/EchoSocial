@@ -1,0 +1,41 @@
+import { getDB } from "../../../util/db/mongodb";
+import ParamValidator from "../../../services/validation/validator";
+import ResponseClient from "../../../services/validation/ResponseClient";
+
+function ValidateDeleteMember(data) {
+    if (!data.userID || !ParamValidator.isValidObjectID(data.userID)) throw new Error("Missing or Invalid: userID")
+}
+
+function parseParams(params, data) {
+    const result = {}
+    for (let param of params) {
+        if (data[param]) result[param] = data[param]
+    }
+    return result;
+}
+
+const { db } = await getDB();
+
+export default async function DeleteMember(params, io) {
+    params = parseParams([
+        "accountID",
+        "userID"
+    ], params);
+
+    try {
+        ValidateDeleteMember(params)
+
+        const deleteMemberResponse = await db.collection("members").deleteOne({ accountID: params.userID })
+
+        const responseData = ResponseClient.DBModifySuccess({
+            data: deleteMemberResponse,
+            message: "Member deleted successfully."
+        })
+
+        return responseData;
+    } catch (error) {
+        console.log(error)
+        const responseData = ResponseClient.GenericFailure({ error: error.message })
+        return responseData;
+    }
+}

@@ -1,0 +1,186 @@
+.mediaViewerContainer {
+    width: fit-content;
+    max-width: calc(100% - 200px);
+    height: calc(100% - 130px);
+    background-color: var(--surface);
+    border-radius: 5px;
+    position: fixed;
+    top: 100px;
+    right: 100px;
+    padding: 25px;
+}
+
+.mediaViewerHead {
+    width: 100%;
+    height: 50px;
+}
+
+.mediaViewerHeadProfile {
+    width: 50px;
+    height: 50px;
+    float: left;
+    border-radius: 50px;
+    display: block;
+    background-size: cover;
+    background-position: center;
+    cursor: pointer;
+}
+
+.mediaViewerHeadData {
+    display: block;
+    width: calc(100% - 80px);
+    height: 100%;
+    float: left;
+    padding: 5px 12px;
+    cursor: pointer;
+}
+
+.mediaViewerHeadDataUser {
+    color: var(--primary);
+    font-size: 15px;
+    font-weight: 700;
+    display: block;
+    opacity: 0.9;
+}
+
+.mediaViewerHeadDataUser:hover { color: var(--accent); }
+
+.mediaViewerHeadDataDateTime {
+    color: var(--primary);
+    opacity: 0.7;
+    font-size: 13px;
+    font-weight: 200;
+    display: block;
+}
+
+.mediaViewerHeadDataDateTime span {
+    font-weight: 500;
+    color: var(--accent);
+}
+
+.mediaViewerHeadDataDateTime span span {
+    width: 5px;
+    height: 5px;
+    background-color: var(--primary) !important;
+    border-radius: 10px;
+    display: inline-block;
+    margin: 0px 7px;
+    transform: translate(0px, -2px);
+}
+
+.mediaViewerHeadOptionIcon {
+    display: block;
+    width: 30px;
+    height: 100%;
+    float: right;
+    padding: 12.5px 2.5px;
+    cursor: pointer;
+    position: relative;
+}
+
+.mediaViewerHeadOptionIcon:hover .mediaViewerHeadOptionBox { display: block; }
+
+.mediaViewerHeadOptionBox {
+    display: none;
+    position: absolute;
+    width: 200px;
+    height: fit-content;
+    background-color: var(--surface);
+    border-radius: 5px;
+    top: 0px;
+    right: 0px;
+    z-index: 2;
+    box-shadow: 0 0 34px 0 rgba(63,66,87,.1);
+    padding: 10px 0px;
+}
+
+.mediaViewerHeadOptionBox:hover { display: block; }
+
+.mediaViewerHeadOption {
+    color: var(--primary);
+    font-size: 15px;
+    font-weight: 500;
+    display: block;
+    padding: 7px 25px;
+}
+
+.mediaViewerHeadOption:hover { color: var(--accent); }
+
+.mediaContent {
+    width: 100%;
+    height: calc(100% - 70px);
+    overflow: hidden;
+    margin-top: 20px;
+}
+
+.media {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.media:hover .mediaControlLeft { display: block; }
+.media:hover .mediaControlRight { display: block; }
+
+.mediaImage {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 5px;
+}
+
+.mediaVideo {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 5px;
+}
+
+.mediaControlLeft {
+    position: absolute;
+    display: none;
+    width: 35px;
+    height: 35px;
+    background-color: #FFFFFF60;
+    top: 50%;
+    left: 0px;
+    transform: translate(0px, -50%) rotate(180deg);
+    padding: 5px;
+    cursor: pointer;
+}
+
+.mediaControlRight {
+    position: absolute;
+    display: none;
+    width: 35px;
+    height: 35px;
+    background-color: #FFFFFF60;
+    top: 50%;
+    right: 0px;
+    transform: translate(0px, -50%);
+    padding: 5px;
+    cursor: pointer;
+}
+
+.mediaCount {
+    width: fit-content;
+    height: 20px;
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 0px 15px;
+    position: absolute;
+    bottom: 10px;
+    border-radius: 5px;
+}
+
+.mediaCount span {
+    width: 10px;
+    height: 10px;
+    border-radius: 10px;
+    background-color: var(--surface);
+    display: block;
+    float: left;
+    margin: 5px 10px;
+}

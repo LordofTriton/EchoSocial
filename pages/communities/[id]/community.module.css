@@ -1,0 +1,453 @@
+.communityHead {
+    width: 100%;
+    height: 400px;
+    border-radius: 5px;
+    background-color: var(--alt);
+    overflow: hidden;
+    position: relative;
+}
+
+.communityHeadCover {
+    width: 100%;
+    height: 70%;
+    background-size: cover;
+    background-position: center;
+}
+
+.communityHeadNav {
+    width: 100%;
+    height: 30%;
+    background-color: var(--surface);
+    padding: 0px 100px;
+}
+
+.communityHeadProfile {
+    width: 150px;
+    height: 150px;
+    position: absolute;
+    bottom: 75px;
+    left: 175px;
+    background-color: var(--base);
+    transform: translate(-50%, 0px);
+    background-size: cover;
+    background-position: center;
+    border-radius: 100%;
+    border: 5px solid var(--surface);
+}
+
+.communityHeadNavLink {
+    display: block;
+    color: var(--primary);
+    opacity: 0.8;
+    float: right;
+    font-size: 17px;
+    font-weight: 600;
+    margin: 60px 50px 0px 0px;
+    cursor: pointer;
+}
+
+.communityHeadNavLink:hover {color: var(--accent);}
+
+.communityHeadNavName {
+    display: block;
+    color: var(--primary);
+    font-size: 25px;
+    font-weight: 700;
+    float: left;
+    margin-top: 50px;
+}
+
+.communityHeadNavNickName {
+    display: block;
+    color: var(--primary);
+    opacity: 0.7;
+    font-size: 15px;
+    font-weight: 200;
+    text-align: center;
+}
+
+.communityHeadButtons {
+    width: fit-content;
+    height: 50px;
+    position: absolute;
+    bottom: 100px;
+    right: 50px;
+}
+
+.communityHeadButton {
+    width: 50px;
+    height: 50px;
+    border-radius: 50px;
+    background-color: var(--primary);
+    float: right;
+    margin-right: 10px;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.communityFriends {
+    width: 100%;
+    height: fit-content;
+    margin-top: 30px;
+    position: relative;
+    overflow: hidden;
+    padding-bottom: 100px;
+}
+
+.communityTimeline {
+    width: 100%;
+    height: fit-content;
+    margin-top: 30px;
+    position: relative;
+    padding-bottom: 100px;
+}
+
+.communityTimelineData {
+    width: calc(25% - 15px);
+    height: fit-content;
+    float: left;
+    margin: 0px 15px 0px 0px;
+    padding-bottom: 30px;
+    position: sticky;
+    top: 0px;
+    left: 0px;
+}
+
+.communityTimelineDataBlock {
+    width: 100%;
+    height: fit-content;
+    background-color: var(--surface);
+    box-shadow: 0 0 8px 0 rgba(63,66,87,.1);
+    border-radius: 5px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    padding-bottom: 20px;
+}
+
+.communityTimelineData hr {
+    border-bottom: 0.5px solid var(--alt);
+    width: calc(100% - 40px);
+    margin: 0px 20px 10px 20px;
+}
+
+.communityTimelineDataTitle {
+    color: var(--primary);
+    font-size: 15px;
+    font-weight: 700;
+    display: block;
+    padding: 14px 20px;
+    border-bottom: 2px solid var(--base);
+    opacity: 0.7;
+    margin-bottom: 10px;
+}
+
+.communityTimelineDataIntro {
+    display: block;
+    width: 100%;
+    height: fit-content;
+    padding: 10px 20px 20px 20px;
+    color: var(--primary);
+}
+
+.communityTimelineDataSeeMore {
+    color: var(--primary);
+    font-size: 13px;
+    font-weight: 200;
+    margin: 5px 20px 10px 20px;
+    font-style: italic;
+    text-align: center;
+    display: block;
+    cursor: pointer;
+}
+
+.communityTimelineDataSeeMore:hover { color: var(--accent); }
+
+.communityTimelineDataBox {
+    width: 100%;
+    height: fit-content;
+    margin: 10px 0px 0px 0px;
+    float: left;
+    padding: 0px 20px;
+}
+
+.communityTimelineDataBoxIcon {
+    display: block;
+    width: 30px;
+    height: 30px;
+    float: left;
+    transform: translate(0px, -2px);
+    opacity: 0.6;
+}
+
+.communityTimelineDataBoxDataText {
+    width: calc(100% - 33px);
+    color: var(--primary);
+    font-size: 15px;
+    font-weight: 400;
+    display: block;
+    float: right;
+    text-align: left;
+    white-space: pre-wrap;
+    padding-right: 15px;
+}
+
+.communityTimelineFeed {
+    width: calc(75% - 15px);
+    height: fit-content;
+    min-height: 300px;
+    float: right;
+    margin: 0px 0px 0px 15px;
+}
+
+.communityTimelineFeedHead {
+    width: 100%;
+    height: 50px;
+    background-color: var(--surface);
+    border-radius: 5px;
+    box-shadow: 0 0 8px 0 rgba(63,66,87,.1);
+    margin-bottom: 10px;
+}
+
+.communityTimelineFeedHeadTitle {
+    color: var(--primary);
+    font-size: 15px;
+    font-weight: 700;
+    display: block;
+    float: left;
+    margin: 13px 20px;
+    opacity: 0.7;
+}
+
+.communityTimelineDataCommunity {
+    width: 100%;
+    height: 60px;
+    padding: 10px 20px;
+    overflow: hidden;
+    display: block;
+}
+
+.communityTimelineDataCommunity div {
+    width: 40px;
+    height: 40px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 40px;
+    float: left;
+    background-color: var(--alt);
+}
+
+.communityTimelineDataCommunity span {
+    color: var(--primary);
+    font-size: 15px;
+    font-weight: 500;
+    float: left;
+    display: block;
+    margin: 10px 15px;
+    cursor: pointer;
+}
+
+.communityTimelineDataCommunity span:hover { color: var(--accent); }
+
+.communityTimelineDataFriend {
+    width: calc(25% - 20px);
+    aspect-ratio: 1;
+    border-radius: 100px;
+    background-size: cover;
+    background-position: center;
+    float: left;
+    margin: 0px 10px;
+    background-color: var(--base);
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+.communityTimelineDataMedia {
+    width: calc(100% - 50px);
+    height: fit-content;
+    margin: 30px 25px 10px 25px;
+    overflow: hidden;
+    border-radius: 5px;
+}
+
+.communityTimelineDataMedia div {
+    width: 50%;
+    height: 80px;
+    float: left;
+    background-size: cover;
+    background-position: center;
+    cursor: pointer;
+}
+
+.communityAboutPersonal {
+    width: 400px;
+    height: fit-content;
+    min-height: 300px;
+    background-color: var(--surface);
+    border-radius: 5px;
+    float: left;
+    padding-bottom: 30px;
+}
+
+.communityAboutPersonalData {
+    width: 100%;
+    height: fit-content;
+    padding: 10px 20px;
+    overflow: hidden;
+}
+
+.communityAboutPersonalDataName {
+    display: block;
+    width: 35%;
+    height: fit-content;
+    color: var(--accent);
+    font-size: 14px;
+    float: left;
+    font-weight: 500;
+    opacity: 0.7;
+}
+
+.communityAboutPersonalDataValue {
+    display: block;
+    width: 65%;
+    height: fit-content;
+    color: var(--primary);
+    font-size: 14px;
+    float: right;
+    font-weight: 400;
+}
+
+.communityAboutNodes {
+    width: calc(100% - 420px);
+    height: fit-content;
+    background-color: var(--surface);
+    border-radius: 5px;
+    padding-bottom: 20px;
+    float: right;
+}
+
+.communityAboutNode {
+    background-color: var(--primary);
+    padding: 10px 40px 10px 10px;
+    border-radius: 5px;
+    color: var(--surface);
+    display: inline-block;
+    margin: 5px 5px 5px 5px;
+    font-size: 13px;
+}
+
+.communityAboutSocials {
+    width: calc(100% - 420px);
+    height: fit-content;
+    background-color: var(--surface);
+    border-radius: 5px;
+    padding-bottom: 20px;
+    float: right;
+    margin-top: 20px;
+}
+
+.communityAboutSocial {
+    width: calc(100% - 40px);
+    height: 40px;
+    border-radius: 5px;
+    display: block;
+    font-size: 15px;
+    font-weight: 500;
+    margin: 10px 20px;
+    color: white;
+    padding: 5px 25px;
+    cursor: pointer;
+}
+
+.communityAboutSocialIcon {
+    display: inline-block;
+    transform: translate(0px, 5px);
+    margin-right: 15px;
+}
+
+.communityAboutSocialLink {
+    color: white;
+    font-size: 13px;
+    font-weight: 400;
+    margin-left: 20px;
+}
+
+.communityMediaImage {
+    width: 100%;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.communityMediaVideo {
+    width: 100%;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.communityMember {
+    width: calc(50% - 20px);
+    height: 60px;
+    background-color: var(--surface);
+    border-radius: 5px;
+    padding: 10px 25px;
+    margin: 20px 10px 0px 10px;
+    float: left;
+}
+
+.communityMemberProfile {
+    height: 100%;
+    aspect-ratio: 1;
+    border-radius: 100%;
+    float: left;
+    cursor: pointer;
+    background-size: cover;
+    background-position: center;
+}
+
+.communityMemberName {
+    display: block;
+    color: var(--primary);
+    font-size: 15px;
+    font-weight: 500;
+    margin: 0px 20px;
+    float: left;
+}
+
+.communityMemberName span { font-size: 10px; font-weight: 200; text-transform: uppercase; }
+
+.communityMemberOptions {
+    width: 30px;
+    height: 100%;
+    float: right;
+    position: relative;
+    padding: 15px 5px;
+}
+
+.communityMemberOptions:hover .communityMemberOptionsDrop { display: block; }
+
+.communityMemberOptionsDrop {
+    display: none;
+    width: 200px;
+    height: fit-content;
+    background-color: var(--surface);
+    box-shadow: 0 0 34px 0 rgba(63,66,87,.1);
+    border-radius: 5px;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    overflow: hidden;
+}
+
+.communityMemberOption {
+    display: block;
+    font-size: 13px;
+    color: var(--primary);
+    cursor: pointer;
+    padding: 7px 20px;
+}
+
+.communityMemberOption:hover {
+    background-color: var(--primary);
+    color: white;
+}

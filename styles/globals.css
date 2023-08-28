@@ -1,26 +1,101 @@
-html,
-body {
-  padding: 0;
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+html {
+  width: 100vw;
+  height: 100vh;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+body {
+  width: 1536px;
+  height: 100%;
+  position: fixed;
+  overflow: hidden;
 }
 
 * {
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  transition: all 0.5s;
+  border: 0px;
+  margin: 0px;
+  padding: 0px;
+  outline: 0px;
   box-sizing: border-box;
+  text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
-  body {
-    color: white;
-    background: black;
-  }
+/* :root {
+  --secondary: #9A9FBF;
+  --base: #EDF2F6;
+  --red: #BA1934ff;
+  --burgundy: #8C0820ff;
+  --accent: #FDBD56ff;
+  --accent: #F58A2Aff;
+  --primary: #3D0D3Cff;
+} */
+
+
+
+@font-face {
+  font-family: Title;
+  src: url(../public/fonts/Adonay-lgZdw.ttf);
+}
+
+@keyframes LoaderSpin {
+  0% {transform: rotate(0deg);}
+  100% {transform: rotate(360deg);}
+}
+
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--primary);
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:active {
+  background-color: var(--accent);
+}
+
+.app-container {
+  zoom: 1; /* Adjust the value to control the scaling */
+  transform-origin: top center; /* Maintain top-center anchor point */
+}
+
+.loader {
+  border-top: 3px solid transparent;
+  border-left: 3px solid currentColor;
+  border-right: 3px solid currentColor;
+  border-bottom: 3px solid transparent;
+  border-radius: 100%;
+  animation: LoaderSpin 2s infinite;
+}
+
+.modalOverlay {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.page {
+  width: 100%;
+  height: 100%;
+  background-color: var(--base);
+  position: absolute;
+  overflow: hidden;
+  overflow-y: auto;
+}
+
+.pageContent {
+  width: 100%;
+  height: fit-content;
+  min-height: 100%;
+  padding: 80px 120px 120px 120px;
 }
