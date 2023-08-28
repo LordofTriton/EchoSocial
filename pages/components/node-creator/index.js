@@ -4,7 +4,7 @@ import styles from "./node-creator.module.css"
 
 import APIClient from "../../../services/APIClient";
 import SVGServer from "../../../services/svg/svgServer";
-import Form from "../../components/form";
+import { Form } from "../../components/form";
 
 export default function NodeCreator({toggle, control, page}) {
     const [newNode, setNewNode] = useState({

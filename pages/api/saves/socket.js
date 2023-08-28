@@ -1,4 +1,4 @@
-import CreateSave, { CreateSaveCallback } from "./create-save";
+import CreateSave from "./create-save";
 import DeleteSave from "./delete-save";
 import GetSaves from "./get-saves";
 
@@ -8,7 +8,6 @@ export default async function SaveSocket(io, socket) {
         else data = JSON.parse(data)
         const response = await CreateSave(data, io)
         io.to(data.accountID).emit(`CREATE_SAVE_RES_${data.serial}`, JSON.stringify(response))
-        if (response.success) await CreateSaveCallback(data, io)
     });
 
     socket.on('DELETE_SAVE', async (data) => {

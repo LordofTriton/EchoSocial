@@ -7,7 +7,7 @@ import Cache from '../../services/CacheService'
 import Modals from '../components/modals';
 import SVGServer from '../../services/svg/svgServer'
 import APIClient from "../../services/APIClient";
-import Form from "../components/form";
+import { Form } from "../components/form";
 import useModalStates from '../hooks/useModalStates'
 import { useSocketContext } from '../../util/SocketProvider'
 import { nickDict } from '../../services/generators/NIckGenerator'

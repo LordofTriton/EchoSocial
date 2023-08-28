@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import styles from './accountnav.module.css';
 
 import SVGServer from "../../../services/svg/svgServer";
-import Form from "../form";
+import { Form } from "../form";
 
 export default function AccountNav({toggle, control, page}) {
     const handleLogout = () => {

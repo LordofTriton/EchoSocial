@@ -4,7 +4,7 @@ import styles from "./echo-creator.module.css"
 
 import APIClient from "../../../services/APIClient";
 import SVGServer from "../../../services/svg/svgServer";
-import Form from "../../components/form";
+import { Form } from "../../components/form";
 import Helpers from "../../../util/Helpers";
 
 export default function EchoCreator({toggle, control, page}) {

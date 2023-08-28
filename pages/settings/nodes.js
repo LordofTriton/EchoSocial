@@ -5,7 +5,7 @@ import { useRouter } from 'next/router'
 
 import Cache from '../../services/CacheService'
 import Modals from '../components/modals';
-import Form from "../components/form";
+import { Form } from "../components/form";
 import APIClient from "../../services/APIClient";
 import SVGServer from "../../services/svg/svgServer";
 import useModalStates from '../hooks/useModalStates'

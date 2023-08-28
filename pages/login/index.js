@@ -9,7 +9,7 @@ import Link from 'next/link';
 import Alert from "../components/alert";
 import Cache from "../../services/CacheService";
 import APIClient from "../../services/APIClient";
-import Form from '../components/form';
+import { Form } from '../components/form';
 
 export default function Login() {
     const router = useRouter()

@@ -4,7 +4,7 @@ import styles from "./community-creator.module.css"
 
 import APIClient from "../../../services/APIClient";
 import SVGServer from "../../../services/svg/svgServer";
-import Form from "../../components/form";
+import { Form } from "../../components/form";
 
 export default function CommunityCreator({toggle, control, page}) {
     const [communityPrivacy, setCommunityPrivacy] = useState("public")

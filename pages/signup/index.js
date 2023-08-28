@@ -58,7 +58,7 @@ export default function Signup() {
         </div>
             <div className={styles.signupContainer}>
                 <div className={styles.signupContainerVectorBox}>
-                    <img src={`${AppConfig.HOST}/images/vectors/signup.jpg`} className={styles.signupContainerVector} />
+                    <img src={`${AppConfig.HOST}/images/vectors/signup.jpg`} className={styles.signupContainerVector} alt="vector" />
                 </div>
                 <div className={styles.signupContainerFormBox}>
                     <h3 className={styles.signupContainerFormBoxTitle}>Sign Up</h3>

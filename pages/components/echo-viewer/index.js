@@ -6,7 +6,7 @@ import SVGServer from "../../../services/svg/svgServer";
 import Echo from "../echo";
 import EchoComment from "../echo-comment";
 import APIClient from "../../../services/APIClient";
-import Form from "../form";
+import { Form } from "../form";
 import Helpers from "../../../util/Helpers";
 
 export default function EchoViewer({ data, control, page }) {

@@ -6,6 +6,6 @@ import SwitchInput from "./switch-input"
 import TextInput from "./text-input"
 import Submit from "./submit-button"
 
-const Form = { AreaInput, DateInput, SelectMultipleInput, SelectSingleInput, SwitchInput, TextInput, Submit }
+export const Form = { AreaInput, DateInput, SelectMultipleInput, SelectSingleInput, SwitchInput, TextInput, Submit }
 
-export default Form;
+export default TextInput;
