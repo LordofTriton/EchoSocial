@@ -16,7 +16,7 @@ export default async (request, response) => {
     if (!response.socket.server.io) {
         console.log("Socket: Initialized.")
         const io = new Server(response.socket.server, { path: "/api/socket", addTrailingSlash: false, cors: {
-                origin: process.env.APP_HOST,
+                origin: "/",
                 methods: ["GET", "POST"],
                 transports: ['websocket', 'polling'],
                 credentials: true
