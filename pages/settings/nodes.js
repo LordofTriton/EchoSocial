@@ -163,7 +163,7 @@ export default function NodesSettings() {
                                         </span>
                                     </div>
                                 </div>
-                                <span className={styles.formContainerFormAddNode}>Can't find what you want?<br /><span>Add It</span></span>
+                                <span className={styles.formContainerFormAddNode}>Can`t find what you want?<br /><span>Add It</span></span>
                                 <div className={styles.formContainerFormButtons}>
                                     <button className={styles.formContainerFormRevertHalf} onClick={() => handleRevert()}>Revert Changes</button>
                                     <button className={styles.formContainerFormSubmitHalf} onClick={() => handleSubmit()}>Save Changes</button>

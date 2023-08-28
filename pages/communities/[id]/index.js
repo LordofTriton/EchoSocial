@@ -213,7 +213,7 @@ export default function Community() {
           <div className={styles.communityTimelineData}>
             <div className={styles.communityTimelineDataBlock}>
               <span className={styles.communityTimelineDataTitle}>About</span>
-              <span className={styles.communityTimelineDataIntro}>"{communityData?.description ? communityData.description : "Loading description..."}"</span>
+              <span className={styles.communityTimelineDataIntro}>"{communityData?.description ? communityData.description : `Loading description...`}"</span>
 
               <div className={styles.communityTimelineDataBox}>
                 <span className={styles.communityTimelineDataBoxIcon}><SVGServer.HeartFilledIcon color="var(--primary)" width="25px" height="25px" /></span>

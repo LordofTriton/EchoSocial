@@ -250,7 +250,7 @@ export default function User() {
           <div className={styles.userTimelineData}>
             <div className={styles.userTimelineDataBlock}>
               <span className={styles.userTimelineDataTitle}>Bio</span>
-              <span className={styles.userTimelineDataIntro}>"{userData?.bio ? userData.bio : "Oops. I haven't written my bio yet!"}"</span>
+              <span className={styles.userTimelineDataIntro}>"{userData?.bio ? userData.bio : `Oops. I haven't written my bio yet!`}"</span>
 
               <div className={styles.userTimelineDataBox}>
                 <span className={styles.userTimelineDataBoxIcon}><SVGServer.HeartFilledIcon color="var(--primary)" width="25px" height="25px" /></span>

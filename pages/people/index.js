@@ -92,7 +92,7 @@ export default function PeopleStrangers() {
                 <div className={styles.peopleHead}>
                     <div className={styles.peopleHeadBanner}>
                         <span className={styles.peopleHeadBannerTitle}>People</span>
-                        <span className={styles.peopleHeadBannerSubTitle}>Find people who share your passion. From gaming, to music, to learning, there's a friend for you.</span>
+                        <span className={styles.peopleHeadBannerSubTitle}>Find people who share your passion. From gaming, to music, to learning, there`s a friend for you.</span>
                         <input type="text" className={styles.peopleHeadBannerSearch} />
                     </div>
                     <div className={styles.peopleHeadNav}>

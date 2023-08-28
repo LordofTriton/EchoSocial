@@ -94,7 +94,7 @@ export default function CommunitiesFeed() {
                 <div className={styles.communitiesHead}>
                     <div className={styles.communitiesHeadBanner}>
                         <span className={styles.communitiesHeadBannerTitle}>Communities</span>
-                        <span className={styles.communitiesHeadBannerSubTitle}>Find people who share your passion. From gaming, to music, to learning, there's a place for you.</span>
+                        <span className={styles.communitiesHeadBannerSubTitle}>Find people who share your passion. From gaming, to music, to learning, there`s a place for you.</span>
                         <input type="text" className={styles.communitiesHeadBannerSearch} />
                     </div>
                     <div className={styles.communitiesHeadNav}>
