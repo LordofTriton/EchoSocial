@@ -4,6 +4,8 @@ import Cache from '../../services/CacheService';
 
 let socketInstance = null;
 let socketRequestCount = 0;
+let socketURL = "/api/socket";
+socket = "/.netlify/functions/socket"
 
 function getAccountID() {
     const account = Cache.getData("EchoUser");
@@ -16,10 +18,10 @@ const useSocket = () => {
     const connectSocket = async () => {
         if (!socketInstance) {
             console.log("Connecting to Socket.")
-            await fetch(process.env.SOCKET_URL)
+            await fetch(socketURL)
 
             socketInstance = io(undefined, {
-                path: process.env.SOCKET_URL
+                path: socketURL
             });
 
             socketInstance.on('connect', () => {
