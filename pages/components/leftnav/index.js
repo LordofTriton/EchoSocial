@@ -28,7 +28,7 @@ export default function LeftNav({ page }) {
     return (
         <div className={styles.leftnavContainer}>
             <div className={styles.leftnavContainerHead}>
-                <img src={`${AppConfig.HOST}/images/logo.png`} alt="logo" />
+                <img src={`/images/logo.png`} alt="logo" />
             </div>
             <div className={styles.leftnavMenuButton} onClick={() => page.router.push("/")} style={{color: page.title === "Feed" ? "var(--accent)" : null}}>
                 <SVGServer.FeedIcon color="currentColor" width="40px" height="40px" />

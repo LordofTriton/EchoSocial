@@ -41,7 +41,7 @@ export default function TopNav({ page }) {
                     </form>
                 </div>
                 <div className={styles.topnavAccount} onMouseEnter={() => setOpenAccountNav(true)} onMouseLeave={() => setOpenAccountNav(false)}>
-                    <div className={styles.topnavProfileImage} style={{ backgroundImage: page.activeUser.profileImage.url ? `url(${page.activeUser.profileImage.url})` : `url(${AppConfig.HOST}/images/profile.jpg)` }}>
+                    <div className={styles.topnavProfileImage} style={{ backgroundImage: page.activeUser.profileImage.url ? `url(${page.activeUser.profileImage.url})` : `url(/images/profile.jpg)` }}>
                         <div className={styles.topnavProfileImageActive}></div>
                     </div>
                     <div className={styles.topnavAccountData}>

@@ -61,14 +61,14 @@ export default function Login() {
             </div>
             <div className={styles.loginContainer}>
                 <div className={styles.loginContainerVectorBox}>
-                    <img src={`${AppConfig.HOST}/images/vectors/login.jpg`} className={styles.loginContainerVector} alt="vector" />
+                    <img src={`/images/vectors/login.jpg`} className={styles.loginContainerVector} alt="vector" />
                 </div>
                 <div className={styles.loginContainerFormBox}>
                     <h3 className={styles.loginContainerFormBoxTitle}>Sign In</h3>
                     <div>
                         <form onSubmit={handleSubmit}>
-                            <input type="text" className={styles.loginContainerFormField} placeholder="Email Address" value={loginDetails.email} onChange={(e) => setLoginDetails({...loginDetails, email: e.target.value})} style={{backgroundImage: `url(${AppConfig.HOST}/images/icons/email.png)`}} required/>
-                            <input type="password" className={styles.loginContainerFormField} placeholder="Password" value={loginDetails.password} onChange={(e) => setLoginDetails({...loginDetails, password: e.target.value})} style={{backgroundImage: `url(${AppConfig.HOST}/images/icons/password.png)`}} required/>
+                            <input type="text" className={styles.loginContainerFormField} placeholder="Email Address" value={loginDetails.email} onChange={(e) => setLoginDetails({...loginDetails, email: e.target.value})} style={{backgroundImage: `url(/images/icons/email.png)`}} required/>
+                            <input type="password" className={styles.loginContainerFormField} placeholder="Password" value={loginDetails.password} onChange={(e) => setLoginDetails({...loginDetails, password: e.target.value})} style={{backgroundImage: `url(/images/icons/password.png)`}} required/>
                             <Link href="/fyp"><span className={styles.loginContainerFormFYP}>Forgot password?</span></Link>
 
                             <Form.Submit text="SIGN IN" loader={loginLoader} />

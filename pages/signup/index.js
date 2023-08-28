@@ -53,22 +53,22 @@ export default function Signup() {
             <link rel="stylesheet" href={`/styles/themes/classic-light.css`} />
         </Head>
         <div className={styles.signupHeader}>
-            <img src={`${AppConfig.HOST}/images/logo.png`} alt="logo" className={styles.signupHeaderLogo} />
+            <img src={`/images/logo.png`} alt="logo" className={styles.signupHeaderLogo} />
             <span className={styles.signupHeaderTitle}>echo</span>
         </div>
             <div className={styles.signupContainer}>
                 <div className={styles.signupContainerVectorBox}>
-                    <img src={`${AppConfig.HOST}/images/vectors/signup.jpg`} className={styles.signupContainerVector} alt="vector" />
+                    <img src={`/images/vectors/signup.jpg`} className={styles.signupContainerVector} alt="vector" />
                 </div>
                 <div className={styles.signupContainerFormBox}>
                     <h3 className={styles.signupContainerFormBoxTitle}>Sign Up</h3>
                     <div>
                         <form onSubmit={handleSubmit}>
-                            <input type="text" className={styles.signupContainerFormFieldHalf} placeholder="First Name" value={signupDetails.firstName} onChange={(e) => setSignupDetails({...signupDetails, firstName: e.target.value.trim()})} style={{backgroundImage: `url(${AppConfig.HOST}/images/icons/user1.png)`, float: "left"}} required/>
-                            <input type="text" className={styles.signupContainerFormFieldHalf} placeholder="Last Name" value={signupDetails.lastName} onChange={(e) => setSignupDetails({...signupDetails, lastName: e.target.value.trim()})} style={{backgroundImage: `url(${AppConfig.HOST}/images/icons/user1.png)`, float: "right"}} required/>
-                            <input type="text" className={styles.signupContainerFormFieldFull} placeholder="Email Address" value={signupDetails.email} onChange={(e) => setSignupDetails({...signupDetails, email: e.target.value.trim()})} style={{backgroundImage: `url(${AppConfig.HOST}/images/icons/email.png)`}} required/>
-                            <input type="password" className={styles.signupContainerFormFieldHalf} placeholder="Password" value={signupDetails.password} onChange={(e) => setSignupDetails({...signupDetails, password: e.target.value.trim()})} style={{backgroundImage: `url(${AppConfig.HOST}/images/icons/password.png)`, float: "left"}} required/>
-                            <input type="password" className={styles.signupContainerFormFieldHalf} placeholder="Confirm Password" value={signupDetails.confirmPassword} onChange={(e) => setSignupDetails({...signupDetails, confirmPassword: e.target.value.trim()})} style={{backgroundImage: `url(${AppConfig.HOST}/images/icons/password.png)`, float: "right"}} required/>
+                            <input type="text" className={styles.signupContainerFormFieldHalf} placeholder="First Name" value={signupDetails.firstName} onChange={(e) => setSignupDetails({...signupDetails, firstName: e.target.value.trim()})} style={{backgroundImage: `url(/images/icons/user1.png)`, float: "left"}} required/>
+                            <input type="text" className={styles.signupContainerFormFieldHalf} placeholder="Last Name" value={signupDetails.lastName} onChange={(e) => setSignupDetails({...signupDetails, lastName: e.target.value.trim()})} style={{backgroundImage: `url(/images/icons/user1.png)`, float: "right"}} required/>
+                            <input type="text" className={styles.signupContainerFormFieldFull} placeholder="Email Address" value={signupDetails.email} onChange={(e) => setSignupDetails({...signupDetails, email: e.target.value.trim()})} style={{backgroundImage: `url(/images/icons/email.png)`}} required/>
+                            <input type="password" className={styles.signupContainerFormFieldHalf} placeholder="Password" value={signupDetails.password} onChange={(e) => setSignupDetails({...signupDetails, password: e.target.value.trim()})} style={{backgroundImage: `url(/images/icons/password.png)`, float: "left"}} required/>
+                            <input type="password" className={styles.signupContainerFormFieldHalf} placeholder="Confirm Password" value={signupDetails.confirmPassword} onChange={(e) => setSignupDetails({...signupDetails, confirmPassword: e.target.value.trim()})} style={{backgroundImage: `url(/images/icons/password.png)`, float: "right"}} required/>
 
                             <button className={styles.signupContainerFormSubmit}>{ 
                                 signupLoader ? <center><div className="loader" style={{width: "30px", height: "30px"}}></div></center> : "SIGN UP" 

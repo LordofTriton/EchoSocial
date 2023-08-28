@@ -66,7 +66,7 @@ export default function Nodes() {
             <link rel="stylesheet" href={`/styles/themes/${activeUser.dark ? 'classic-dark.css' : 'classic-light.css'}`} />
         </Head>
             <div className={styles.nodeHeader}>
-                <img src={`${AppConfig.HOST}/images/logo.png`} alt="logo" className={styles.nodeHeaderLogo} />
+                <img src={`/images/logo.png`} alt="logo" className={styles.nodeHeaderLogo} />
                 <span className={styles.nodeHeaderTitle}>echo</span>
             </div>
             <div className={styles.nodeContainer}>
