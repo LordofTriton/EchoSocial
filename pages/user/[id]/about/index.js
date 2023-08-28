@@ -222,8 +222,8 @@ export default function UserAbout() {
                         <div style={{padding: "0px 20px"}}>
                         {
                             activeUser && activeUser.nodes.length > 1 ?
-                            activeUser.nodes.map((node) => 
-                                <span className={styles.userAboutNode}>{node.emoji} {node.displayName}</span>
+                            activeUser.nodes.map((node, index) => 
+                                <span key={index} className={styles.userAboutNode}>{node.emoji} {node.displayName}</span>
                             ) : null
                         }
                         </div>

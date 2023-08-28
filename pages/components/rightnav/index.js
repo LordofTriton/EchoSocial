@@ -25,8 +25,8 @@ export default function RightNav({ page }) {
                     ) : null
                 }
                 {
-                    Array.from({ length: Math.max(0, 7 - userFriends.length) }, (_, index) => index).map((obj) =>
-                        <div className={styles.rightnavChatBoxChat}></div>
+                    Array.from({ length: Math.max(0, 7 - userFriends.length) }, (_, index) => index).map((obj, index) =>
+                        <div className={styles.rightnavChatBoxChat} key={index}></div>
                     )
                 }
             </div>

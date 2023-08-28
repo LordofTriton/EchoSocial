@@ -195,8 +195,8 @@ export default function UserCommunities() {
                         userCommunities.length ?
                         <QuadMasonryLayout>
                             {
-                                userCommunities.map((community) => 
-                                    <CommunityThumb data={community} page={pageControl} member={community.userMember} />
+                                userCommunities.map((community, index) => 
+                                    <CommunityThumb data={community} page={pageControl} member={community.userMember} key={index} />
                                 )
                             }
                         </QuadMasonryLayout> : null

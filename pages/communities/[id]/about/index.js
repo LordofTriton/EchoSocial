@@ -190,8 +190,8 @@ export default function CommunityAbout() {
                 <div style={{padding: "0px 20px"}}>
                 {
                     communityData && communityData.nodes.length > 1 ?
-                    communityData.nodes.map((node) => 
-                        <span className={styles.communityAboutNode}>{node.emoji} {node.displayName}</span>
+                    communityData.nodes.map((node, index) => 
+                        <span key={index} className={styles.communityAboutNode}>{node.emoji} {node.displayName}</span>
                     ) : null
                 }
                 </div>

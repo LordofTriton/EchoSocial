@@ -20,7 +20,7 @@ function parseParams(data) {
 const { db } = await getDB();
 
 export default async function ChangePassword(params) {
-    let params = {
+    params = {
         accountID: request.body.accountID,
         oldPassword: request.body.oldPassword,
         newPassword: request.body.newPassword,

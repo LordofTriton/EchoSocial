@@ -189,13 +189,13 @@ export default function CommunityMembers() {
                     communityData.userMember.role === "member" ?
                     <QuadMasonryLayout>
                         {
-                            communityMembers.map((friend) => 
-                                <UserThumb data={friend} page={pageControl} />
+                            communityMembers.map((friend, index) => 
+                                <UserThumb data={friend} page={pageControl} key={index} />
                             )
                         }
                     </QuadMasonryLayout> : 
-                    communityMembers.map((member) => 
-                        <div className={styles.communityMember}>
+                    communityMembers.map((member, index) => 
+                        <div className={styles.communityMember} key={index}>
                             <div className={styles.communityMemberProfile} style={{backgroundImage: `url(${member.profileImage.url})`}}></div>
                             <span className={styles.communityMemberName}>{member.firstName} {member.lastName}<br /><span>{member.role}</span></span>
                             <div className={styles.communityMemberOptions}>

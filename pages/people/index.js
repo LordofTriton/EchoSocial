@@ -105,8 +105,8 @@ export default function PeopleStrangers() {
                     activeUser && people.length ? 
                     <QuadMasonryLayout>
                     {
-                        people.map((person) => 
-                            <UserThumb data={person} page={pageControl} />
+                        people.map((person, index) => 
+                            <UserThumb data={person} page={pageControl} key={index} />
                         )
                     }
                     </QuadMasonryLayout> : null
