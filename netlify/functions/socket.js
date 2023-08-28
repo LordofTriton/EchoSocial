@@ -10,8 +10,8 @@ import HeartSocket from '../../pages/api/hearts/socket';
 import BlacklistSocket from '../../pages/api/blacklist/socket';
 import ApplicationSocket from '../../pages/api/community-applications/socket';
 import MemberSocket from '../../pages/api/community-members/socket';
+import { Server } from 'socket.io';
 
-const { Server } = require('socket.io');
 const express = require('express');
 const server = express();
 const httpServer = require('http').createServer(server);
