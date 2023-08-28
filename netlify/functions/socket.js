@@ -11,10 +11,11 @@ import BlacklistSocket from '../../pages/api/blacklist/socket';
 import ApplicationSocket from '../../pages/api/community-applications/socket';
 import MemberSocket from '../../pages/api/community-members/socket';
 import { Server } from 'socket.io';
+import Express from 'express';
+import http from 'http';
 
-const express = require('express');
-const server = express();
-const httpServer = require('http').createServer(server);
+const server = Express();
+const httpServer = http.createServer(server);
 
 const io = new Server(httpServer, { addTrailingSlash: false, cors: {
         origin: "*",
