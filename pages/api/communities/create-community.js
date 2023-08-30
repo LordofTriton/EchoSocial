@@ -55,10 +55,6 @@ export default async function CreateCommunity(params, io) {
             privacy: params.privacy,
             entryApproval: false,
             echoApproval: false,
-            rules: [{
-                title: "Be kind and courteous",
-                description: "We're all in this together to create a Welcoming environment. Let's treat everyone with respect. Healthy debates are natural, but kindness is required."
-            }],
             country: null,
             city: null,
             website: null,

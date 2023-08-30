@@ -20,6 +20,7 @@ export default function Login() {
     const [loginLoader, setLoginLoader] = useState(false)
     const [alert, setAlert] = useState(null)
     const [activeUser, setActiveUser] = useState(Cache.getData("EchoUser"))
+    const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "light")
 
     const handleSubmit = async (event) => {
         event.preventDefault()
@@ -30,6 +31,7 @@ export default function Login() {
 
             if (authResult.success) {
                 Cache.saveData("EchoUser", authResult.data)
+                localStorage.setItem("EchoTheme", authResult.data.dark)
                 const activeUser = Cache.getData("EchoUser")
                 console.log(activeUser)
 
@@ -52,7 +54,7 @@ export default function Login() {
             <title>Echo - Login</title>
             <meta name="description" content="A simple social media." />
             <link rel="icon" href="/favicon.ico" />
-            { activeUser ? <link rel="stylesheet" href={`/styles/themes/${activeUser.dark ? 'classic-dark.css' : 'classic-light.css'}`} /> : null}
+            { activeUser ? <link rel="stylesheet" href={`/styles/themes/${activeTheme === "dark" ? 'classic-dark.css' : 'classic-light.css'}`} /> : null}
         </Head>
             <div className={styles.loginHeader}>
                 <img src={`/images/logo.png`} alt="logo" className={styles.loginHeaderLogo} />

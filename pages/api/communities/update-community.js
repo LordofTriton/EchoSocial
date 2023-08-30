@@ -43,10 +43,14 @@ export default async function UpdateCommunity(params, io) {
         "entryApproval",
         "echoApproval",
         "rules",
-        "location",
+        "country",
+        "city",
         "website",
         "communityStatus",
-        "lastUpdated"
+        "lastUpdated",
+        "fSocial",
+        "iSocial",
+        "tSocial"
     ], params);
 
     try {

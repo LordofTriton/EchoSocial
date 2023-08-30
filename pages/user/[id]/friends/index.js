@@ -15,6 +15,7 @@ import UserThumb from '../../../components/user-thumb';
 export default function UserFriends() {
     const router = useRouter()
     const [activeUser, setActiveUser] = useState(Cache.getData("EchoUser"))
+    const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "light")
     const [userData, setUserData] = useState(null)
     const [alert, setAlert] = useState(null)
     const [userFriends, setUserFriends] = useState([])
@@ -64,6 +65,8 @@ export default function UserFriends() {
         cache: Cache,
         activeUser,
         setActiveUser,
+        activeTheme,
+        setActiveTheme,
         socket,
         socketMethods,
         alert,
@@ -128,7 +131,7 @@ export default function UserFriends() {
                 <title>Echo - {userData ? `${userData.firstName} ${userData.lastName}` : "User"}</title>
                 <meta name="description" content="A simple social media." />
                 <link rel="icon" href="/favicon.ico" />
-                <link rel="stylesheet" href={`/styles/themes/${activeUser.dark ? 'classic-dark.css' : 'classic-light.css'}`} />
+                <link rel="stylesheet" href={`/styles/themes/${activeTheme === "dark" ? 'classic-dark.css' : 'classic-light.css'}`} />
             </Head>
 
             <div className="pageContent" style={{ backgroundColor: "var(--base)" }}>

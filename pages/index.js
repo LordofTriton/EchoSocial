@@ -14,6 +14,7 @@ import { useSocketContext } from '../util/SocketProvider'
 export default function Home() {
   const router = useRouter()
   const [activeUser, setActiveUser] = useState(Cache.getData("EchoUser"))
+  const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "light")
   const [alert, setAlert] = useState(null)
   const {modalStates, modalControl} = useModalStates()
   const [echoFeed, setEchoFeed] = useState([])
@@ -78,6 +79,8 @@ export default function Home() {
     cache: Cache,
     activeUser,
     setActiveUser,
+    activeTheme,
+    setActiveTheme,
     socket,
     socketMethods,
     alert,
@@ -106,7 +109,7 @@ export default function Home() {
         <title>Echo - Home</title>
         <meta name="description" content="A simple social media." />
         <link rel="icon" href="/favicon.ico" />
-        <link rel="stylesheet" href={`/styles/themes/${activeUser.dark ? 'classic-dark.css' : 'classic-light.css'}`} />
+        <link rel="stylesheet" href={`/styles/themes/${activeTheme === "dark" ? 'classic-dark.css' : 'classic-light.css'}`} />
       </Head>
 
       {

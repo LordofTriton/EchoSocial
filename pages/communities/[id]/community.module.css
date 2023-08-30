@@ -452,3 +452,56 @@
     background-color: var(--primary);
     color: white;
 }
+
+.communitySettings {
+    width: 100%;
+    height: fit-content;
+    border-radius: 5px;
+    background-color: var(--surface);
+    overflow: hidden;
+    margin-top: 20px;
+}
+
+.communitySettingsNav {
+    width: 20%;
+    height: fit-content;
+    float: left;
+    padding: 20px;
+}
+
+.communitySettingsNavButton {
+    display: block;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--primary);
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+
+.communitySettingsNavButton:hover { color: var(--accent); }
+
+.communitySettingsBody {
+    width: 80%;
+    height: fit-content;
+    float: right;
+    border-left: 4px solid var(--base);
+}
+
+.communitysettingsBodyTitle {
+    display: block;
+    width: 100%;
+    color: var(--primary);
+    font-size: 15px;
+    font-weight: 600;
+    padding: 20px 20px;
+    border-bottom: 1px solid var(--base);
+}
+
+.communitySettingsBodyContent {
+    width: 100%;
+    height: fit-content;
+    padding: 20px 25px;
+    overflow: hidden;
+    overflow: hidden;
+    padding-bottom: 50px;
+}

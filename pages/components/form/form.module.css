@@ -109,14 +109,14 @@
     position: absolute;
     top: 100%;
     left: 0px;
-    background-color: var(--surface);
+    background-color: var(--primary);
     border-radius: 0px 0px 5px 5px;
     outline: 1px solid var(--base);
     z-index: 2;
 }
 
 .formSelectOption {
-    color: var(--primary);
+    color: var(--surface);
     font-size: 15px;
     display: block;
     width: 100%;
@@ -126,7 +126,7 @@
 
 .formSelectOption:hover {
     background-color: var(--accent);
-    color: var(--surface);
+    color: white;
 }
 
 .formSwitch {

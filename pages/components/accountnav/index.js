@@ -13,6 +13,8 @@ export default function AccountNav({toggle, control, page}) {
     const themeChange = (dark) => {
         page.cache.saveData("EchoUser", { ...page.activeUser, dark })
         page.setActiveUser({ ...page.activeUser, dark })
+        localStorage.setItem("EchoTheme", dark)
+        page.setActiveTheme(dark)
         if (page.socket) page.socketMethods.socketEmitter("UPDATE_SETTINGS", {
             accountID: page.activeUser.accountID,
             dark
@@ -32,9 +34,9 @@ export default function AccountNav({toggle, control, page}) {
             </div>
             <div className={styles.accountNavButton}>
                 <Form.SwitchInput
-                    value={page.activeUser.dark}
+                    value={page.activeTheme === "dark"}
                     style={{ float: "left" }}
-                    onChange={(value) => themeChange(value)}
+                    onChange={(value) => themeChange(value ? "dark" : "light")}
                 />
                 <span className={styles.accountNavButtonText}>Dark Mode</span>
             </div>
