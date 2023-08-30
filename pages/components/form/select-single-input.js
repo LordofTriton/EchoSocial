@@ -11,7 +11,7 @@ export default function SelectSingleInput({label, style, value, setValue, option
     }, [])
 
     const handleOptionClick = (option) => {
-        setValue(option)
+        setValue(option.value)
         setShowDrop(false)
     }
 
