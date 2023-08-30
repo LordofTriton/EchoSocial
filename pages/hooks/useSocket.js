@@ -5,7 +5,6 @@ import Cache from '../../services/CacheService';
 let socketInstance = null;
 let socketRequestCount = 0;
 let socketURL = "/api/socket";
-// socketURL = "/.netlify/functions/socket"
 
 function getAccountID() {
     const account = Cache.getData("EchoUser");

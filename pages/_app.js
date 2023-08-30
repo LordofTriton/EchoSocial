@@ -18,6 +18,10 @@ export default function MyApp({ Component, pageProps }) {
 
   useEffect(() => {
     if (typeof window !== undefined) {
+      if (window.location.hostname === "echosocial.netlify.app") {
+        document.location = "http://13.51.177.101:3000"
+        return;
+      }
       const user = Cache.getData("EchoUser")
       if (!user.accountID && !authLess.includes(router.route)) router.push("/login")
       if (user.nodes && user.nodes.length < 1) router.push("/nodes")
