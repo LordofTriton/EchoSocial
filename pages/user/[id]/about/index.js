@@ -22,7 +22,6 @@ export default function UserAbout() {
     const {socket, socketMethods} = useSocketContext()
 
     useEffect(() => {
-        setUserFriends([])
         const updateUserData = (data) => {
             if (data.success) {
                 setUserData(data.data)

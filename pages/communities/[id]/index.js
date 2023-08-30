@@ -226,22 +226,6 @@ export default function Community() {
               <br />
             </div>
 
-            {/* {
-              communityData && communityData.communities.length ?
-              <div className={styles.communityTimelineDataBlock}>
-                <span className={styles.communityTimelineDataTitle}>Communities</span>
-                {
-                  communityData.communities.slice(0, showAllCommunities ? 1000 : 3).map((community, index) =>
-                    <span key={index} className={styles.communityTimelineDataCommunity} onClick={() => router.push(`/communities/${community.communityID}`)}>
-                      <div style={{ backgroundImage: `url(${community.profileImage.url})` }}></div>
-                      <span>{community.displayName}</span>
-                    </span>
-                  )
-                }
-                {communityData && communityData.communities.length > 3 ? <span onClick={() => setShowAllCommunities(!showAllCommunities)} className={styles.communityTimelineDataSeeMore}>{showAllCommunities ? "Hide Communities" : "See More"}</span> : null}
-              </div> : null
-            } */}
-
             {
               communityMembers.length ?
               <div className={styles.communityTimelineDataBlock}>

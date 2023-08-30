@@ -189,7 +189,7 @@ export default function CommunityAbout() {
                 <span className={styles.communityTimelineDataTitle}>Nodes</span>
                 <div style={{padding: "0px 20px"}}>
                 {
-                    communityData && communityData.nodes.length > 1 ?
+                    communityData && communityData.nodes.length > 0 ?
                     communityData.nodes.map((node, index) => 
                         <span key={index} className={styles.communityAboutNode}>{node.emoji} {node.displayName}</span>
                     ) : null
