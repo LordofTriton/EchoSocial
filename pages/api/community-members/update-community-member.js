@@ -21,6 +21,7 @@ export default async function UpdateMember(params, io) {
     const { db } = await getDB();
     params = parseParams([
         "accountID",
+        "communityID",
         "userID",
         "muted",
         "status",
@@ -30,7 +31,7 @@ export default async function UpdateMember(params, io) {
     try {
         ValidateUpdateMember(params);
 
-        const member = await db.collection("members").findOneAndUpdate({ accountID: params.userID }, {$set: params})
+        const member = await db.collection("members").findOneAndUpdate({ accountID: params.userID, communityID: params.communityID }, {$set: params})
         if (!member) throw new Error("Member does not exist!")
 
         const responseData = ResponseClient.GenericSuccess({

@@ -59,7 +59,7 @@ function isValidMemberStatus(status) {
     return validMemberStatuses.includes(status)
 }
 
-function isValidMemberRoles(role) {
+function isValidMemberRole(role) {
     const validMemberRoles = ["admin", "moderator", "member"]
     return validMemberRoles.includes(role)
 }
@@ -78,7 +78,7 @@ const ParamValidator = {
     isValidCommunityPrivacy,
     isValidCommunityStatus,
     isValidMemberStatus,
-    isValidMemberRoles
+    isValidMemberRole
 }
 
 export default ParamValidator;

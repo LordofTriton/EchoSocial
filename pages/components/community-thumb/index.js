@@ -7,10 +7,11 @@ import APIClient from "../../../services/APIClient";
 import Helpers from "../../../util/Helpers";
 
 export default function CommunityThumb({ data, page, member }) {
-    const [applied, setApplied] = useState(false)
+    const [applied, setApplied] = useState(data.userApplied || false)
     const [communityData, setCommunityData] = useState(data)
 
     const handleClickButton = async () => {
+        if (applied) return;
         if (member) page.router.push(`/communities/${communityData.communityID}`)
         else {
             if (communityData.entryApproval) {

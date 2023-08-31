@@ -46,9 +46,10 @@ export default async function BlacklistMember(params, io) {
             blockee: params.userID
         })
 
+        const community = await db.collection("communities").findOne({ communityID: params.communityID })
         await CreateNotification({
             accountID: userID,
-            content: `An admin approved your application to join the ${community.displayName} community.`,
+            content: `You have been banned from the ${community.displayName} community.`,
             image: community.profileImage.url,
             clickable: false,
             redirect: ""

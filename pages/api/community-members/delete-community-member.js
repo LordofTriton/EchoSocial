@@ -18,13 +18,14 @@ export default async function DeleteMember(params, io) {
     const { db } = await getDB();
     params = parseParams([
         "accountID",
+        "communityID",
         "userID"
     ], params);
 
     try {
         ValidateDeleteMember(params)
 
-        const deleteMemberResponse = await db.collection("members").deleteOne({ accountID: params.userID })
+        const deleteMemberResponse = await db.collection("members").deleteOne({ accountID: params.userID, communityID: params.communityID })
 
         const responseData = ResponseClient.DBModifySuccess({
             data: deleteMemberResponse,

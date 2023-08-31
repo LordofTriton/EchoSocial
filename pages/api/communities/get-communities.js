@@ -54,12 +54,14 @@ export default async function GetCommunities(params, io) {
         for (let community of fetchCommunitysResponse) {
             const memberCount = await db.collection("members").countDocuments({ communityID: community.communityID })
             const userMember = await db.collection("members").findOne({ accountID: params.accountID, communityID: community.communityID })
+            const userApplied = userMember ? true : await db.collection("applications").findOne({ accountID: params.accountID, communityID: community.communityID })
             const userBlocked = await db.collection("blacklist").findOne({ blocker: params.communityID, blockee: params.accountID })
             communityList.push({
                 ...community,
                 memberCount,
                 userMember: userMember ? true : false,
-                userBlocked: userBlocked ? true : false
+                userBlocked: userBlocked ? true : false,
+                userApplied: userApplied ? true: false
             })
         }
 

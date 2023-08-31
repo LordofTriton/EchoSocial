@@ -14,6 +14,7 @@ import DateGenerator from '../../../../services/generators/DateGenerator';
 import DuoMasonryLayout from '../../../components/masonry/duo-masonry';
 import QuadMasonryLayout from '../../../components/masonry/quad-masonry';
 import UserThumb from '../../../components/user-thumb';
+import CommunityHead from '../../../components/community-head';
 
 export default function CommunityMembers() {
   const router = useRouter()
@@ -91,46 +92,6 @@ export default function CommunityMembers() {
     ...modalControl
   }
 
-  const handleUpdateProfileCover = async (e) => {
-    const formData = new FormData();
-    formData.append(`media`, e.target.files[0])
-    const uploadedFile = (await APIClient.post("/cloud/upload", formData, {'Content-Type': "multipart/form-data"})).data;
-    if (!uploadedFile.success) {
-      createAlert({type: "error", message: uploadedFile.message})
-      return;
-    }
-    if (communityData.profileCover.publicID) await APIClient.del(`/cloud/delete?publicID=${communityData.profileCover.publicID}`);
-    setCommunityData({...communityData, profileCover: uploadedFile.data[0]})
-
-    if (socket) socketMethods.socketEmitter("UPDATE_COMMUNITY", { 
-      accountID: activeUser.accountID,
-      communityID: communityData.communityID,
-      profileCover: uploadedFile.data[0]
-    })
-  }
-
-  const handleUpdateProfileImage = async (e) => {
-    const formData = new FormData();
-    formData.append(`media`, e.target.files[0])
-    const uploadedFile = (await APIClient.post("/cloud/upload", formData, {'Content-Type': "multipart/form-data"})).data;
-    if (!uploadedFile.success) {
-      createAlert({type: "error", message: uploadedFile.message})
-      return;
-    }
-    if (communityData.profileImage.publicID) await APIClient.del(`/cloud/delete?publicID=${communityData.profileImage.publicID}`);
-    setCommunityData({...communityData, profileImage: uploadedFile.data[0]})
-
-    if (socket) socketMethods.socketEmitter("UPDATE_COMMUNITY", { 
-      accountID: activeUser.accountID,
-      communityID: communityData.communityID,
-      profileImage: uploadedFile.data[0]
-    })
-  }
-
-  const handleLeaveGroup = async () => {
-
-  }
-
   const handleScroll = (event) => {
     const { scrollTop, scrollHeight, clientHeight } = event.target;
     const isAtBottom = scrollTop + clientHeight >= scrollHeight - 10;
@@ -140,6 +101,52 @@ export default function CommunityMembers() {
       setMemberLoader(true)
     }
   };
+
+  const handleKick = async (accountID) => {
+    if (!socket) return;
+    socketMethods.socketEmitter("DELETE_MEMBER", {
+      accountID: activeUser.accountID,
+      communityID: communityData.communityID,
+      userID: accountID
+    })
+    setCommunityMembers(communityMembers.filter((member) => member.accountID !== accountID))
+    createAlert("success", "User kicked successfully.")
+  }
+
+  const handleBan = async (accountID) => {
+    if (!socket) return;
+    socketMethods.socketEmitter("BAN_MEMBER", {
+      accountID: activeUser.accountID,
+      communityID: communityData.communityID,
+      userID: accountID
+    })
+    setCommunityMembers(communityMembers.filter((member) => member.accountID !== accountID))
+    createAlert("success", "User banned successfully.")
+  }
+
+  const handleMute = async (accountID) => {
+    if (!socket) return;
+    socketMethods.socketEmitter("UPDATE_MEMBER", {
+      accountID: activeUser.accountID,
+      communityID: communityData.communityID,
+      userID: accountID,
+      muted: true
+    })
+    setCommunityMembers(communityMembers.filter((member) => member.accountID !== accountID))
+    createAlert("success", "User muted successfully.")
+  }
+
+  const handleAssignRole = async (accountID, role) => {
+    if (!socket) return;
+    socketMethods.socketEmitter("UPDATE_MEMBER", {
+      accountID: activeUser.accountID,
+      communityID: communityData.communityID,
+      userID: accountID,
+      role: role
+    })
+    setCommunityMembers(communityMembers.map((member) => member.accountID !== accountID ? member : { ...member, role }))
+    createAlert("success", "User role assigned successfully.")
+  }
 
   return (
     <div className="page" style={{backgroundColor: "var(--base)"}} onScroll={handleScroll}>
@@ -151,37 +158,7 @@ export default function CommunityMembers() {
       </Head>
 
       <div className="pageContent" style={{backgroundColor: "var(--base)"}}>
-        <div className={styles.communityHead}>
-          <div className={styles.communityHeadCover} style={{backgroundImage: communityData ? `url(${communityData.profileCover.url})` : null}}></div>
-          <div className={styles.communityHeadNav}>
-              <span className={styles.communityHeadNavName}>{communityData ? communityData.displayName : ""}</span>
-              <span className={styles.communityHeadNavLink}><SVGServer.OptionIcon color="var(--secondary)" width="25px" height="25px" /></span>
-              <span className={styles.communityHeadNavLink} onClick={() => router.push(`/communities/${communityData.communityID}/media`)}>Media</span>
-              <span className={styles.communityHeadNavLink} onClick={() => router.push(`/communities/${communityData.communityID}/members`)} style={{color: "var(--accent)"}}>Members</span>
-              <span className={styles.communityHeadNavLink} onClick={() => router.push(`/communities/${communityData.communityID}/about`)}>About</span>
-              <span className={styles.communityHeadNavLink} onClick={() => router.push(`/communities/${communityData.communityID}`)}>Timeline</span>
-          </div>
-          <div className={styles.communityHeadProfile} style={{backgroundImage: communityData ? `url(${communityData.profileImage.url})` : null}}></div>
-          <div className={styles.communityHeadButtons}>
-            {
-              communityData && communityData.userMember && communityData.userMember.role !== "member" ?
-              <>
-                <div className={styles.communityHeadButton} onClick={() => router.push("/settings")}>
-                  <SVGServer.SettingsIcon color="var(--surface)" width="30px" height="30px" />
-                </div>
-    
-                <label htmlFor="coverSelector" className={styles.communityHeadButton}><SVGServer.ImageIcon color="var(--surface)" width="30px" height="30px" /></label>
-                <input type="file" id="coverSelector" accept="image/*" onChange={(e) => handleUpdateProfileCover(e)} style={{display: "none"}} multiple/>
-    
-                <label htmlFor="profileSelector" className={styles.communityHeadButton}><SVGServer.CameraIcon color="var(--surface)" width="30px" height="30px" /></label>
-                <input type="file" id="profileSelector" accept="image/*" onChange={(e) => handleUpdateProfileImage(e)} style={{display: "none"}} multiple/>
-              </> :
-              <div className={styles.communityHeadButton} onClick={() => handleLeaveGroup()}>
-                <SVGServer.LogoutIcon color="var(--surface)" width="30px" height="30px" />
-              </div>
-            }
-          </div>
-        </div>
+        <CommunityHead data={communityData} page={pageControl} />
 
         <div className={styles.communityFriends}>
             <div className={styles.communityTimelineFeedHead}>
@@ -201,15 +178,18 @@ export default function CommunityMembers() {
                         <div className={styles.communityMember} key={index}>
                             <div className={styles.communityMemberProfile} style={{backgroundImage: `url(${member.profileImage.url})`}}></div>
                             <span className={styles.communityMemberName}>{member.firstName} {member.lastName}<br /><span>{member.role}</span></span>
-                            <div className={styles.communityMemberOptions}>
-                                <SVGServer.OptionIcon color="var(--primary)" width="20px" height="20px" />
-                                <div className={styles.communityMemberOptionsDrop}>
-                                    <span className={styles.communityMemberOption}>Kick</span>
-                                    <span className={styles.communityMemberOption}>Ban</span>
-                                    <span className={styles.communityMemberOption}>Mute</span>
-                                    <span className={styles.communityMemberOption}>Change Role</span>
-                                </div>
-                            </div>
+                            { member.role !== "admin" ? 
+                              <div className={styles.communityMemberOptions}>
+                                  <SVGServer.OptionIcon color="var(--primary)" width="20px" height="20px" />
+                                  <div className={styles.communityMemberOptionsDrop}>
+                                      <span className={styles.communityMemberOption} onClick={() => handleKick(member.accountID)}>Kick</span>
+                                      <span className={styles.communityMemberOption} onClick={() => handleBan(member.accountID)}>Ban</span>
+                                      <span className={styles.communityMemberOption} onClick={() => handleMute(member.accountID)}>Mute</span>
+                                      <span className={styles.communityMemberOption} onClick={() => handleAssignRole(member.accountID, member.role === "member" ? "moderator" : "member")}>{ member.role === "member" ? "Set as Moderator" : "Set as Member" }</span>
+                                  </div>
+                              </div>
+                              : null 
+                            }
                         </div>
                     )
                 : null

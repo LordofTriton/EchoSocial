@@ -43,7 +43,7 @@ export default async function GetAccounts(params, io) {
             nodes: { $elemMatch: { nodeID: { $in: userAccount.nodes.map((node) => node.nodeID) } } }
         }
         if (params.friends) filters.accountID = { $in: friendsList }
-        else filters.accountID = { $nin: friendsList }
+        else filters.accountID = { $nin: friendsList, $ne: params.accountID }
 
         const pagination = {
             page: parseInt(params.page),

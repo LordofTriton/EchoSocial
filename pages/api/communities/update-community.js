@@ -9,7 +9,6 @@ function ValidateUpdateCommunity(data) {
     if (data.profileCover && data.profileCover.url && data.profileCover.url.length < 5) throw new Error("Invalid: profile cover.")
     if (data.description && data.description.length < 2) throw new Error("Invalid: description.")
     if (data.nodes && data.nodes.length < 1) throw new Error("Invalid: nodes.")
-    if (data.applications && data.applications.length < 1) throw new Error("Invalid: applications.")
     if (data.privacy && !ParamValidator.isValidCommunityPrivacy(data.privacy)) throw new Error("Invalid: privacy.")
     if (data.location) {
         if (!data.location.country || data.location.country.length < 1) throw new Error("Missing or Invalid: location country")
@@ -37,12 +36,9 @@ export default async function UpdateCommunity(params, io) {
         "profileCover",
         "description",
         "nodes",
-        "members",
-        "applications",
         "privacy",
         "entryApproval",
         "echoApproval",
-        "rules",
         "country",
         "city",
         "website",

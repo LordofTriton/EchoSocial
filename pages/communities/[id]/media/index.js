@@ -12,6 +12,7 @@ import useModalStates from '../../../hooks/useModalStates';
 import { useSocketContext } from '../../../../util/SocketProvider';
 import DateGenerator from '../../../../services/generators/DateGenerator';
 import DuoMasonryLayout from '../../../components/masonry/duo-masonry';
+import CommunityHead from '../../../components/community-head';
 
 export default function CommunityMedia() {
   const router = useRouter()
@@ -62,46 +63,6 @@ export default function CommunityMedia() {
     ...modalControl
   }
 
-  const handleUpdateProfileCover = async (e) => {
-    const formData = new FormData();
-    formData.append(`media`, e.target.files[0])
-    const uploadedFile = (await APIClient.post("/cloud/upload", formData, {'Content-Type': "multipart/form-data"})).data;
-    if (!uploadedFile.success) {
-      createAlert({type: "error", message: uploadedFile.message})
-      return;
-    }
-    if (communityData.profileCover.publicID) await APIClient.del(`/cloud/delete?publicID=${communityData.profileCover.publicID}`);
-    setCommunityData({...communityData, profileCover: uploadedFile.data[0]})
-
-    if (socket) socketMethods.socketEmitter("UPDATE_COMMUNITY", { 
-      accountID: activeUser.accountID,
-      communityID: communityData.communityID,
-      profileCover: uploadedFile.data[0]
-    })
-  }
-
-  const handleUpdateProfileImage = async (e) => {
-    const formData = new FormData();
-    formData.append(`media`, e.target.files[0])
-    const uploadedFile = (await APIClient.post("/cloud/upload", formData, {'Content-Type': "multipart/form-data"})).data;
-    if (!uploadedFile.success) {
-      createAlert({type: "error", message: uploadedFile.message})
-      return;
-    }
-    if (communityData.profileImage.publicID) await APIClient.del(`/cloud/delete?publicID=${communityData.profileImage.publicID}`);
-    setCommunityData({...communityData, profileImage: uploadedFile.data[0]})
-
-    if (socket) socketMethods.socketEmitter("UPDATE_COMMUNITY", { 
-      accountID: activeUser.accountID,
-      communityID: communityData.communityID,
-      profileImage: uploadedFile.data[0]
-    })
-  }
-
-  const handleLeaveGroup = async () => {
-
-  }
-
   const handleScroll = (event) => {
     const { scrollTop, scrollHeight, clientHeight } = event.target;
     const isAtBottom = scrollTop + clientHeight >= scrollHeight - 10;
@@ -122,37 +83,7 @@ export default function CommunityMedia() {
       </Head>
 
       <div className="pageContent" style={{backgroundColor: "var(--base)"}}>
-        <div className={styles.communityHead}>
-          <div className={styles.communityHeadCover} style={{backgroundImage: communityData ? `url(${communityData.profileCover.url})` : null}}></div>
-          <div className={styles.communityHeadNav}>
-              <span className={styles.communityHeadNavName}>{communityData ? communityData.displayName : ""}</span>
-              <span className={styles.communityHeadNavLink}><SVGServer.OptionIcon color="var(--secondary)" width="25px" height="25px" /></span>
-              <span className={styles.communityHeadNavLink} onClick={() => router.push(`/communities/${communityData.communityID}/media`)} style={{color: "var(--accent)"}}>Media</span>
-              <span className={styles.communityHeadNavLink} onClick={() => router.push(`/communities/${communityData.communityID}/members`)}>Members</span>
-              <span className={styles.communityHeadNavLink} onClick={() => router.push(`/communities/${communityData.communityID}/about`)}>About</span>
-              <span className={styles.communityHeadNavLink} onClick={() => router.push(`/communities/${communityData.communityID}`)}>Timeline</span>
-          </div>
-          <div className={styles.communityHeadProfile} style={{backgroundImage: communityData ? `url(${communityData.profileImage.url})` : null}}></div>
-          <div className={styles.communityHeadButtons}>
-            {
-              communityData && communityData.userMember && communityData.userMember.role !== "member" ?
-              <>
-                <div className={styles.communityHeadButton} onClick={() => router.push("/settings")}>
-                  <SVGServer.SettingsIcon color="var(--surface)" width="30px" height="30px" />
-                </div>
-    
-                <label htmlFor="coverSelector" className={styles.communityHeadButton}><SVGServer.ImageIcon color="var(--surface)" width="30px" height="30px" /></label>
-                <input type="file" id="coverSelector" accept="image/*" onChange={(e) => handleUpdateProfileCover(e)} style={{display: "none"}} multiple/>
-    
-                <label htmlFor="profileSelector" className={styles.communityHeadButton}><SVGServer.CameraIcon color="var(--surface)" width="30px" height="30px" /></label>
-                <input type="file" id="profileSelector" accept="image/*" onChange={(e) => handleUpdateProfileImage(e)} style={{display: "none"}} multiple/>
-              </> :
-              <div className={styles.communityHeadButton} onClick={() => handleLeaveGroup()}>
-                <SVGServer.LogoutIcon color="var(--surface)" width="30px" height="30px" />
-              </div>
-            }
-          </div>
-        </div>
+        <CommunityHead data={communityData} page={pageControl} />
 
       </div>
 

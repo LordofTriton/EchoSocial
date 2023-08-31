@@ -10,6 +10,10 @@ export default function SelectSingleInput({label, style, value, setValue, option
         setValue(options[0].value)
     }, [])
 
+    useEffect(() => {
+        if (!value) setValue(options[0].value)
+    })
+
     const handleOptionClick = (option) => {
         setValue(option.value)
         setShowDrop(false)
@@ -19,7 +23,7 @@ export default function SelectSingleInput({label, style, value, setValue, option
         <div className={styles.formSelectInputField} style={{...style, borderRadius: showDrop ? "5px 5px 0px 0px" : null}}>
             <span className={styles.formTextInputFieldLabel}>{label}</span>
             <div className={styles.formSelectSingleSelected} onClick={() => setShowDrop(!showDrop)}>
-                <span className={styles.formSelectSingleSelectedItem}>{value}</span>
+                <span className={styles.formSelectSingleSelectedItem}>{value ? value : ""}</span>
                 <span className={styles.formSelectSingleSelectedArrow}><SVGServer.ArrowRight color="var(--primary)" width="20px" height="20px" /></span>
             </div>
             {

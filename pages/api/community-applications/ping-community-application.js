@@ -23,24 +23,21 @@ export default async function PingApplication(params, io) {
     const { db } = await getDB();
     params = parseParams([
         "accountID",
+        "communityID",
         "applicationID",
         "approve",
-        "deny",
-        "denialReason"
+        "deny"
     ], params);
 
     try {
         ValidatePingApplication(params);
         const authUserMember = await db.collection("members").findOne({
             accountID: params.accountID,
-            userID: params.accountID
+            communityID: params.communityID
         })
         if (!authUserMember || authUserMember.role === "member") throw new Error("You are unauthorised to perform this action.")
         const application = await db.collection("applications").findOne({ applicationID: params.applicationID })
-        const community = await GetCommunity({
-            accountID: params.accountID,
-            communityID: params.communityID
-        })
+        const community = await db.collection("communities").findOne({ communityID: params.communityID });
 
         if (params.approve) {
             await CreateMember({
