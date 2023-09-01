@@ -6,6 +6,7 @@ import IDGenerator from "../../../services/generators/IDGenerator";
 import DateGenerator from "../../../services/generators/DateGenerator";
 import CreateNotification from "../notifications/create-notification";
 import CreateMember from "../community-members/create-community-member";
+import CreateNode from "../nodes/create-node";
 
 function ValidateCreateCommunity(data) {
     if (!data.accountID || !ParamValidator.isValidAccountID(data.accountID)) throw new Error("Missing or Invalid: accountID")
@@ -38,6 +39,12 @@ export default async function CreateCommunity(params, io) {
         let newCommunity = await db.collection("communities").findOne({ name: String(params.name).toLowerCase().replace(/\s/g, "").trim() })
         if (newCommunity) throw new Error("A community with this name already exists.")
 
+        const nodeData = await CreateNode({
+            accountID: params.accountID,
+            name: params.name,
+            emoji: "⚜"
+        })
+
         const communityData = {
             communityID: IDGenerator.GenerateCommunityID(),
             name: String(params.name).toLowerCase().replace(/\s/g, "").trim(),
@@ -52,8 +59,9 @@ export default async function CreateCommunity(params, io) {
             },
             description: params.description,
             nodes: params.nodes,
+            node: nodeData.data,
             privacy: params.privacy,
-            entryApproval: false,
+            entryApproval: params.privacy === "private" ? true : false,
             echoApproval: false,
             country: null,
             city: null,

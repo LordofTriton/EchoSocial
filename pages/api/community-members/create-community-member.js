@@ -73,4 +73,5 @@ export async function CreateMemberCallback(params, io) {
         clickable: true,
         redirect: `${AppConfig.HOST}/communities/${community.communityID}`
     }, io)
+    await db.collection("nodes").findOneAndUpdate({ nodeID: community.node.nodeID }, { $inc: { pings: 1 }})
 }

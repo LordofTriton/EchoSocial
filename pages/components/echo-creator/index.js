@@ -23,7 +23,7 @@ export default function EchoCreator({toggle, control, page}) {
         console.log(toggle)
         if (toggle.echoID) {
             setEchoAudience(toggle.audience)
-            setOldEchoMedia(toggle.content.media)
+            setOldEchoMedia(toggle.content.media ? toggle.content.media : [])
             setEchoLink(toggle.content.link)
             setEchoNodes(toggle.nodes)
             setEchoText(toggle.content.text)
@@ -31,8 +31,8 @@ export default function EchoCreator({toggle, control, page}) {
     }, [toggle])
 
     useEffect(() => {
-        const nodes = page.community ? page.community.communityNodes : page.activeUser.nodes;
-        setNodeList(nodes)
+        if (toggle.echoID) setNodeList(toggle.communityID ? [toggle.communityData.node] : page.activeUser.nodes)
+        else setNodeList(page.community ? [page.community.communityNode] : page.activeUser.nodes)
     }, [page])
 
     useEffect(() => {
@@ -70,7 +70,8 @@ export default function EchoCreator({toggle, control, page}) {
     const editEcho = async () => {
         setCreateEchoLoader(true)
         let media = oldEchoMedia;
-        const removedMedia = toggle.content.media.filter((media) => !oldEchoMedia.map((oldMedia) => oldMedia.url).includes(media.url))
+        const originalMedia = toggle.content.media ? toggle.content.media : []
+        const removedMedia = originalMedia.filter((media) => !oldEchoMedia.map((oldMedia) => oldMedia.url).includes(media.url))
         for (let file of removedMedia) {
             await APIClient.del(`/cloud/delete?publicID=${file.publicID}`);
         }
@@ -151,7 +152,7 @@ export default function EchoCreator({toggle, control, page}) {
                 value={echoAudience}
                 setValue={setEchoAudience}
                 options={
-                    communityData ? [{label: communityData.communityName, value: communityData.communityName}] : [ {label: "Public", value: "public"}, {label: "Friends", value: "friends"}, {label: "Private", value: "private"} ]
+                    communityData ? [{label: communityData.communityName, value: communityData.communityNode}] : [ {label: "Public", value: "public"}, {label: "Friends", value: "friends"}, {label: "Private", value: "private"} ]
                 }
             />
 

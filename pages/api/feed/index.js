@@ -39,9 +39,15 @@ export default async function Feed(params, io) {
         if (!userAccount) throw new Error("Account does not exist.")
 
         const filters = { 
-            nodes: { $in: params.nodes ? params.nodes : userAccount.nodes.map((node) => node.nodeID) },
-            $or: [ { communityID: { $in: communities.map((obj) => obj.communityID) } }, { audience: "public" }, { audience: "friends", accountID: { $in: friendsList } }, { accountID: params.accountID } ],
-            $and: [ { accountID: { $nin: blacklist.map((obj) => obj.blockee) } }, { accountID: { $nin: blacklist.map((obj) => obj.blocker) } } ]
+            $or: [ 
+                { nodes: { $in: params.nodes ? params.nodes : userAccount.nodes.map((node) => node.nodeID) } }, 
+                { communityID: { $in: communities.map((obj) => obj.communityID) } } 
+            ],
+            $and: [ 
+                { $or: [ { communityID: { $in: communities.map((obj) => obj.communityID) } }, { audience: "public" }, { audience: "friends", accountID: { $in: friendsList } }, { accountID: params.accountID } ] },
+                { accountID: { $nin: blacklist.map((obj) => obj.blockee) } },
+                { accountID: { $nin: blacklist.map((obj) => obj.blocker) } } 
+            ]
         }
 
         const pagination = {
@@ -75,6 +81,7 @@ export default async function Feed(params, io) {
                 },
                 communityData: {
                     name: community ? community.displayName : null,
+                    node: community ? community.node : null,
                     profileImage: community ? community.profileImage : null,
                     userRole: communityMember ? communityMember.role : null
                 }

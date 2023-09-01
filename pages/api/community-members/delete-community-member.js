@@ -39,3 +39,8 @@ export default async function DeleteMember(params, io) {
         return responseData;
     }
 }
+
+export async function DeleteMemberCallback(params, io) {
+    const community = await db.collection("communities").findOne({ communityID: params.communityID })
+    await db.collection("nodes").findOneAndUpdate({ nodeID: community.node.nodeID }, { $inc: { pings: 1 }})
+}

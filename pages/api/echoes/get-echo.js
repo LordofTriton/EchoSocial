@@ -65,6 +65,7 @@ export default async function GetEcho(params, io) {
             },
             communityData: {
                 name: community ? community.displayName : null,
+                node: community ? community.node : null,
                 profileImage: community ? community.profileImage : null,
                 userRole: communityMember ? communityMember.role : null
             }

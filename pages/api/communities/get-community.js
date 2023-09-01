@@ -38,6 +38,7 @@ export default async function GetCommunity(params, io) {
             profileCover: fetchCommunityResponse.profileCover,
             description: fetchCommunityResponse.description,
             nodes: fetchCommunityResponse.nodes,
+            node: fetchCommunityResponse.node,
             memberCount,
             applications: fetchCommunityResponse.applications,
             privacy: fetchCommunityResponse.privacy,

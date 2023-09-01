@@ -62,7 +62,20 @@ export default function CommunityHead({ data, page, title }) {
             <div className={styles.communityHeadCover} style={{ backgroundImage: communityData ? `url(${communityData.profileCover.url})` : null }}></div>
             <div className={styles.communityHeadNav}>
                 <span className={styles.communityHeadNavName}>{communityData ? communityData.displayName : ""}</span>
-                <span className={styles.communityHeadNavLink}><SVGServer.OptionIcon color="var(--secondary)" width="25px" height="25px" /></span>
+                <div className={styles.communityHeadOptions}>
+                    <span className={styles.communityHeadNavLink}>
+                        <SVGServer.OptionIcon color="var(--secondary)" width="25px" height="25px" />
+                    </span>
+                    <div className={styles.communityHeadOptionBox}>
+                    {
+                        communityData && communityData.userMember && communityData.userMember.role === "member" ?
+                        <>
+                        <span className={styles.communityHeadOption} onClick={() => blockUser()}>Block {communityData ? communityData.displayName : "Community"}</span>
+                        <span className={styles.communityHeadOption}>Report {communityData ? communityData.displayName : "Community"}</span>
+                        </> : null
+                    }
+                    </div>
+                </div>
                 <span className={styles.communityHeadNavLink} onClick={() => page.router.push(`/communities/${communityData.communityID}/media`)} style={{ color: title === "media" ? "var(--accent)" : null }}>Media</span>
                 <span className={styles.communityHeadNavLink} onClick={() => page.router.push(`/communities/${communityData.communityID}/members`)} style={{ color: title === "members" ? "var(--accent)" : null }}>Members</span>
                 <span className={styles.communityHeadNavLink} onClick={() => page.router.push(`/communities/${communityData.communityID}/about`)} style={{ color: title === "about" ? "var(--accent)" : null }}>About</span>

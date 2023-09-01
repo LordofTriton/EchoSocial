@@ -9,6 +9,7 @@ import TokenGenerator from "../../../services/generators/TokenGenerator";
 import NickGenerator from "../../../services/generators/NIckGenerator";
 import CreateNotification from "../notifications/create-notification";
 import CreateSettings from "../settings/create-settings";
+import CreateMember from "../community-members/create-community-member";
 
 function ValidateCreateAccount(data) {
     if (!data.firstName || data.firstName.length < 2) throw new Error("Missing or Invalid: first name.")
@@ -120,12 +121,17 @@ export default async (request, response) => {
         response.once("close", async () => {
             await CreateSettings({ accountID: accountData.accountID })
             await CreateNotification({
-            accountID: accountData.accountID,
-            content: `Hi, ${accountData.firstName}! Welcome to Echo. Click here to set up your profile.`,
-            image: accountData.profileImage.url,
-            clickable: true,
-            redirect: `${AppConfig.HOST}/settings`
-        })})
+                accountID: accountData.accountID,
+                content: `Hi, ${accountData.firstName}! Welcome to Echo. Click here to set up your profile.`,
+                image: accountData.profileImage.url,
+                clickable: true,
+                redirect: `${AppConfig.HOST}/settings`
+            })
+            await CreateMember({
+                accountID: accountData.accountID,
+                communityID: "64f1cfcbfb50625f2c96883c"
+            })
+        })
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })

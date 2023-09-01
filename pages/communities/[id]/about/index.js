@@ -48,7 +48,8 @@ export default function CommunityAbout() {
     community: communityData ? {
         communityID: communityData.communityID,
         communityName: communityData.displayName,
-        communityNodes: communityData.nodes
+        communityNodes: communityData.nodes,
+        communityNode: communityData.node
     } : null,
     router,
     cache: Cache,

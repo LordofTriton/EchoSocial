@@ -40,8 +40,9 @@ export default async function CreateNode(params, io) {
         const createNodeResponse = await db.collection("nodes").insertOne(nodeData)
         if (createNodeResponse.errors) throw new Error("An error occured when creating node.");
 
+        const node = await db.collection("nodes").findOne({ nodeID: nodeData.nodeID })
         const responseData = ResponseClient.DBModifySuccess({
-            data: createNodeResponse,
+            data: node,
             message: "Node created successfully."
         })
         return responseData;

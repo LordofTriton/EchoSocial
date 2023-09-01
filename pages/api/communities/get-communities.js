@@ -33,10 +33,13 @@ export default async function GetCommunities(params, io) {
         if (!userAccount) throw new Error("Account does not exist.")
 
         const filters = { 
-            nodes: { $elemMatch: { nodeID: { $in: userAccount.nodes.map((node) => node.nodeID) } } }
+            $and: params.member ? [ 
+                { communityID: { $in: communities.map((obj) => obj.communityID) } }
+            ] : [
+                { nodes: { $elemMatch: { nodeID: { $in: userAccount.nodes.map((node) => node.nodeID) } } } },
+                { communityID: { $nin: communities.map((obj) => obj.communityID) } }
+            ]
         }
-        if (params.member) filters.communityID = { $in: communities.map((obj) => obj.communityID) }
-        else filters.communityID = { $nin: communities.map((obj) => obj.communityID) }
         if (params.filter) filters.name = { $regex: String(params.filter).toLowerCase().replace(/\s/g, "").trim(), $options: 'i' }
 
         const pagination = {

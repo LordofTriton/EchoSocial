@@ -1,6 +1,7 @@
 import { getDB } from "../../../util/db/mongodb";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
+import DeleteNode from "../nodes/delete-node";
 
 function ValidateDeleteCommunity(data) {
     if (!data.accountID || !ParamValidator.isValidAccountID(data.accountID)) throw new Error("Missing or Invalid: accountID")
@@ -27,9 +28,14 @@ export default async function DeleteCommunity(params, io) {
 
         const community = (await db.collection("communities").findOne({ communityID: params.communityID }))
         const authUserMember = await db.collection("members").findOne({ communityID: params.communityID, accountID: params.accountID })
-        if (memberData.role !== "admin") throw new Error("You are unauthorised to delete this community.")
+        if (authUserMember.role !== "admin") throw new Error("You are unauthorised to delete this community.")
 
         const deleteCommunityResponse = await db.collection("communities").deleteOne({ communityID: params.communityID })
+
+        await DeleteNode({
+            accountID: params.accountID,
+            nodeID: community.node.nodeID
+        })
 
         const responseData = ResponseClient.DBModifySuccess({
             data: deleteCommunityResponse,

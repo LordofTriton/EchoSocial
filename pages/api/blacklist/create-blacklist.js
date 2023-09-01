@@ -4,6 +4,7 @@ import ResponseClient from "../../../services/validation/ResponseClient";
 import IDGenerator from "../../../services/generators/IDGenerator";
 import CreateNotification from "../notifications/create-notification";
 import AppConfig from "../../../util/config";
+import DeleteHeart from "../hearts/delete-heart";
 
 function ValidateCreateBlacklist(data) {
     if (!data.accountID || !ParamValidator.isValidAccountID(data.accountID)) throw new Error("Missing or Invalid: accountID.")
@@ -33,6 +34,8 @@ export default async function CreateBlacklist(params, io) {
 
         let blocked = await db.collection("blacklists").findOne({ blocker: params.blocker, blockee: params.blockee })
         if (blocked) throw new Error("Already blocked :)")
+
+        await DeleteHeart({ accountID: params.blocker, userID: params.blockee }, io)
 
         const blacklistData = {
             blacklistID: IDGenerator.GenerateBlacklistID(),
