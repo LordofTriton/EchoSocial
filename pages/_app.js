@@ -19,7 +19,7 @@ export default function MyApp({ Component, pageProps }) {
   useEffect(() => {
     if (typeof window !== undefined) {
       if (window.location.hostname === "echosocial.netlify.app") {
-        document.location = "http://13.51.177.101:3000"
+        document.location = "http://51.20.12.46:3000"
         return;
       }
       const user = Cache.getData("EchoUser")
