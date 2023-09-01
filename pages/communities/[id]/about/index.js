@@ -74,7 +74,7 @@ export default function CommunityAbout() {
       </Head>
 
       <div className="pageContent" style={{backgroundColor: "var(--base)"}}>
-         <CommunityHead data={communityData} page={pageControl} />
+         <CommunityHead data={communityData} page={pageControl} title="about" />
 
         <div className={styles.communityFriends}>
             <div className={styles.communityAboutPersonal}>

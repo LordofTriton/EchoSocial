@@ -3,7 +3,7 @@ import styles from "./community-head.module.css"
 import APIClient from "../../../services/APIClient";
 import SVGServer from "../../../services/svg/svgServer";
 
-export default function CommunityHead({ data, page }) {
+export default function CommunityHead({ data, page, title }) {
     const [communityData, setCommunityData] = useState(data)
 
     useEffect(() => {
@@ -63,10 +63,10 @@ export default function CommunityHead({ data, page }) {
             <div className={styles.communityHeadNav}>
                 <span className={styles.communityHeadNavName}>{communityData ? communityData.displayName : ""}</span>
                 <span className={styles.communityHeadNavLink}><SVGServer.OptionIcon color="var(--secondary)" width="25px" height="25px" /></span>
-                <span className={styles.communityHeadNavLink} onClick={() => page.router.push(`/communities/${communityData.communityID}/media`)}>Media</span>
-                <span className={styles.communityHeadNavLink} onClick={() => page.router.push(`/communities/${communityData.communityID}/members`)}>Members</span>
-                <span className={styles.communityHeadNavLink} onClick={() => page.router.push(`/communities/${communityData.communityID}/about`)}>About</span>
-                <span className={styles.communityHeadNavLink} onClick={() => page.router.push(`/communities/${communityData.communityID}`)} style={{ color: "var(--accent)" }}>Timeline</span>
+                <span className={styles.communityHeadNavLink} onClick={() => page.router.push(`/communities/${communityData.communityID}/media`)} style={{ color: title === "media" ? "var(--accent)" : null }}>Media</span>
+                <span className={styles.communityHeadNavLink} onClick={() => page.router.push(`/communities/${communityData.communityID}/members`)} style={{ color: title === "members" ? "var(--accent)" : null }}>Members</span>
+                <span className={styles.communityHeadNavLink} onClick={() => page.router.push(`/communities/${communityData.communityID}/about`)} style={{ color: title === "about" ? "var(--accent)" : null }}>About</span>
+                <span className={styles.communityHeadNavLink} onClick={() => page.router.push(`/communities/${communityData.communityID}`)} style={{ color: title === "timeline" ? "var(--accent)" : null }}>Timeline</span>
             </div>
             <div className={styles.communityHeadProfile} style={{ backgroundImage: communityData ? `url(${communityData.profileImage.url})` : null }}></div>
             <div className={styles.communityHeadButtons}>
@@ -84,7 +84,7 @@ export default function CommunityHead({ data, page }) {
                             <input type="file" id="profileSelector" accept="image/*" onChange={(e) => handleUpdateProfileImage(e)} style={{ display: "none" }} multiple />
                         </> :
                         <div className={styles.communityHeadButton} onClick={() => handleLeaveGroup()}>
-                            <SVGServer.LogoutIcon color="var(--surface)" width="30px" height="30px" />
+                            <SVGServer.ExitIcon color="var(--surface)" width="30px" height="30px" />
                         </div>
                 }
             </div>

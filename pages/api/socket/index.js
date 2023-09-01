@@ -11,6 +11,7 @@ import HeartSocket from '../hearts/socket';
 import BlacklistSocket from '../blacklist/socket';
 import ApplicationSocket from '../community-applications/socket';
 import MemberSocket from '../community-members/socket';
+import SaveSocket from '../saves/socket';
 
 export default async (request, response) => {
     if (!response.socket.server.io) {
@@ -56,6 +57,7 @@ export default async (request, response) => {
             HeartSocket(io, socket)
             NodeSocket(io, socket)
             NotificationSocket(io, socket)
+            SaveSocket(io, socket)
             SettingsSocket(io, socket)
         });
 

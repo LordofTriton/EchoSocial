@@ -44,6 +44,10 @@ function GenerateSaveID() {
     return String(new ObjectId())
 }
 
+function GenerateBlacklistID() {
+    return String(new ObjectId())
+}
+
 const IDGenerator = {
     GenerateAccountID,
     GenerateCommunityID,
@@ -55,7 +59,8 @@ const IDGenerator = {
     GenerateHeartID,
     GenerateMemberID,
     GenerateApplicationID,
-    GenerateSaveID
+    GenerateSaveID,
+    GenerateBlacklistID
 }
 
 export default IDGenerator;

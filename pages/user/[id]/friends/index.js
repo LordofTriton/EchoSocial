@@ -11,6 +11,7 @@ import useModalStates from '../../../hooks/useModalStates';
 import { useSocketContext } from '../../../../util/SocketProvider';
 import QuadMasonryLayout from '../../../components/masonry/quad-masonry';
 import UserThumb from '../../../components/user-thumb';
+import UserHead from '../../../components/user-head';
 
 export default function UserFriends() {
     const router = useRouter()
@@ -76,55 +77,6 @@ export default function UserFriends() {
         ...modalControl
     }
 
-    const handleUpdateProfileCover = async (e) => {
-        const formData = new FormData();
-        formData.append(`media`, e.target.files[0])
-        const uploadedFile = (await APIClient.post("/cloud/upload", formData, { 'Content-Type': "multipart/form-data" })).data;
-        if (!uploadedFile.success) {
-            createAlert({ type: "error", message: uploadedFile.message })
-            return;
-        }
-        if (userData.profileCover.publicID) await APIClient.del(`/cloud/delete?publicID=${communityData.profileCover.publicID}`);
-        setUserData({ ...userData, profileCover: uploadedFile.data[0] })
-
-        if (socket) socketMethods.socketEmitter("UPDATE_ACCOUNT", {
-            accountID: activeUser.accountID,
-            profileCover: uploadedFile.data[0]
-        })
-        Cache.saveData("EchoUser", { ...userData, profileCover: uploadedFile.data[0] })
-        setActiveUser({ ...activeUser, profileCover: uploadedFile.data[0] })
-    }
-
-    const handleUpdateProfileImage = async (e) => {
-        const formData = new FormData();
-        formData.append(`media`, e.target.files[0])
-        const uploadedFile = (await APIClient.post("/cloud/upload", formData, { 'Content-Type': "multipart/form-data" })).data;
-        if (!uploadedFile.success) {
-            createAlert({ type: "error", message: uploadedFile.message })
-            return;
-        }
-        if (userData.profileImage.publicID) await APIClient.del(`/cloud/delete?publicID=${communityData.profileImage.publicID}`);
-        setUserData({ ...userData, profileImage: uploadedFile.data[0] })
-
-        if (socket) socketMethods.socketEmitter("UPDATE_ACCOUNT", {
-            accountID: activeUser.accountID,
-            profileImage: uploadedFile.data[0]
-        })
-        Cache.saveData("EchoUser", { ...userData, profileImage: uploadedFile.data[0] })
-        setActiveUser({ ...activeUser, profileImage: uploadedFile.data[0] })
-    }
-
-    const handleFollowButtonClick = async () => {
-        if (!socket) return;
-        if (userData.userHearted) setUserData({ ...userData, userHearted: false, hearts: userData.hearts - 1 })
-        else setUserData({ ...userData, userHearted: true, hearts: userData.hearts + 1 })
-
-        if (activeUser.accountID !== userData.accountID) socketMethods.socketEmitter(userData.userHearted ? "DELETE_HEART" : "CREATE_HEART", {
-            accountID: activeUser.accountID,
-            userID: userData.accountID
-        })
-    }
-
     return (
         <div className="page" style={{ backgroundColor: "var(--base)" }}>
             <Head>
@@ -135,49 +87,7 @@ export default function UserFriends() {
             </Head>
 
             <div className="pageContent" style={{ backgroundColor: "var(--base)" }}>
-                <div className={styles.userHead}>
-                    <div className={styles.userHeadCover} style={{ backgroundImage: userData ? `url(${userData.profileCover.url})` : null }}></div>
-                    <div className={styles.userHeadNav}>
-                        <div className={styles.userHeadNavThird}>
-                            <span className={styles.userHeadNavLinkLeft} onClick={() => router.push(`/user/${router.query.id}`)}>Timeline</span>
-                            <span className={styles.userHeadNavLinkLeft} onClick={() => router.push(`/user/${router.query.id}/about`)}>About</span>
-                            <span className={styles.userHeadNavLinkLeft} onClick={() => router.push(`/user/${router.query.id}/friends`)} style={{ color: "var(--accent)" }}>Friends</span>
-                        </div>
-                        <div className={styles.userHeadNavThird}>
-                            <span className={styles.userHeadNavName}>{userData ? `${userData.firstName} ${userData.lastName}` : ""}</span>
-                            <span className={styles.userHeadNavNickName}>{userData ? userData.nickname : ""}</span>
-                        </div>
-                        <div className={styles.userHeadNavThird}>
-                            <span className={styles.userHeadNavLinkRight}><SVGServer.OptionIcon color="var(--secondary)" width="25px" height="25px" /></span>
-                            <span className={styles.userHeadNavLinkRight} onClick={() => router.push(`/user/${router.query.id}/media`)}>Media</span>
-                            <span className={styles.userHeadNavLinkRight} onClick={() => router.push(`/user/${router.query.id}/communities`)}>Communities</span>
-                        </div>
-                    </div>
-                    <div className={styles.userHeadProfile} style={{ backgroundImage: userData ? `url(${userData.profileImage.url})` : null }}></div>
-                    <div className={styles.userHeadButtons}>
-                        {
-                            router.query.id === activeUser.accountID ?
-                                <>
-                                    <div className={styles.userHeadButton} onClick={() => router.push("/settings")}>
-                                        <SVGServer.SettingsIcon color="var(--surface)" width="30px" height="30px" />
-                                    </div>
-                                    <label htmlFor="coverSelector" className={styles.userHeadButton}><SVGServer.ImageIcon color="var(--surface)" width="30px" height="30px" /></label>
-                                    <input type="file" id="coverSelector" accept="image/*" onChange={(e) => handleUpdateProfileCover(e)} style={{ display: "none" }} multiple />
-                                    <label htmlFor="profileSelector" className={styles.userHeadButton}><SVGServer.CameraIcon color="var(--surface)" width="30px" height="30px" /></label>
-                                    <input type="file" id="profileSelector" accept="image/*" onChange={(e) => handleUpdateProfileImage(e)} style={{ display: "none" }} multiple />
-                                </> :
-                                <>
-                                    <div className={styles.userHeadButton} onClick={() => handleFollowButtonClick()}>
-                                        {
-                                            userData && userData.userHearted ?
-                                                <SVGServer.HeartFilledIcon color="var(--surface)" width="30px" height="30px" /> :
-                                                <SVGServer.HeartLineIcon color="var(--surface)" width="30px" height="30px" />
-                                        }
-                                    </div>
-                                </>
-                        }
-                    </div>
-                </div>
+                <UserHead data={userData} page={pageControl} title="friends" />
 
                 <div className={styles.userFriends}>
                     <div className={styles.userTimelineFeedHead}>

@@ -20,7 +20,7 @@ export default function CommunitySettings() {
     const [activeUser, setActiveUser] = useState(Cache.getData("EchoUser"))
     const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "light")
     const [communityData, setCommunityData] = useState(null)
-    const [communityApplications, setCommunityApplications] = useState([])
+    const [communityBanned, setCommunityBanned] = useState([])
     const [alert, setAlert] = useState(null)
     const {modalStates, modalControl} = useModalStates()
     const {socket, socketMethods} = useSocketContext()
@@ -30,29 +30,29 @@ export default function CommunitySettings() {
       totalItems: 0,
       totalPages: 1
     })
-    const [applicationLoader, setApplicationLoader] = useState(true)
-    const [applicationPage, setApplicationPage] = useState(1)
+    const [bannedLoader, setBannedLoader] = useState(true)
+    const [bannedPage, setBannedPage] = useState(1)
 
     useEffect(() => {
         const updateCommunityData = (data) => (data.success) ? setCommunityData(data.data) : null;
-        const updateCommunityApplications = (data) => {
+        const updateCommunityBanned = (data) => {
             if (data.success) {
-                setCommunityApplications((state) => state.concat(data.data))
+                setCommunityBanned((state) => state.concat(data.data))
                 setPagination(data.pagination)
             }
-            setApplicationLoader(false)
+            setBannedLoader(false)
         }
         if (router.query.id && socket) {
             socketMethods.socketRequest("GET_COMMUNITY", {
                 accountID: activeUser.accountID,
                 communityID: router.query.id
             }, updateCommunityData)
-            socketMethods.socketRequest("GET_APPLICATIONS", {
+            socketMethods.socketRequest("GET_BLACKLISTS", {
                 accountID: activeUser.accountID,
-                communityID: router.query.id,
-                page: applicationPage,
+                blocker: router.query.id,
+                page: bannedPage,
                 pageSize: 10
-            }, updateCommunityApplications)
+            }, updateCommunityBanned)
         }
     }, [router.query, socket])
 
@@ -82,28 +82,15 @@ export default function CommunitySettings() {
         ...modalControl
     }
 
-    const handleApproveApplication = async (applicationID) => {
+    const handleLiftBan = async (blockee) => {
         if (!socket) return;
-        socketMethods.socketEmitter("PING_APPLICATION", {
+        socketMethods.socketEmitter("DELETE_BLACKLIST", {
             accountID: activeUser.accountID,
-            communityID: communityData.communityID,
-            applicationID,
-            approve: true
+            blocker: communityData.communityID,
+            blockee
         })
-        setCommunityApplications(communityApplications.filter((obj) => obj.applicationID !== applicationID))
-        createAlert("success", "Application approved succesfully.")
-    }
-
-    const handleDenyApplication = async (applicationID) => {
-        if (!socket) return;
-        socketMethods.socketEmitter("PING_APPLICATION", {
-            accountID: activeUser.accountID,
-            communityID: communityData.communityID,
-            applicationID,
-            approve: true
-        })
-        setCommunityApplications(communityApplications.filter((obj) => obj.applicationID !== applicationID))
-        createAlert("success", "Application denied succesfully.")
+        setCommunityBanned(communityBanned.filter((obj) => obj.blockee !== blockee))
+        createAlert("success", "Ban lifted succesfully.")
     }
 
     return (
@@ -127,27 +114,26 @@ export default function CommunitySettings() {
                             <span className={styles.communitySettingsNavButton} onClick={() => router.push(`/communities/${communityData.communityID}/settings`)}>General</span>
                             <span className={styles.communitySettingsNavButton} onClick={() => router.push(`/communities/${communityData.communityID}/settings/permissions`)}>Permissions</span>
                             <span className={styles.communitySettingsNavButton} onClick={() => router.push(`/communities/${communityData.communityID}/settings/applications`)} style={{ color: "var(--accent)" }}>Pending Applications</span>
-                            <span className={styles.communitySettingsNavButton} onClick={() => router.push(`/communities/${communityData.communityID}/settings/blacklist`)}>Blacklist</span>
+                            <span className={styles.communitySettingsNavButton} onClick={() => router.push(`/communities/${communityData.communityID}/settings/blacklist`)}>Banned Users</span>
                         </div>
                         <div className={styles.communitySettingsBody}>
-                            <span className={styles.communitysettingsBodyTitle}>Pending Applications</span>
+                            <span className={styles.communitysettingsBodyTitle}>Blacklisted Users</span>
                             <div className={styles.communitySettingsBodyContent}>
                             {
-                                communityApplications.length > 0 ?
-                                    communityApplications.map((application, index) => 
+                                communityBanned.length > 0 ?
+                                    communityBanned.map((banned, index) => 
                                         <div className={styles.communityMember} key={index} style={{backgroundColor: "var(--base)"}}>
-                                            <div className={styles.communityMemberProfile} style={{backgroundImage: `url(${application.profileImage.url})`}}></div>
-                                            <span className={styles.communityMemberName} style={{color: "var(--primary)"}}>{application.firstName} {application.lastName}<br /><span>NEW MEMBER</span></span>
+                                            <div className={styles.communityMemberProfile} style={{backgroundImage: `url(${banned.profileImage.url})`}}></div>
+                                            <span className={styles.communityMemberName} style={{color: "var(--primary)"}}>{banned.firstName} {banned.lastName}<br /><span>NEW MEMBER</span></span>
                                             <div className={styles.communityMemberOptions}>
                                                 <SVGServer.OptionIcon color="var(--primary)" width="20px" height="20px" />
                                                 <div className={styles.communityMemberOptionsDrop}>
-                                                    <span className={styles.communityMemberOption} onClick={() => handleApproveApplication(application.applicationID)}>Approve</span>
-                                                    <span className={styles.communityMemberOption} onClick={() => handleDenyApplication(application.applicationID)}>Deny</span>
+                                                    <span className={styles.communityMemberOption} onClick={() => handleLiftBan(banned.blockee)}>Lift ban</span>
                                                 </div>
                                             </div>
                                         </div>
                                     )
-                                : <span style={{fontSize: "15px", fontWeight: "200", color: "var(--primary)"}}>There are currently no applications to view.</span>
+                                : <span style={{fontSize: "15px", fontWeight: "200", color: "var(--primary)"}}>There are currently no banned users to view.</span>
                             }
                             </div>
                         </div>

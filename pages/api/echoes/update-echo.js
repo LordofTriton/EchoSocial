@@ -4,7 +4,6 @@ import ResponseClient from "../../../services/validation/ResponseClient";
 
 function ValidateUpdateEcho(data) {
     if (!data.echoID || !ParamValidator.isValidObjectID(data.echoID)) throw new Error("Missing or Invalid: echoID")
-    if (data.audience && !ParamValidator.isValidAudience(data.audience)) throw new Error("Invalid: audience")
     if (data.nodes && data.nodes.length < 1) throw new Error("Invalid: nodes")
     if (data.content) {
         if (data.content.text && data.content.text.length < 5) throw new Error("Missing or Invalid: content text.")

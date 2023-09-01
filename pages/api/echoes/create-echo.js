@@ -10,7 +10,7 @@ function ValidateCreateEcho(data) {
     if (data.communityID && !ParamValidator.isValidAccountID(data.communityID)) throw new Error("Missing or Invalid: communityID.")
     if (!data.content) throw new Error("Missing or Invalid: content.")
     if (data.content) {
-        if (data.content.text && data.content.text.length < 5) throw new Error("Missing or Invalid: content text.")
+        if (data.content.text && data.content.text.length < 2) throw new Error("Missing or Invalid: content text.")
     }
 }
 

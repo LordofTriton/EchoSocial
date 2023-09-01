@@ -141,7 +141,7 @@ export default function Community() {
       </Head>
 
       <div className="pageContent" style={{backgroundColor: "var(--base)"}}>
-        <CommunityHead data={communityData} page={pageControl} />
+        <CommunityHead data={communityData} page={pageControl} title="timeline" />
 
         <div className={styles.communityTimeline}>
           <div className={styles.communityTimelineData}>

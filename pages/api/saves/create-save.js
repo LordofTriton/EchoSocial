@@ -33,7 +33,7 @@ export default async function CreateSave(params, io) {
         if (newSave) throw new Error("This echo is already saved.")
 
         const savedData = {
-            savedID: IDGenerator.GenerateSaveID(),
+            saveID: IDGenerator.GenerateSaveID(),
             accountID: params.accountID,
             echoID: params.echoID,
             datetime: Date.now()

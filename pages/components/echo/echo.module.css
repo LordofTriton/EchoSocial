@@ -49,6 +49,18 @@
 
 .echoHeadDataUser:hover { color: var(--accent); }
 
+.echoHeadDataUser span {
+    display: inline-block;
+    text-transform: uppercase;
+    background-color: var(--base);
+    border-radius: 3px;
+    font-weight: 500;
+    font-size: 8px !important;
+    padding: 3px 3px;
+    margin-left: 10px;
+    transform: translate(0px, -2px);
+}
+
 .echoHeadDataDateTime {
     color: var(--primary);
     opacity: 0.7;

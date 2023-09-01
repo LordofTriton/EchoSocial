@@ -6,9 +6,11 @@ import DateGenerator from "../../../services/generators/DateGenerator";
 import APIClient from "../../../services/APIClient";
 import Helpers from "../../../util/Helpers";
 
-export default function Echo({ data, page, fullText=false }) {
+export default function Echo({ data, page, fullText=false, saved=false }) {
     const [echoData, setEchoData] = useState(data)
     const [echoMediaIndex, setEchoMediaIndex] = useState(0)
+    const [deleted, setDeleted] = useState(false)
+    const [echoSaved, setEchoSaved] = useState(saved)
 
     const getCurrentMedia = () => {
         return echoData.content.media[echoMediaIndex].url;
@@ -36,10 +38,30 @@ export default function Echo({ data, page, fullText=false }) {
             accountID: page.activeUser.accountID,
             echoID: echoData.echoID
         })
+        page.createAlert("success", "Echo deleted successfully.")
+        setDeleted(true)
+    }
+
+    const handleSaveEcho = async () => {
+        const createdSave = (data) => page.createAlert(data.success ? "success" : "error", data.message);
+        if (page.socket) page.socketMethods.socketRequest("CREATE_SAVE", { 
+            accountID: page.activeUser.accountID,
+            echoID: echoData.echoID
+        }, createdSave)
+        setEchoSaved(true)
+    }
+
+    const handleUnsaveEcho = async () => {
+        if (page.socket) page.socketMethods.socketEmitter("DELETE_SAVE", { 
+            accountID: page.activeUser.accountID,
+            echoID: echoData.echoID
+        })
+        page.createAlert("success", "Echo unsaved successfully.")
+        setEchoSaved(false)
     }
 
     return (
-        <div className={styles.echo} key={echoData.echoID}>
+        <div className={styles.echo} key={echoData.echoID} style={{display: deleted || (saved && !echoSaved) ? "none" : null}}>
             <div className={styles.echoHead}>
                 {
                     echoData.communityID && !page.community ?
@@ -59,7 +81,7 @@ export default function Echo({ data, page, fullText=false }) {
                     <>
                     <div className={styles.echoHeadProfile} style={{ backgroundImage: `url(${echoData.userData.profileImage.url})` }} onClick={() => page.router.push(`/user/${echoData.accountID}`)}></div>
                     <span className={styles.echoHeadData} onClick={() => page.router.push(`/user/${echoData.accountID}`)}>
-                        <span className={styles.echoHeadDataUser}>{`${echoData.userData.firstName} ${echoData.userData.lastName}`}</span>
+                        <span className={styles.echoHeadDataUser}>{`${echoData.userData.firstName} ${echoData.userData.lastName}`}{ echoData.communityData ? <span>{ echoData.communityData.userRole }</span> : null }</span>
                         <span className={styles.echoHeadDataDateTime}>{DateGenerator.GenerateDateTime(echoData.datetime)}</span>
                     </span>
                     </>
@@ -67,11 +89,11 @@ export default function Echo({ data, page, fullText=false }) {
                 <div className={styles.echoHeadOptionIcon}>
                     <SVGServer.OptionIcon color="var(--secondary)" width="25px" height="25px" />
                     <div className={styles.echoHeadOptionBox}>
-                        { echoData.accountID === page.activeUser.accountID ? <span className={styles.echoHeadOption}>Edit Post</span> : null}
+                        { echoData.accountID === page.activeUser.accountID ? <span className={styles.echoHeadOption} onClick={() => page.setShowEchoCreator(echoData)}>Edit Post</span> : null}
                         { echoData.accountID === page.activeUser.accountID ? <span className={styles.echoHeadOption} onClick={() => handleDeleteEcho()}>Delete Post</span> : null }
-                        <span className={styles.echoHeadOption}>Save</span>
-                        <span className={styles.echoHeadOption}>Hide</span>
-                        <span className={styles.echoHeadOption}>Report</span>
+                        { echoData.accountID !== page.activeUser.accountID ? <span className={styles.echoHeadOption} onClick={() => echoSaved ? handleUnsaveEcho() : handleSaveEcho()}>{echoSaved ? "Unsave" : "Save"}</span> : null }
+                        { echoData.accountID !== page.activeUser.accountID ? <span className={styles.echoHeadOption}>Hide</span> : null }
+                        { echoData.accountID !== page.activeUser.accountID ? <span className={styles.echoHeadOption}>Report</span> : null }
                     </div>
                 </div>
             </div>

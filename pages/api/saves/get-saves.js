@@ -3,7 +3,7 @@ import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 
 function ValidateGetSaves(data) {
-    if (!data.echoID || !ParamValidator.isValidAccountID(data.echoID)) throw new Error("Missing or Invalid: echoID.")
+    if (!data.accountID || !ParamValidator.isValidAccountID(data.accountID)) throw new Error("Missing or Invalid: accountID.")
     if (data.saveID && !ParamValidator.isValidObjectID(data.saveID)) throw new Error("Invalid: saveID.")
     if (data.nodes && data.nodes.length < 1) throw new Error("Invalid: nodes.")
 }
@@ -44,7 +44,7 @@ export default async function GetSaves(params, io) {
             const user = (await db.collection("accounts").findOne({ accountID: echo.accountID }))
             const comments = await db.collection("comments").countDocuments({ echoID: echo.echoID })
             const community = echo.communityID ? await db.collection("communities").findOne({ communityID: echo.communityID }) : null
-            const communityMember = community ? await db.collection("members").findOne({ communityID: echo.communityID, accountID: params.accountID }) : null
+            const communityMember = community ? await db.collection("members").findOne({ communityID: echo.communityID, accountID: echo.accountID }) : null
             let heartCount = await db.collection("hearts").countDocuments({ echoID: echo.echoID });
             let userHearted = await db.collection("hearts").findOne({ accountID: params.accountID, echoID: echo.echoID });
 

@@ -3,16 +3,16 @@ import styles from "./form.module.css"
 
 import SVGServer from "../../../services/svg/svgServer";
 
-export default function SelectMultipleInput({label, style, onAdd, onRemove, options}) {
+export default function SelectMultipleInput({label, style, defaultValue, onAdd, onRemove, options}) {
     const [showDrop, setShowDrop] = useState(false)
     const [selected, setSelected] = useState([])
 
-    // useEffect(() => {
-    //     if (options && options.length > 0) {
-    //         onAdd(options[0].value)
-    //         setSelected(options.length > 0 ? [options[0]] : [])
-    //     }
-    // }, [options])
+    useEffect(() => {
+        if (defaultValue && defaultValue.length > 0) {
+            const preselected = options.filter((option) => defaultValue.includes(option.value))
+            setSelected(preselected)
+        }
+    }, [defaultValue])
 
     const handleOptionClick = (option, index) => {
         if (!selected.find((item, itemIndex) => itemIndex === index)) {

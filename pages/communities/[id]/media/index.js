@@ -83,7 +83,7 @@ export default function CommunityMedia() {
       </Head>
 
       <div className="pageContent" style={{backgroundColor: "var(--base)"}}>
-        <CommunityHead data={communityData} page={pageControl} />
+        <CommunityHead data={communityData} page={pageControl} title="media" />
 
       </div>
 

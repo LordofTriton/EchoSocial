@@ -4,7 +4,7 @@ import ResponseClient from "../../../services/validation/ResponseClient";
 
 function ValidateDeleteSave(data) {
     if (!data.accountID || !ParamValidator.isValidAccountID(data.accountID)) throw new Error("Missing or Invalid: accountID")
-    if (!data.communityID || !ParamValidator.isValidObjectID(data.communityID)) throw new Error("Missing or Invalid: communityID")
+    if (!data.echoID || !ParamValidator.isValidObjectID(data.echoID)) throw new Error("Missing or Invalid: echoID")
 }
 
 function parseParams(params, data) {
@@ -19,7 +19,7 @@ export default async function DeleteSave(params, io) {
     const { db } = await getDB();
     params = parseParams([
         "accountID",
-        "communityID"
+        "echoID"
     ], params);
 
     try {

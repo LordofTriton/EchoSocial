@@ -9,70 +9,61 @@ import SVGServer from "../../../../services/svg/svgServer";
 import Modals from '../../../components/modals';
 import useModalStates from '../../../hooks/useModalStates';
 import { useSocketContext } from '../../../../util/SocketProvider';
-import TriMasonryLayout from '../../../components/masonry/tri-masonry';
-import Echo from '../../../components/echo';
-import Helpers from '../../../../util/Helpers';
+import QuadMasonryLayout from '../../../components/masonry/quad-masonry';
+import UserThumb from '../../../components/user-thumb';
 import UserHead from '../../../components/user-head';
+import Echo from '../../../components/echo';
+import TriMasonryLayout from '../../../components/masonry/tri-masonry';
 
-export default function UserMedia() {
+export default function UserSaved() {
     const router = useRouter()
     const [activeUser, setActiveUser] = useState(Cache.getData("EchoUser"))
     const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "light")
     const [userData, setUserData] = useState(null)
     const [alert, setAlert] = useState(null)
-    const [userMediaEchoes, setUserMediaEchoes] = useState([])
+    const [userSaved, setUserSaved] = useState([])
     const {modalStates, modalControl} = useModalStates()
-    const [showAllCommunities, setShowAllCommunities] = useState(false)
-    const [echoPage, setEchoPage] = useState(1)
     const {socket, socketMethods} = useSocketContext()
+    const [savedPage, setSavedPage] = useState(1)
     const [pagination, setPagination] = useState({
         page: 1,
         pageSize: 10,
         totalItems: 0,
         totalPages: 1
     })
-    const [echoLoader, setEchoLoader] = useState(true)
+    const [savedLoader, setSavedLoader] = useState(true)
 
     useEffect(() => {
-        setUserMediaEchoes([])
+        setUserSaved([])
         const updateUserData = (data) => {
             if (data.success) {
                 setUserData(data.data)
             }
         }
-        const showEcho = (data) => data.success ? modalControl.setShowEchoViewer(data.data) : null
         if (router.query.id) {
             if (socket) socketMethods.socketRequest("GET_ACCOUNT", {
                 accountID: activeUser.accountID,
                 userID: router.query.id
             }, updateUserData)
         }
-        if (router.query.echo) {
-            if (socket) socketMethods.socketRequest("GET_ECHO", {
-                accountID: activeUser.accountID,
-                echoID: router.query.echo
-            }, showEcho)
-        }
     }, [router.query, socket])
 
     useEffect(() => {
-        const updateMediaEchoes = (data) => {
+        const updateUserSaved = (data) => {
             if (data.success) {
-                setUserMediaEchoes((state) => state.concat(data.data))
+                setUserSaved((state) => state.concat(data.data))
                 setPagination(data.pagination)
             }
-            setEchoLoader(false)
+            setSavedLoader(false)
         }
         if (userData) {
-            if (socket) socketMethods.socketRequest("USER_FEED", {
+            if (socket) socketMethods.socketRequest("GET_SAVES", {
                 accountID: activeUser.accountID,
-                userID: router.query.id,
-                hasMedia: true,
-                page: echoPage,
-                pageSize: 7
-            }, updateMediaEchoes)
+                page: savedPage,
+                pageSize: 10
+            }, updateUserSaved)
         }
-    }, [userData, echoPage, socket])
+    }, [userData, savedPage, socket])
 
     const createAlert = (type, message) => {
         setAlert({ type, message })
@@ -100,41 +91,38 @@ export default function UserMedia() {
         const { scrollTop, scrollHeight, clientHeight } = event.target;
         const isAtBottom = scrollTop + clientHeight >= scrollHeight - 10;
 
-        if (isAtBottom && echoPage < pagination.totalPages && !echoLoader) {
-            setEchoPage(echoPage + 1);
-            setEchoLoader(true)
+        if (isAtBottom && savedPage < pagination.totalPages && !savedLoader) {
+            setSavedPage(savedPage + 1);
+            setSavedLoader(true)
         }
     };
 
     return (
         <div className="page" style={{ backgroundColor: "var(--base)" }} onScroll={handleScroll}>
             <Head>
-                <title>Echo - {userData ? `${userData.firstName} ${userData.lastName}` : "User"}</title>
+                <title>Saved - {userData ? `${userData.firstName} ${userData.lastName}` : "User"}</title>
                 <meta name="description" content="A simple social media." />
                 <link rel="icon" href="/favicon.ico" />
                 <link rel="stylesheet" href={`/styles/themes/${activeTheme === "dark" ? 'classic-dark.css' : 'classic-light.css'}`} />
             </Head>
 
             <div className="pageContent" style={{ backgroundColor: "var(--base)" }}>
-                <UserHead data={userData} page={pageControl} title="media" />
+                <UserHead data={userData} page={pageControl} title="saved" />
 
                 <div className={styles.userTimeline}>
                     <div className={styles.userTimelineFeedHead}>
-                        <span className={styles.userTimelineFeedHeadTitle}>{router.query.id === activeUser.accountID ? "Your " : userData ? `${userData.firstName}'s ` : ""}Photos & Videos</span>
+                        <span className={styles.userTimelineFeedHeadTitle}>Your Saved Echoes</span>
                     </div>
-                    <TriMasonryLayout>
                     {
-                        userMediaEchoes.length > 0 ?
-                        userMediaEchoes.map((echo) => 
-                            echo.content.media.map((media, index) => 
-                                <>
-                                { Helpers.getFileType(media.url) === "image" ? <img className={styles.userMediaImage} src={media.url} onClick={() => modalControl.setShowEchoViewer(echo)} alt="media" /> : null }
-                                { Helpers.getFileType(media.url) === "video" ? <video className={styles.userMediaImage} src={media.url} onClick={() => modalControl.setShowEchoViewer(echo)} /> : null }
-                                </>
-                            )
-                        ) : null
+                        userSaved.length ?
+                            <TriMasonryLayout>
+                                {
+                                    userSaved.map((saved, index) =>
+                                        <Echo data={saved} page={pageControl} saved={true} key={index} />
+                                    )
+                                }
+                            </TriMasonryLayout> : null
                     }
-                    </TriMasonryLayout>
                 </div>
             </div>
 

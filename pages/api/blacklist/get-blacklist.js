@@ -4,8 +4,7 @@ import ResponseClient from "../../../services/validation/ResponseClient";
 
 function ValidateGetBlacklists(data) {
     if (!data.accountID || !ParamValidator.isValidAccountID(data.accountID)) throw new Error("Missing or Invalid: accountID.")
-    if (data.blocker && !ParamValidator.isValidObjectID(data.blocker)) throw new Error("Invalid: blocker.")
-    if (data.blockee && !ParamValidator.isValidObjectID(data.blockee)) throw new Error("Invalid: blockee.")
+    if (!data.blocker || !ParamValidator.isValidObjectID(data.blocker)) throw new Error("Invalid: blocker.")
 }
 
 function parseParams(params, data) {
@@ -29,9 +28,9 @@ export default async function GetBlacklists(params, io) {
         ValidateGetBlacklists(params);
 
         const filters = {
-            accountID: params.accountID
+            accountID: params.accountID,
+            blocker: params.blocker
         }
-        if (params.blocker) blacklistData.blocker = params.blocker;
 
         const pagination = {
             page: parseInt(params.page),
@@ -46,7 +45,7 @@ export default async function GetBlacklists(params, io) {
 
         let blacklistData = []
         for (let blacklist of fetchBlacklistsResponse) {
-            const user = (await db.collection("accounts").findOne({ accountID: blacklist.accountID }))
+            const user = (await db.collection("accounts").findOne({ accountID: blacklist.blockee }))
             const finalBlacklistData = {
                 ...blacklist,
                 firstName: user.firstName,

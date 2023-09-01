@@ -4,6 +4,7 @@ import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import DeleteMember from "./delete-community-member";
 import CreateBlacklist from "../blacklist/create-blacklist";
+import CreateNotification from "../notifications/create-notification";
 
 function ValidateBlacklistMember(data) {
     if (!data.accountID || !ParamValidator.isValidAccountID(data.accountID)) throw new Error("Missing or Invalid: accountID.")
@@ -48,7 +49,7 @@ export default async function BlacklistMember(params, io) {
 
         const community = await db.collection("communities").findOne({ communityID: params.communityID })
         await CreateNotification({
-            accountID: userID,
+            accountID: params.userID,
             content: `You have been banned from the ${community.displayName} community.`,
             image: community.profileImage.url,
             clickable: false,

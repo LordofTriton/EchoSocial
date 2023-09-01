@@ -65,7 +65,7 @@ export default async function CommunityFeed(params, io) {
             const user = (await db.collection("accounts").findOne({ accountID: echo.accountID }))
             const comments = await db.collection("comments").countDocuments({ echoID: echo.echoID })
             const community = echo.communityID ? await db.collection("communities").findOne({ communityID: echo.communityID }) : null
-            const communityMember = community ? await db.collection("members").findOne({ communityID: echo.communityID, accountID: params.accountID }) : null
+            const communityMember = community ? await db.collection("members").findOne({ communityID: echo.communityID, accountID: echo.accountID }) : null
             let heartCount = await db.collection("hearts").countDocuments({ echoID: echo.echoID });
             let userHearted = await db.collection("hearts").findOne({ accountID: params.accountID, echoID: echo.echoID });
 
