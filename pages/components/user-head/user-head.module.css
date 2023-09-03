@@ -1,69 +1,160 @@
 .userHead {
     width: 100%;
-    height: 400px;
+    height: fit-content;
     border-radius: 5px;
     background-color: var(--alt);
     position: relative;
+    overflow: hidden;
+    margin-top: 20px;
 }
 
 .userHeadCover {
     width: 100%;
-    height: 70%;
+    height: 300px;
     background-size: cover;
     background-position: center;
 }
 
+.userHeadCoverButton {
+    width: 40px;
+    height: 40px;
+    border-radius: 40px;
+    background-color: rgba(0, 0, 0, 0.7);
+    float: right;
+    margin-top: 10px;
+    margin-right: 10px;
+    padding: 10px;
+    cursor: pointer;
+}
+
 .userHeadNav {
     width: 100%;
-    height: 30%;
+    height: fit-content;
     background-color: var(--surface);
-    padding: 0px 80px;
+    padding: 110px 80px 0px 80px;
+    position: relative;
+}
+
+.userHeadButtons {
+    width: fit-content;
+    height: 50px;
+    position: absolute;
+    bottom: 15px;
+    right: 80px;
+}
+
+.userHeadButton {
+    width: fit-content;
+    height: fit-content;
+    border-radius: 50px;
+    float: right;
+    margin-right: 10px;
+    padding: 7px 15px;
+    cursor: pointer;
+    border: 2px solid var(--primary);
+}
+
+.userHeadButton:hover { border-color: var(--accent); }
+
+.userHeadButton * { float: left; }
+
+.userHeadButton span {
+    display: block;
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--primary);
+    margin-left: 10px;
+    transform: translate(0px, -2px);
+}
+
+.userHeadBar {
+    width: 100%;
+    height: 100px;
+    /* background-image: linear-gradient(to bottom, rgba(0,0,0,0), var(--surface)); */
+    background-color: var(--surface);
+    position: absolute;
+    bottom: 0px;
+    opacity: 0.9;
+}
+
+.userHeadData {
+    width: fit-content;
+    height: 170px;
+    position: absolute;
+    bottom: 0px;
+    left: 80px;
+    overflow: hidden;
+    transform: translate(0px, -5px);
 }
 
 .userHeadProfile {
     width: 150px;
     height: 150px;
-    position: absolute;
-    bottom: 75px;
-    left: 50%;
     background-color: var(--base);
-    transform: translate(-50%, 0px);
+    margin: 10px;
     background-size: cover;
     background-position: center;
     border-radius: 100%;
     border: 5px solid var(--surface);
-}
-
-.userHeadNavThird {
-    width: 33.33%;
-    height: 100%;
     float: left;
 }
 
-.userHeadNavLinkLeft {
+.userHeadProfileButton {
     display: block;
-    color: var(--primary);
-    opacity: 0.8;
+    width: 30px;
+    height: 30px;
+    border-radius: 30px;
+    background-color: var(--base);
+    outline: 3px solid var(--surface);
+    margin: 120px 55px 0px 55px;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.userHeadNames {
+    width: fit-content;
+    height: 150px;
     float: left;
-    font-size: 17px;
-    font-weight: 600;
-    margin: 50px 50px 0px 0px;
-    cursor: pointer;
+    padding: 85px 0px 0px 10px;
 }
 
-.userHeadNavLinkRight {
+.userHeadName {
     display: block;
     color: var(--primary);
-    opacity: 0.8;
-    float: right;
-    font-size: 17px;
-    font-weight: 600;
-    margin: 50px 50px 0px 0px;
+    font-size: 25px;
+    font-weight: 700;
+    margin-top: 10px;
+}
+
+.userHeadNickName {
+    display: block;
+    color: var(--primary);
+    opacity: 0.7;
+    font-size: 15px;
+    font-weight: 400;
+}
+
+.userHeadNavLinks {
+    width: 100%;
+    height: 50px;
+    background-color: var(--surface);
+    border-radius: 5px;
+    box-shadow: 0 0 8px 0 rgba(63,66,87,.1);
+    margin-top: 5px;
+    padding: 0px 80px;
+}
+
+.userHeadNavLink {
+    display: block;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--primary);
+    padding: 15px 20px;
+    float: left;
     cursor: pointer;
 }
 
-.userHeadNavLinkLeft:hover {color: var(--accent);}
-.userHeadNavLinkRight:hover {color: var(--accent);}
+.userHeadNavLink:hover { color: var(--accent); }
 
 .userHeadOptions {
     position: relative;
@@ -78,13 +169,11 @@
     display: none;
     width: 200px;
     height: fit-content;
-    background-color: var(--surface);
+    background-color: var(--primary);
     border-radius: 5px;
     position: absolute;
-    top: 50px;
-    right: 50px;
-    z-index: 2;
-    border: 1px solid var(--secondary);
+    top: 20px;
+    right: 20px;
     z-index: 2;
     box-shadow: 0 0 34px 0 rgba(63,66,87,.1);
     padding: 10px 0px;
@@ -93,7 +182,7 @@
 .userHeadOptionBox:hover { display: block; }
 
 .userHeadOption {
-    color: var(--primary);
+    color: var(--base);
     font-size: 15px;
     font-weight: 500;
     display: block;
@@ -102,40 +191,3 @@
 }
 
 .userHeadOption:hover { color: var(--accent); }
-
-.userHeadNavName {
-    display: block;
-    color: var(--primary);
-    font-size: 25px;
-    font-weight: 700;
-    text-align: center;
-    margin-top: 50px;
-}
-
-.userHeadNavNickName {
-    display: block;
-    color: var(--primary);
-    opacity: 0.7;
-    font-size: 15px;
-    font-weight: 200;
-    text-align: center;
-}
-
-.userHeadButtons {
-    width: fit-content;
-    height: 50px;
-    position: absolute;
-    bottom: 100px;
-    right: 50px;
-}
-
-.userHeadButton {
-    width: 50px;
-    height: 50px;
-    border-radius: 50px;
-    background-color: var(--accent);
-    float: right;
-    margin-right: 10px;
-    padding: 10px;
-    cursor: pointer;
-}

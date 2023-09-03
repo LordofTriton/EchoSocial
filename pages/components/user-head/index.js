@@ -75,57 +75,81 @@ export default function UserHead({ data, page, title }) {
     }
 
     return (
+        <>
         <div className={styles.userHead}>
-            <div className={styles.userHeadCover} style={{ backgroundImage: userData ? `url(${userData.profileCover.url})` : null }}></div>
-            <div className={styles.userHeadNav}>
-                <div className={styles.userHeadNavThird}>
-                    <span className={styles.userHeadNavLinkLeft} onClick={() => page.router.push(`/user/${page.router.query.id}`)} style={{ color: title === "timeline" ? "var(--accent)" : null }}>Timeline</span>
-                    <span className={styles.userHeadNavLinkLeft} onClick={() => page.router.push(`/user/${page.router.query.id}/about`)} style={{ color: title === "about" ? "var(--accent)" : null }}>About</span>
-                    <span className={styles.userHeadNavLinkLeft} onClick={() => page.router.push(`/user/${page.router.query.id}/friends`)} style={{ color: title === "friends" ? "var(--accent)" : null }}>Friends</span>
-                </div>
-                <div className={styles.userHeadNavThird}>
-                    <span className={styles.userHeadNavName}>{userData ? `${userData.firstName} ${userData.lastName}` : ""}</span>
-                    <span className={styles.userHeadNavNickName}>{userData ? userData.nickname : ""}</span>
-                </div>
-                <div className={styles.userHeadNavThird}>
-                    <div className={styles.userHeadOptions}>
-                        <span className={styles.userHeadNavLinkRight}>
-                            <SVGServer.OptionIcon color="var(--secondary)" width="25px" height="25px" />
-                        </span>
-                        <div className={styles.userHeadOptionBox}>
-                            {userData && userData.accountID !== page.activeUser.accountID ? <span className={styles.userHeadOption} onClick={() => blockUser()}>Block {userData ? userData.firstName : "User"}</span> : null}
-                            {userData && userData.accountID !== page.activeUser.accountID ? <span className={styles.userHeadOption}>Report {userData ? userData.firstName : "User"}</span> : null}
-                            {userData && userData.accountID === page.activeUser.accountID ? <span className={styles.userHeadOption} onClick={() => page.router.push(`/user/${page.router.query.id}/saved`)}>Saved</span> : null}
-                        </div>
+            <div className={styles.userHeadCover} style={{ backgroundImage: userData ? `url(${userData.profileCover.url})` : null }}>
+                {
+                    page.router.query.id === page.activeUser.accountID ?
+                    <><label htmlFor="coverSelector" className={styles.userHeadCoverButton}><SVGServer.ImageIcon color="var(--alt)" width="20px" height="20px" /></label>
+                    <input type="file" id="coverSelector" accept="image/*" onChange={(e) => handleUpdateProfileCover(e)} style={{ display: "none" }} multiple />
+                    </> : null
+                }
+                <div className={styles.userHeadBar}></div>
+                <div className={styles.userHeadData}>
+                    <div className={styles.userHeadProfile} style={{ backgroundImage: userData ? `url(${userData.profileImage.url})` : null }}>
+                        {
+                            page.router.query.id === page.activeUser.accountID ?
+                            <><label htmlFor="profileSelector" className={styles.userHeadProfileButton}><SVGServer.CameraIcon color="var(--primary)" width="20px" height="20px" /></label>
+                            <input type="file" id="profileSelector" accept="image/*" onChange={(e) => handleUpdateProfileImage(e)} style={{ display: "none" }} multiple />
+                            </>: null
+                        }
                     </div>
-                    <span className={styles.userHeadNavLinkRight} onClick={() => page.router.push(`/user/${page.router.query.id}/media`)} style={{ color: title === "media" ? "var(--accent)" : null }}>Media</span>
-                    <span className={styles.userHeadNavLinkRight} onClick={() => page.router.push(`/user/${page.router.query.id}/communities`)} style={{ color: title === "communities" ? "var(--accent)" : null }}>Communities</span>
+                    <div className={styles.userHeadNames}>
+                        <span className={styles.userHeadName}>{userData ? `${userData.firstName} ${userData.lastName}` : " "}</span>
+                        <span className={styles.userHeadNickName}>{userData ? userData.nickname : ""}</span>
+                    </div>
                 </div>
             </div>
-            <div className={styles.userHeadProfile} style={{ backgroundImage: userData ? `url(${userData.profileImage.url})` : null }}></div>
             <div className={styles.userHeadButtons}>
                 {
                     page.router.query.id === page.activeUser.accountID ?
                         <>
                             <div className={styles.userHeadButton} onClick={() => page.router.push("/settings")}>
-                                <SVGServer.SettingsIcon color="var(--surface)" width="30px" height="30px" />
+                                <SVGServer.SettingsIcon color="var(--primary)" width="20px" height="20px" />
+                                <span>Settings</span>
                             </div>
-                            <label htmlFor="coverSelector" className={styles.userHeadButton}><SVGServer.ImageIcon color="var(--surface)" width="30px" height="30px" /></label>
-                            <input type="file" id="coverSelector" accept="image/*" onChange={(e) => handleUpdateProfileCover(e)} style={{ display: "none" }} multiple />
-                            <label htmlFor="profileSelector" className={styles.userHeadButton}><SVGServer.CameraIcon color="var(--surface)" width="30px" height="30px" /></label>
-                            <input type="file" id="profileSelector" accept="image/*" onChange={(e) => handleUpdateProfileImage(e)} style={{ display: "none" }} multiple />
-                        </> :
+                            </> :
                         <>
-                            <div className={styles.userHeadButton} onClick={() => handleFollowButtonClick()}>
+                            <div className={styles.userHeadButton} onClick={() => handleFollowButtonClick()} style={{borderColor: userData && userData.userHearted ? "var(--accent)" : null}}>
                                 {
                                     userData && userData.userHearted ?
-                                        <SVGServer.HeartFilledIcon color="var(--surface)" width="30px" height="30px" /> :
-                                        <SVGServer.HeartLineIcon color="var(--surface)" width="30px" height="30px" />
+                                        <SVGServer.HeartFilledIcon color="var(--accent)" width="20px" height="20px" /> :
+                                        <SVGServer.HeartLineIcon color="var(--primary)" width="20px" height="20px" />
                                 }
+                                <span style={{color: userData && userData.userHearted ? "var(--accent)" : null}}>{userData && userData.userHearted ? "Liked" : "Like"}</span>
                             </div>
+                            {
+                                userData && userData.userFriend ?
+                                <div className={styles.userHeadButton} onClick={() => handleFollowButtonClick()}>
+                                    <SVGServer.ChatIcon color="var(--primary)" width="20px" height="20px" />
+                                    <span>Message</span>
+                                </div> : null
+                            }
                         </>
                 }
             </div>
         </div>
+
+        <div className={styles.userHeadNavLinks}>
+            <span className={styles.userHeadNavLink} style={{color: title === "timeline" ? "var(--accent)" : null}} onClick={() => page.router.push(`/user/${userData.accountID}`)}>Timeline</span>
+            <span className={styles.userHeadNavLink} style={{color: title === "about" ? "var(--accent)" : null}} onClick={() => page.router.push(`/user/${userData.accountID}/about`)}>About</span>
+            <span className={styles.userHeadNavLink} style={{color: title === "friends" ? "var(--accent)" : null}} onClick={() => page.router.push(`/user/${userData.accountID}/friends`)}>Friends</span>
+            <span className={styles.userHeadNavLink} style={{color: title === "communities" ? "var(--accent)" : null}} onClick={() => page.router.push(`/user/${userData.accountID}/communities`)}>Communities</span>
+            <span className={styles.userHeadNavLink} style={{color: title === "media" ? "var(--accent)" : null}} onClick={() => page.router.push(`/user/${userData.accountID}/media`)}>Media</span>
+            { userData && userData.accountID === page.activeUser.accountID ? <span className={styles.userHeadNavLink} style={{color: title === "media" ? "var(--accent)" : null}} onClick={() => page.router.push(`/user/${userData.accountID}/saved`)}>Saved</span> : null }
+            {
+                userData && userData.accountID !== page.activeUser.accountID ? 
+                <div className={styles.userHeadOptions}>
+                    <span className={styles.userHeadNavLink}>
+                        <SVGServer.OptionIcon color="var(--primary)" width="25px" height="25px" />
+                    </span>
+                    <div className={styles.userHeadOptionBox}>
+                        <span className={styles.userHeadOption} onClick={() => blockUser()}>Block {userData ? userData.firstName : "User"}</span>
+                        <span className={styles.userHeadOption}>Report {userData ? userData.firstName : "User"}</span>
+                    </div>
+                </div> : null
+            }
+        </div>
+        </>
     )
 }

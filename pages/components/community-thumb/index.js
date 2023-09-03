@@ -11,8 +11,8 @@ export default function CommunityThumb({ data, page, member }) {
     const [communityData, setCommunityData] = useState(data)
 
     const handleClickButton = async () => {
-        if (applied) return;
         if (member) page.router.push(`/communities/${communityData.communityID}`)
+        if (applied) return;
         else {
             if (communityData.entryApproval) {
                 const createdApplication = (data) => setApplied(true)

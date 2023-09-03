@@ -36,6 +36,8 @@ export default async function GetAccount(params, io) {
 
         let heartCount = await db.collection("hearts").countDocuments({ userID: filters.accountID });
         let userHearted = params.userID && params.userID !== params.accountID ? await db.collection("hearts").findOne({ accountID: params.accountID, userID: params.userID }) : false;
+        let userLiked = await db.collection("hearts").findOne({ accountID: params.accountID, userID: fetchAccountResponse.accountID })
+        let userLikee = await db.collection("hearts").findOne({ accountID: fetchAccountResponse.accountID, userID: params.accountID })
         
         const userAccount = {
             accountID: fetchAccountResponse.accountID,
@@ -71,7 +73,10 @@ export default async function GetAccount(params, io) {
             lastLogin: fetchAccountResponse.lastLogin,
             lastActive: fetchAccountResponse.lastActive,
             userStatus: fetchAccountResponse.userStatus,
-            isVerified: fetchAccountResponse.isVerified
+            isVerified: fetchAccountResponse.isVerified,
+            userLiked: userLiked ? true : false,
+            userLikee: userLikee ? true : false,
+            userFriend: userLiked && userLikee ? true : false
         }
 
         const responseData = ResponseClient.GenericSuccess({

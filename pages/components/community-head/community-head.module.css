@@ -1,51 +1,160 @@
 .communityHead {
     width: 100%;
-    height: 400px;
+    height: fit-content;
     border-radius: 5px;
     background-color: var(--alt);
     position: relative;
+    overflow: hidden;
+    margin-top: 20px;
 }
 
 .communityHeadCover {
     width: 100%;
-    height: 70%;
+    height: 300px;
     background-size: cover;
     background-position: center;
 }
 
+.communityHeadCoverButton {
+    width: 40px;
+    height: 40px;
+    border-radius: 40px;
+    background-color: rgba(0, 0, 0, 0.7);
+    float: right;
+    margin-top: 10px;
+    margin-right: 10px;
+    padding: 10px;
+    cursor: pointer;
+}
+
 .communityHeadNav {
     width: 100%;
-    height: 30%;
+    height: fit-content;
     background-color: var(--surface);
-    padding: 0px 100px;
+    padding: 110px 80px 0px 80px;
+    position: relative;
+}
+
+.communityHeadButtons {
+    width: fit-content;
+    height: 50px;
+    position: absolute;
+    bottom: 15px;
+    right: 80px;
+}
+
+.communityHeadButton {
+    width: fit-content;
+    height: fit-content;
+    border-radius: 50px;
+    float: right;
+    margin-right: 10px;
+    padding: 7px 15px;
+    cursor: pointer;
+    border: 2px solid var(--primary);
+}
+
+.communityHeadButton:hover { border-color: var(--accent); }
+
+.communityHeadButton * { float: left; }
+
+.communityHeadButton span {
+    display: block;
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--primary);
+    margin-left: 10px;
+    transform: translate(0px, -2px);
+}
+
+.communityHeadBar {
+    width: 100%;
+    height: 100px;
+    /* background-image: linear-gradient(to bottom, rgba(0,0,0,0), var(--surface)); */
+    background-color: var(--surface);
+    position: absolute;
+    bottom: 0px;
+    opacity: 0.9;
+}
+
+.communityHeadData {
+    width: fit-content;
+    height: 170px;
+    position: absolute;
+    bottom: 0px;
+    left: 80px;
+    overflow: hidden;
+    transform: translate(0px, -5px);
 }
 
 .communityHeadProfile {
     width: 150px;
     height: 150px;
-    position: absolute;
-    bottom: 75px;
-    left: 175px;
     background-color: var(--base);
-    transform: translate(-50%, 0px);
+    margin: 10px;
     background-size: cover;
     background-position: center;
     border-radius: 100%;
     border: 5px solid var(--surface);
+    float: left;
+}
+
+.communityHeadProfileButton {
+    display: block;
+    width: 30px;
+    height: 30px;
+    border-radius: 30px;
+    background-color: var(--base);
+    outline: 3px solid var(--surface);
+    margin: 120px 55px 0px 55px;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.communityHeadNames {
+    width: fit-content;
+    height: 150px;
+    float: left;
+    padding: 85px 0px 0px 10px;
+}
+
+.communityHeadName {
+    display: block;
+    color: var(--primary);
+    font-size: 25px;
+    font-weight: 700;
+    margin-top: 10px;
+}
+
+.communityHeadNickName {
+    display: block;
+    color: var(--primary);
+    opacity: 0.7;
+    font-size: 15px;
+    font-weight: 400;
+}
+
+.communityHeadNavLinks {
+    width: 100%;
+    height: 50px;
+    background-color: var(--surface);
+    border-radius: 5px;
+    box-shadow: 0 0 8px 0 rgba(63,66,87,.1);
+    margin-top: 5px;
+    padding: 0px 80px;
 }
 
 .communityHeadNavLink {
     display: block;
+    font-size: 15px;
+    font-weight: 500;
     color: var(--primary);
-    opacity: 0.8;
-    float: right;
-    font-size: 17px;
-    font-weight: 600;
-    margin: 60px 50px 0px 0px;
+    padding: 15px 20px;
+    float: left;
     cursor: pointer;
 }
 
-.communityHeadNavLink:hover {color: var(--accent);}
+.communityHeadNavLink:hover { color: var(--accent); }
 
 .communityHeadOptions {
     position: relative;
@@ -60,13 +169,11 @@
     display: none;
     width: 200px;
     height: fit-content;
-    background-color: var(--surface);
+    background-color: var(--primary);
     border-radius: 5px;
     position: absolute;
-    top: 50px;
-    right: 50px;
-    z-index: 2;
-    border: 1px solid var(--secondary);
+    top: 20px;
+    right: 20px;
     z-index: 2;
     box-shadow: 0 0 34px 0 rgba(63,66,87,.1);
     padding: 10px 0px;
@@ -75,7 +182,7 @@
 .communityHeadOptionBox:hover { display: block; }
 
 .communityHeadOption {
-    color: var(--primary);
+    color: var(--base);
     font-size: 15px;
     font-weight: 500;
     display: block;
@@ -84,40 +191,3 @@
 }
 
 .communityHeadOption:hover { color: var(--accent); }
-
-.communityHeadNavName {
-    display: block;
-    color: var(--primary);
-    font-size: 25px;
-    font-weight: 700;
-    float: left;
-    margin-top: 50px;
-}
-
-.communityHeadNavNickName {
-    display: block;
-    color: var(--primary);
-    opacity: 0.7;
-    font-size: 15px;
-    font-weight: 200;
-    text-align: center;
-}
-
-.communityHeadButtons {
-    width: fit-content;
-    height: 50px;
-    position: absolute;
-    bottom: 100px;
-    right: 50px;
-}
-
-.communityHeadButton {
-    width: 50px;
-    height: 50px;
-    border-radius: 50px;
-    background-color: var(--accent);
-    float: right;
-    margin-right: 10px;
-    padding: 10px;
-    cursor: pointer;
-}

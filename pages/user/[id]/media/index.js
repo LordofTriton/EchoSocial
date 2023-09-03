@@ -22,7 +22,6 @@ export default function UserMedia() {
     const [alert, setAlert] = useState(null)
     const [userMediaEchoes, setUserMediaEchoes] = useState([])
     const {modalStates, modalControl} = useModalStates()
-    const [showAllCommunities, setShowAllCommunities] = useState(false)
     const [echoPage, setEchoPage] = useState(1)
     const {socket, socketMethods} = useSocketContext()
     const [pagination, setPagination] = useState({

@@ -131,7 +131,6 @@ export default function User() {
         <meta name="description" content="A simple social media." />
         <link rel="icon" href="/favicon.ico" />
         <link rel="stylesheet" href={`/styles/themes/${activeTheme === "dark" ? 'classic-dark.css' : 'classic-light.css'}`} />
-        <meta name="viewport" content="width=1024"></meta>
       </Head>
 
       <div className="pageContent" style={{backgroundColor: "var(--base)"}}>

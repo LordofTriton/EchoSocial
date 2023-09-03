@@ -58,49 +58,62 @@ export default function CommunityHead({ data, page, title }) {
     }
 
     return (
+        <>
         <div className={styles.communityHead}>
-            <div className={styles.communityHeadCover} style={{ backgroundImage: communityData ? `url(${communityData.profileCover.url})` : null }}></div>
-            <div className={styles.communityHeadNav}>
-                <span className={styles.communityHeadNavName}>{communityData ? communityData.displayName : ""}</span>
-                <div className={styles.communityHeadOptions}>
-                    <span className={styles.communityHeadNavLink}>
-                        <SVGServer.OptionIcon color="var(--secondary)" width="25px" height="25px" />
-                    </span>
-                    <div className={styles.communityHeadOptionBox}>
-                    {
-                        communityData && communityData.userMember && communityData.userMember.role === "member" ?
-                        <>
-                        <span className={styles.communityHeadOption} onClick={() => blockUser()}>Block {communityData ? communityData.displayName : "Community"}</span>
-                        <span className={styles.communityHeadOption}>Report {communityData ? communityData.displayName : "Community"}</span>
-                        </> : null
-                    }
-                    </div>
-                </div>
-                <span className={styles.communityHeadNavLink} onClick={() => page.router.push(`/communities/${communityData.communityID}/media`)} style={{ color: title === "media" ? "var(--accent)" : null }}>Media</span>
-                <span className={styles.communityHeadNavLink} onClick={() => page.router.push(`/communities/${communityData.communityID}/members`)} style={{ color: title === "members" ? "var(--accent)" : null }}>Members</span>
-                <span className={styles.communityHeadNavLink} onClick={() => page.router.push(`/communities/${communityData.communityID}/about`)} style={{ color: title === "about" ? "var(--accent)" : null }}>About</span>
-                <span className={styles.communityHeadNavLink} onClick={() => page.router.push(`/communities/${communityData.communityID}`)} style={{ color: title === "timeline" ? "var(--accent)" : null }}>Timeline</span>
-            </div>
-            <div className={styles.communityHeadProfile} style={{ backgroundImage: communityData ? `url(${communityData.profileImage.url})` : null }}></div>
-            <div className={styles.communityHeadButtons}>
+            <div className={styles.communityHeadCover} style={{ backgroundImage: communityData ? `url(${communityData.profileCover.url})` : null }}>
                 {
                     communityData && communityData.userMember && communityData.userMember.role !== "member" ?
-                        <>
-                            <div className={styles.communityHeadButton} onClick={() => page.router.push(`/communities/${communityData.communityID}/settings`)}>
-                                <SVGServer.SettingsIcon color="var(--surface)" width="30px" height="30px" />
-                            </div>
-
-                            <label htmlFor="coverSelector" className={styles.communityHeadButton}><SVGServer.ImageIcon color="var(--surface)" width="30px" height="30px" /></label>
-                            <input type="file" id="coverSelector" accept="image/*" onChange={(e) => handleUpdateProfileCover(e)} style={{ display: "none" }} multiple />
-
-                            <label htmlFor="profileSelector" className={styles.communityHeadButton}><SVGServer.CameraIcon color="var(--surface)" width="30px" height="30px" /></label>
+                    <><label htmlFor="coverSelector" className={styles.communityHeadCoverButton}><SVGServer.ImageIcon color="var(--alt)" width="20px" height="20px" /></label>
+                    <input type="file" id="coverSelector" accept="image/*" onChange={(e) => handleUpdateProfileCover(e)} style={{ display: "none" }} multiple />
+                    </> : null
+                }
+                <div className={styles.communityHeadBar}></div>
+                <div className={styles.communityHeadData}>
+                    <div className={styles.communityHeadProfile} style={{ backgroundImage: communityData ? `url(${communityData.profileImage.url})` : null }}>
+                        {
+                            communityData && communityData.userMember && communityData.userMember.role !== "member" ?
+                            <><label htmlFor="profileSelector" className={styles.communityHeadProfileButton}><SVGServer.CameraIcon color="var(--primary)" width="20px" height="20px" /></label>
                             <input type="file" id="profileSelector" accept="image/*" onChange={(e) => handleUpdateProfileImage(e)} style={{ display: "none" }} multiple />
-                        </> :
+                            </>: null
+                        }
+                    </div>
+                    <div className={styles.communityHeadNames}>
+                        <span className={styles.communityHeadName}>{communityData ? communityData.displayName : " "}</span>
+                        <span className={styles.communityHeadNickName}>Community</span>
+                    </div>
+                </div>
+            </div>
+            <div className={styles.communityHeadButtons}>
+                {
+                    <>
                         <div className={styles.communityHeadButton} onClick={() => handleLeaveGroup()}>
-                            <SVGServer.ExitIcon color="var(--surface)" width="30px" height="30px" />
+                            <SVGServer.ExitIcon color="var(--primary)" width="20px" height="20px" />
+                            <span>Leave</span>
                         </div>
+                    </>
                 }
             </div>
         </div>
+
+        <div className={styles.communityHeadNavLinks}>
+            <span className={styles.communityHeadNavLink} style={{color: title === "timeline" ? "var(--accent)" : null}} onClick={() => page.router.push(`/communities/${communityData.communityID}`)}>Timeline</span>
+            <span className={styles.communityHeadNavLink} style={{color: title === "about" ? "var(--accent)" : null}} onClick={() => page.router.push(`/communities/${communityData.communityID}/about`)}>About</span>
+            <span className={styles.communityHeadNavLink} style={{color: title === "members" ? "var(--accent)" : null}} onClick={() => page.router.push(`/communities/${communityData.communityID}/members`)}>Members</span>
+            <span className={styles.communityHeadNavLink} style={{color: title === "media" ? "var(--accent)" : null}} onClick={() => page.router.push(`/communities/${communityData.communityID}/media`)}>Media</span>
+            { communityData && communityData.userMember && communityData.userMember.role !== "member" ? <span className={styles.communityHeadNavLink} style={{color: title === "settings" ? "var(--accent)" : null}} onClick={() => page.router.push(`/communities/${communityData.communityID}/settings`)}>Settings</span> : null }
+            {
+                communityData && communityData.userMember && communityData.userMember.role === "member" ? 
+                <div className={styles.communityHeadOptions}>
+                    <span className={styles.communityHeadNavLink}>
+                        <SVGServer.OptionIcon color="var(--primary)" width="25px" height="25px" />
+                    </span>
+                    <div className={styles.communityHeadOptionBox}>
+                        <span className={styles.communityHeadOption} onClick={() => blockUser()}>Block {communityData ? communityData.firstName : "User"}</span>
+                        <span className={styles.communityHeadOption}>Report {communityData ? communityData.firstName : "User"}</span>
+                    </div>
+                </div> : null
+            }
+        </div>
+        </>
     )
 }

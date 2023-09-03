@@ -101,7 +101,7 @@ export default function NodesSettings() {
                                 <>
                                     <span className={styles.settingsBodySubNavButton} onClick={() => router.push("/settings")}>Profile Info</span>
                                     <span className={styles.settingsBodySubNavButton} onClick={() => router.push("/settings/preferences")}>Preferences</span>
-                                    <span className={styles.settingsBodySubNavButton} style={{ color: "var(--accent)"}} onClick={() => router.push("/settings/nodes")}>Hobbies and Interests</span>
+                                    <span className={styles.settingsBodySubNavButton} style={{ color: "var(--accent)"}} onClick={() => router.push("/settings/nodes")}>Nodes</span>
                                     <span className={styles.settingsBodySubNavButton} onClick={() => router.push("/settings/cp")}>Change/Reset Password</span>
                                 </> : null
                         }
@@ -124,7 +124,7 @@ export default function NodesSettings() {
                     </div>
                     <div className={styles.settingsBodyContent}>
                         <div className={styles.formContainer}>
-                            <span className={styles.formContainerTitle}>Feed</span>
+                            <span className={styles.formContainerTitle}>Nodes</span>
                             <div className={styles.formContainerForm}>
                                 <div className={styles.formContainerFormNodeList}>
                                     <div style={{ display: "inline-block" }}>

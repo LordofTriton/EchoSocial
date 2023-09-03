@@ -80,7 +80,7 @@ export default function ChangePasswordSettings() {
                                 <>
                                     <span className={styles.settingsBodySubNavButton} onClick={() => router.push("/settings")}>Profile Info</span>
                                     <span className={styles.settingsBodySubNavButton} onClick={() => router.push("/settings/preferences")}>Preferences</span>
-                                    <span className={styles.settingsBodySubNavButton} onClick={() => router.push("/settings/nodes")}>Hobbies and Interests</span>
+                                    <span className={styles.settingsBodySubNavButton} onClick={() => router.push("/settings/nodes")}>Nodes</span>
                                     <span className={styles.settingsBodySubNavButton} style={{ color: "var(--accent)" }} onClick={() => router.push("/settings/cp")}>Change/Reset Password</span>
                                 </> : null
                         }

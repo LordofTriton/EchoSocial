@@ -13,6 +13,8 @@ import { useSocketContext } from '../../../../util/SocketProvider';
 import DateGenerator from '../../../../services/generators/DateGenerator';
 import DuoMasonryLayout from '../../../components/masonry/duo-masonry';
 import CommunityHead from '../../../components/community-head';
+import TriMasonryLayout from '../../../components/masonry/tri-masonry';
+import Helpers from '../../../../util/Helpers';
 
 export default function CommunityMedia() {
   const router = useRouter()
@@ -20,8 +22,17 @@ export default function CommunityMedia() {
   const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "light")
   const [communityData, setCommunityData] = useState(null)
   const [alert, setAlert] = useState(null)
+  const [communityMediaEchoes, setCommunityMediaEchoes] = useState([])
   const {modalStates, modalControl} = useModalStates()
+  const [echoPage, setEchoPage] = useState(1)
   const {socket, socketMethods} = useSocketContext()
+  const [pagination, setPagination] = useState({
+      page: 1,
+      pageSize: 10,
+      totalItems: 0,
+      totalPages: 1
+  })
+  const [echoLoader, setEchoLoader] = useState(true)
 
   useEffect(() => {
     const updateCommunityData = (data) => {
@@ -36,6 +47,25 @@ export default function CommunityMedia() {
       }, updateCommunityData)
     }
   }, [router.query, socket])
+
+  useEffect(() => {
+    const updateCommunityMediaEchoes = (data) => {
+        if (data.success) {
+            setCommunityMediaEchoes((state) => state.concat(data.data))
+            setPagination(data.pagination)
+        }
+        setEchoLoader(false)
+    }
+    if (communityData) {
+        if (socket) socketMethods.socketRequest("COMMUNITY_FEED", {
+            accountID: activeUser.accountID,
+            communityID: router.query.id,
+            hasMedia: true,
+            page: echoPage,
+            pageSize: 7
+        }, updateCommunityMediaEchoes)
+    }
+}, [communityData, echoPage, socket])
 
   const createAlert = (type, message) => {
     setAlert({ type, message })
@@ -68,9 +98,9 @@ export default function CommunityMedia() {
     const { scrollTop, scrollHeight, clientHeight } = event.target;
     const isAtBottom = scrollTop + clientHeight >= scrollHeight - 10;
 
-    if (isAtBottom && feedPage < pagination.totalPages && !echoLoader) {
-      setFeedPage(feedPage + 1);
-      setEchoLoader(true)
+    if (isAtBottom && echoPage < pagination.totalPages && !echoLoader) {
+        setEchoPage(echoPage + 1);
+        setEchoLoader(true)
     }
   };
 
@@ -86,6 +116,24 @@ export default function CommunityMedia() {
       <div className="pageContent" style={{backgroundColor: "var(--base)"}}>
         <CommunityHead data={communityData} page={pageControl} title="media" />
 
+        <div className={styles.communityTimeline}>
+          <div className={styles.communityTimelineFeedHead}>
+          <span className={styles.communityTimelineFeedHeadTitle}>{`${communityData ? communityData.displayName : "Community"}'s `} Photos & Videos</span>
+          </div>
+          <TriMasonryLayout>
+          {
+              communityMediaEchoes.length > 0 ?
+              communityMediaEchoes.map((echo) => 
+                  echo.content.media.map((media, index) => 
+                      <>
+                      { Helpers.getFileType(media.url) === "image" ? <img className={styles.communityMediaImage} src={media.url} onClick={() => modalControl.setShowEchoViewer(echo)} alt="media" /> : null }
+                      { Helpers.getFileType(media.url) === "video" ? <video className={styles.communityMediaImage} src={media.url} onClick={() => modalControl.setShowEchoViewer(echo)} /> : null }
+                      </>
+                  )
+              ) : null
+          }
+          </TriMasonryLayout>
+        </div>
       </div>
 
       <Modals page={pageControl} />
