@@ -14,7 +14,7 @@ function ValidateCreateApplication(data) {
 function parseParams(params, data) {
     const result = {}
     for (let param of params) {
-        if (data[param]) result[param] = data[param]
+        if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
     }
     return result;
 }
@@ -77,7 +77,7 @@ export async function CreateApplicationCallback(params, io) {
             content: `${user.firstName} ${user.lastName} applied to join your community. Click to view.`,
             image: user.profileImage.url,
             clickable: true,
-            redirect: `${AppConfig.HOST}/communities/${params.communityID}/applications`
+            redirect: `/communities/${params.communityID}/settings/applications`
         }, io)
     }
 }

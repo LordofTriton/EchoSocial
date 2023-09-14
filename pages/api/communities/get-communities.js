@@ -9,7 +9,7 @@ function ValidateGetCommunities(data) {
 function parseParams(params, data) {
     const result = {}
     for (let param of params) {
-        if (data[param]) result[param] = data[param]
+        if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
     }
     return result;
 }
@@ -20,6 +20,7 @@ export default async function GetCommunities(params, io) {
         "accountID",
         "userID",
         "member", 
+        "search",
         "page", 
         "pageSize",
         "filter"
@@ -33,14 +34,14 @@ export default async function GetCommunities(params, io) {
         if (!userAccount) throw new Error("Account does not exist.")
 
         const filters = { 
-            $and: params.member ? [ 
-                { communityID: { $in: communities.map((obj) => obj.communityID) } }
-            ] : [
-                { nodes: { $elemMatch: { nodeID: { $in: userAccount.nodes.map((node) => node.nodeID) } } } },
-                { communityID: { $nin: communities.map((obj) => obj.communityID) } }
-            ]
+            $and: []
         }
-        if (params.filter) filters.name = { $regex: String(params.filter).toLowerCase().replace(/\s/g, "").trim(), $options: 'i' }
+        if (params.member === true) filters.$and.push({ communityID: { $in: communities.map((obj) => obj.communityID) } })
+        if (params.member === false) {
+            filters.$and.push({ nodes: { $elemMatch: { nodeID: { $in: userAccount.nodes.map((node) => node.nodeID) } } } })
+            filters.$and.push({ communityID: { $nin: communities.map((obj) => obj.communityID) } })
+        }
+        if (params.filter) filters.$and.push({ name: { $regex: String(params.filter).toLowerCase().replace(/\s/g, "").trim(), $options: 'i' } })
 
         const pagination = {
             page: parseInt(params.page),
@@ -55,12 +56,15 @@ export default async function GetCommunities(params, io) {
 
         let communityList = []
         for (let community of fetchCommunitysResponse) {
+            const echoCount = await db.collection("echoes").countDocuments({ communityID: community.communityID })
             const memberCount = await db.collection("members").countDocuments({ communityID: community.communityID })
             const userMember = await db.collection("members").findOne({ accountID: params.accountID, communityID: community.communityID })
             const userApplied = userMember ? true : await db.collection("applications").findOne({ accountID: params.accountID, communityID: community.communityID })
             const userBlocked = await db.collection("blacklist").findOne({ blocker: params.communityID, blockee: params.accountID })
+
             communityList.push({
                 ...community,
+                echoCount,
                 memberCount,
                 userMember: userMember ? true : false,
                 userBlocked: userBlocked ? true : false,

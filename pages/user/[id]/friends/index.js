@@ -3,27 +3,36 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from 'next/router'
 import styles from '../user.module.css';
 
-import Cache from '../../../../services/CacheService'
+import CookieService from '../../../../services/CookieService'
 import APIClient from "../../../../services/APIClient";
 import SVGServer from "../../../../services/svg/svgServer";
 import Modals from '../../../components/modals';
 import useModalStates from '../../../hooks/useModalStates';
+import useDataStates from '../../../hooks/useDataStates';
 import { useSocketContext } from '../../../../util/SocketProvider';
 import QuadMasonryLayout from '../../../components/masonry/quad-masonry';
 import UserThumb from '../../../components/user-thumb';
 import UserHead from '../../../components/user-head';
+import CacheService from '../../../../services/CacheService';
 
 export default function UserFriends() {
     const router = useRouter()
-    const [activeUser, setActiveUser] = useState(Cache.getData("EchoUser"))
-    const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "light")
-    const [userData, setUserData] = useState(null)
+    const {modalStates, modalControl} = useModalStates()
+    const {dataStates, dataControl} = useDataStates()
+    const {socket, socketMethods} = useSocketContext()
+    const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
+    const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
+    const [userData, setUserData] = useState(dataStates.userData(router.query.id) || null)
     const [alert, setAlert] = useState(null)
     const [userFriends, setUserFriends] = useState([])
-    const { modalStates, modalControl } = useModalStates()
     const [friendPage, setFriendPage] = useState(1)
-    const { socket, socketMethods } = useSocketContext()
     const [friendLoader, setFriendLoader] = useState(true)
+    const [pagination, setPagination] = useState({
+        page: 1,
+        pageSize: 10,
+        totalItems: 0,
+        totalPages: 1
+    })
 
     useEffect(() => {
         setUserFriends([])
@@ -44,13 +53,16 @@ export default function UserFriends() {
         const updateUserFriends = (data) => {
             if (data.success) {
                 setUserFriends((state) => state.concat(data.data))
+                setPagination(data.pagination)
             }
             setFriendLoader(false)
         }
         if (userData) {
             if (socket) socketMethods.socketRequest("GET_FRIENDS", {
                 accountID: activeUser.accountID,
-                userID: router.query.id
+                userID: router.query.id,
+                page: friendPage,
+                pageSize: 10
             }, updateUserFriends)
         }
     }, [userData, socket])
@@ -63,7 +75,8 @@ export default function UserFriends() {
     const pageControl = {
         title: userData ? `${userData.firstName} ${userData.lastName}` : "User",
         router,
-        cache: Cache,
+        cookies: CookieService,
+        cache: CacheService,
         activeUser,
         setActiveUser,
         activeTheme,
@@ -74,11 +87,23 @@ export default function UserFriends() {
         socket,
         createAlert,
         ...modalStates,
-        ...modalControl
+        ...modalControl,
+        ...dataStates,
+        ...dataControl
     }
 
+    const handleScroll = (event) => {
+        const { scrollTop, scrollHeight, clientHeight } = event.target;
+        const isAtBottom = scrollTop + clientHeight >= scrollHeight - 10;
+
+        if (isAtBottom && friendPage < pagination.totalPages && !friendLoader) {
+            setFriendPage(friendPage + 1);
+            setFriendLoader(true)
+        }
+    };
+
     return (
-        <div className="page" style={{ backgroundColor: "var(--base)" }}>
+        <div className="page" style={{ backgroundColor: "var(--base)" }} onScroll={handleScroll}>
             <Head>
                 <title>Echo - {userData ? `${userData.firstName} ${userData.lastName}` : "User"}</title>
                 <meta name="description" content="A simple social media." />

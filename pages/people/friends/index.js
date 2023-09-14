@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from 'next/router'
 import styles from '../people.module.css';
 
-import Cache from '../../../services/CacheService'
+import CookieService from '../../../services/CookieService'
 import APIClient from "../../../services/APIClient";
 import Modals from "../../components/modals";
 import Head from "next/head";
@@ -12,14 +12,17 @@ import useModalStates from "../../hooks/useModalStates";
 import { useSocketContext } from "../../../util/SocketProvider";
 import QuadMasonryLayout from "../../components/masonry/quad-masonry";
 import UserThumb from "../../components/user-thumb";
+import useDataStates from "../../hooks/useDataStates";
+import CacheService from "../../../services/CacheService";
 
 export default function PeopleFriends() {
     const router = useRouter()
-    const [activeUser, setActiveUser] = useState(Cache.getData("EchoUser"))
-    const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "light")
+    const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
+    const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
     const [alert, setAlert] = useState(null)
     const {modalStates, modalControl} = useModalStates()
-    const [people, setPeople] = useState([])
+    const {dataStates, dataControl} = useDataStates()
+    const [people, setPeople] = useState(dataStates.friendPeople || [])
     const [searchQuery, setSearchQuery] = useState("")
     const [peoplePage, setPeoplePage] = useState(1)
     const {socket, socketMethods} = useSocketContext()
@@ -32,10 +35,18 @@ export default function PeopleFriends() {
     const [peopleLoader, setPeopleLoader] = useState(true)
 
     useEffect(() => {
+        if (searchQuery.length > 1) return;
         if (socket) {
             const updatePeople = (data) => {
                 if (data.success) {
-                    setPeople((state) => state.concat(data.data))
+                    if (peoplePage === 1) {
+                        setPeople(data.data)
+                        if (peoplePage < 3) dataControl.setFriendPeople(data.data)
+                    }
+                    else {
+                        setPeople((state) => state.concat(data.data))
+                        if (peoplePage < 3) dataControl.setFriendPeople(people.concat(data.data))
+                    }
                     setPagination(data.pagination)
                 }
                 setPeopleLoader(false)
@@ -51,6 +62,25 @@ export default function PeopleFriends() {
         }
     }, [peoplePage, socket])
 
+    useEffect(() => {
+        if (socket && searchQuery.length % 3 === 0 && !peopleLoader) {
+            const updatePeople = (data) => {
+                if (data.success) {
+                    setPeople((state) => state.concat(data.data))
+                    setPagination(data.pagination)
+                }
+                setPeopleLoader(false)
+            }
+            socketMethods.socketRequest("GET_ACCOUNTS", {
+                accountID: activeUser.accountID,
+                friends: true,
+                page: 1,
+                pageSize: 10,
+                filter: searchQuery.length ? searchQuery : null
+            }, updatePeople)
+        }
+    }, [peoplePage, searchQuery, socket])
+
     const createAlert = (type, message) => {
         setAlert({type, message})
         setTimeout(() => setAlert(null), 5000)
@@ -59,7 +89,8 @@ export default function PeopleFriends() {
     const pageControl = {
         title: "People",
         router,
-        cache: Cache,
+        cookies: CookieService,
+        cache: CacheService,
         activeUser,
         setActiveUser,
         activeTheme,
@@ -69,7 +100,9 @@ export default function PeopleFriends() {
         alert,
         createAlert,
         ...modalStates,
-        ...modalControl
+        ...modalControl,
+        ...dataStates,
+        ...dataControl
     }
 
     const handleScroll = (event) => {
@@ -94,9 +127,9 @@ export default function PeopleFriends() {
             <div className="pageContent" style={{backgroundColor: "var(--base)"}}>
                 <div className={styles.peopleHead}>
                     <div className={styles.peopleHeadBanner}>
-                        <span className={styles.peopleHeadBannerTitle}>People</span>
+                        <span className={styles.peopleHeadBannerTitle}><span className="titleGradient">People</span></span>
                         <span className={styles.peopleHeadBannerSubTitle}>Find people who share your passion. From gaming, to music, to learning, there`s a friend for you.</span>
-                        <input type="text" className={styles.peopleHeadBannerSearch} />
+                        <input type="text" className={styles.peopleHeadBannerSearch} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
                     </div>
                     <div className={styles.peopleHeadNav}>
                         <span className={styles.peopleHeadNavButton} onClick={() => router.push("/people")}>Strangers</span>

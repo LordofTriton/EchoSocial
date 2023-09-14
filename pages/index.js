@@ -2,22 +2,25 @@ import Head from 'next/head'
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 
-import Cache from '../services/CacheService'
+import CookieService from '../services/CookieService'
+import CacheService from '../services/CacheService'
 import styles from '../styles/index.module.css'
 import APIClient from '../services/APIClient';
 import Echo from './components/echo';
 import Modals from './components/modals';
 import DuoMasonryLayout from './components/masonry/duo-masonry'
 import useModalStates from './hooks/useModalStates'
+import useDataStates from './hooks/useDataStates'
 import { useSocketContext } from '../util/SocketProvider'
 
 export default function Home() {
   const router = useRouter()
-  const [activeUser, setActiveUser] = useState(Cache.getData("EchoUser"))
-  const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "light")
+  const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
+  const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
   const [alert, setAlert] = useState(null)
   const {modalStates, modalControl} = useModalStates()
-  const [echoFeed, setEchoFeed] = useState([])
+  const {dataStates, dataControl} = useDataStates()
+  const [echoFeed, setEchoFeed] = useState(dataStates.feed || [])
   const [echoFeedPage, setEchoFeedPage] = useState(1)
   const [echoFeedFilter, setEchoFeedFilter] = useState(null)
   const {socket, socketMethods} = useSocketContext()
@@ -33,7 +36,14 @@ export default function Home() {
     if (socket) {
       const updateFeed = (data) => {
         if (data.success) {
-          setEchoFeed((state) => state.concat(data.data))
+          if (echoFeedPage === 1) {
+              setEchoFeed(data.data)
+              if (echoFeedPage < 3) dataControl.setFeed(data.data)
+          }
+          else {
+              setEchoFeed((state) => state.concat(data.data))
+              if (echoFeedPage < 3) dataControl.setFeed(echoFeed.concat(data.data))
+          }
           setPagination(data.pagination)
         }
         setFeedLoader(false)
@@ -76,7 +86,8 @@ export default function Home() {
   const pageControl = {
     title: "Feed",
     router,
-    cache: Cache,
+    cookies: CookieService,
+    cache: CacheService,
     activeUser,
     setActiveUser,
     activeTheme,
@@ -86,7 +97,9 @@ export default function Home() {
     alert,
     createAlert,
     ...modalStates,
-    ...modalControl
+    ...modalControl,
+    ...dataStates,
+    ...dataControl,
   }
 
   const filteredFeed = () => {

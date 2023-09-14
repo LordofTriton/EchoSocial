@@ -8,13 +8,12 @@ import CreateNotification from "../notifications/create-notification";
 
 function ValidatePingApplication(data) {
     if (!data.applicationID || !ParamValidator.isValidObjectID(data.applicationID)) throw new Error("Missing or Invalid: applicationID")
-    if (data.deny && (!data.denialReason || data.denialReason.length < 1)) throw new Error("Missing or Invalid: denial reason")
 }
 
 function parseParams(params, data) {
     const result = {}
     for (let param of params) {
-        if (data[param]) result[param] = data[param]
+        if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
     }
     return result;
 }
@@ -53,7 +52,7 @@ export default async function PingApplication(params, io) {
                 content: `An admin approved your application to join the ${community.displayName} community.`,
                 image: community.profileImage.url,
                 clickable: false,
-                redirect: ""
+                redirect: `/communities/${community.communityID}`
             }, io)
         } 
         

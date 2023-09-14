@@ -12,6 +12,8 @@ import BlacklistSocket from '../blacklist/socket';
 import ApplicationSocket from '../community-applications/socket';
 import MemberSocket from '../community-members/socket';
 import SaveSocket from '../saves/socket';
+import ChatSocket from '../messenger/socket';
+import FriendSocket from '../friends/socket';
 
 export default async (request, response) => {
     if (!response.socket.server.io) {
@@ -54,7 +56,9 @@ export default async (request, response) => {
             MemberSocket(io, socket)
             EchoSocket(io, socket)
             FeedSocket(io, socket)
+            FriendSocket(io, socket)
             HeartSocket(io, socket)
+            ChatSocket(io, socket)
             NodeSocket(io, socket)
             NotificationSocket(io, socket)
             SaveSocket(io, socket)

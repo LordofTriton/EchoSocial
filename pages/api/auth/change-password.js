@@ -44,7 +44,7 @@ export default async function ChangePassword(params, io) {
             content: `Your password was changed.`,
             image: userAccount.profileImage.url,
             clickable: false,
-            redirect: `${AppConfig.HOST}/settings`
+            redirect: `/settings`
         }, io)
 
         response.json(responseData)

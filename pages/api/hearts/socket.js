@@ -24,10 +24,10 @@ export default async function HeartSocket(io, socket) {
         io.to(data.accountID).emit(`GET_HEARTS_RES_${data.serial}`, JSON.stringify(response))
     });
 
-    socket.on('GET_FRIENDS_REQ', async (data) => {
-        if (!data) return;
-        else data = JSON.parse(data)
-        const response = await GetFriends(data, io)
-        io.to(data.accountID).emit(`GET_FRIENDS_RES_${data.serial}`, JSON.stringify(response))
-    });
+    // socket.on('GET_FRIENDS_REQ', async (data) => {
+    //     if (!data) return;
+    //     else data = JSON.parse(data)
+    //     const response = await GetFriends(data, io)
+    //     io.to(data.accountID).emit(`GET_FRIENDS_RES_${data.serial}`, JSON.stringify(response))
+    // });
 }

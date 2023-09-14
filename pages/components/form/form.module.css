@@ -1,4 +1,7 @@
 .formTextInputField {
+    width: 100%;
+    margin-left: 0px;
+    margin-right: 0px;
     background-color: transparent;
     padding: 10px;
     border-radius: 5px;
@@ -22,6 +25,9 @@
 }
 
 .formSelectInputField {
+    width: 100%; 
+    margin-left: 0px;
+    margin-right: 0px;
     background-color: transparent;
     padding: 10px;
     border-radius: 5px;
@@ -41,6 +47,7 @@
 }
 
 .formSelectSingleSelected {
+    width: 100%;
     cursor: pointer;
     padding-right: 50px;
     position: relative;
@@ -171,4 +178,47 @@
 
 .formSubmit:hover {
     background-color: var(--accent);
+}
+
+.formFullWrapper {
+    width: 100%;
+    height: fit-content;
+    padding: 0px 10px;
+}
+
+.formHalfWrapper {
+    width: 100%;
+    height: fit-content;
+    padding: 0px 0px;
+}
+
+.formHalfWrapper > div {
+    width: calc(100% - 20px);
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.formThirdWrapper {
+    width: 100%;
+    height: fit-content;
+    padding: 0px 0px;
+}
+
+.formThirdWrapper > div {
+    width: calc(100% - 20px);
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+@media screen and (min-width: 1125px) {
+    .formHalfWrapper > div {
+        width: calc(50% - 20px);
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+    .formThirdWrapper > div {
+        width: calc(33.33% - 20px);
+        margin-left: 10px;
+        margin-right: 10px;
+    }
 }

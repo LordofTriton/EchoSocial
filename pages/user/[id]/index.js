@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from 'next/router'
 import styles from './user.module.css';
 
-import Cache from '../../../services/CacheService'
+import CookieService from '../../../services/CookieService'
 import Echo from "../../components/echo";
 import APIClient from "../../../services/APIClient";
 import SVGServer from "../../../services/svg/svgServer";
@@ -12,20 +12,23 @@ import DuoMasonryLayout from '../../components/masonry/duo-masonry';
 import useModalStates from '../../hooks/useModalStates';
 import { useSocketContext } from '../../../util/SocketProvider';
 import UserHead from '../../components/user-head';
+import useDataStates from '../../hooks/useDataStates';
+import CacheService from '../../../services/CacheService';
 
 export default function User() {
   const router = useRouter()
-  const [activeUser, setActiveUser] = useState(Cache.getData("EchoUser"))
-  const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "light")
-  const [userData, setUserData] = useState(null)
+  const {modalStates, modalControl} = useModalStates()
+  const {dataStates, dataControl} = useDataStates()
+  const {socket, socketMethods} = useSocketContext()
+  const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
+  const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
+  const [userData, setUserData] = useState(dataStates.userData(router.query.id) || null)
   const [alert, setAlert] = useState(null)
-  const [userEchoes, setUserEchoes] = useState([])
+  const [userEchoes, setUserEchoes] = useState(dataStates.userFeed(router.query.id) || [])
   const [userFriends, setUserFriends] = useState([])
   const [userMediaEchoes, setUserMediaEchoes] = useState([])
-  const {modalStates, modalControl} = useModalStates()
   const [showAllCommunities, setShowAllCommunities] = useState(false)
   const [feedPage, setFeedPage] = useState(1)
-  const {socket, socketMethods} = useSocketContext()
   const [pagination, setPagination] = useState({
     page: 1,
     pageSize: 10,
@@ -40,6 +43,7 @@ export default function User() {
     const updateUserData = (data) => {
       if (data.success) {
         setUserData(data.data)
+        dataControl.setUserData(data.data)
       }
     }
     const showEcho = (data) => data.success ? modalControl.setShowEchoViewer(data.data) : null
@@ -60,7 +64,14 @@ export default function User() {
   useEffect(() => {
     const updateEchoes = (data) => {
       if (data.success) {
-        setUserEchoes((state) => state.concat(data.data))
+        if (feedPage === 1) {
+            setUserEchoes(data.data)
+            if (feedPage < 3) dataControl.setUserFeed(router.query.id, data.data)
+        }
+        else {
+          setUserEchoes((state) => state.concat(data.data))
+            if (feedPage < 3) dataControl.setUserFeed(router.query.id, userEchoes.concat(data.data))
+        }
         setPagination(data.pagination)
       }
       setEchoLoader(false)
@@ -77,7 +88,9 @@ export default function User() {
       if (userFriends.length < 1) {
         if (socket) socketMethods.socketRequest("GET_FRIENDS", {
           accountID: activeUser.accountID,
-          userID: router.query.id
+          userID: router.query.id,
+          page: 1,
+          pageSize: 10
         }, updateUserFriends)
       }
       if (userMediaEchoes.length < 1) {
@@ -100,7 +113,8 @@ export default function User() {
   const pageControl = {
     title: userData ? `${userData.firstName} ${userData.lastName}` : "User",
     router,
-    cache: Cache,
+    cookies: CookieService,
+    cache: CacheService,
     activeUser,
     setActiveUser,
     activeTheme,
@@ -111,7 +125,9 @@ export default function User() {
     socket,
     createAlert,
     ...modalStates,
-    ...modalControl
+    ...modalControl,
+    ...dataStates,
+    ...dataControl
   }
 
   const handleScroll = (event) => {

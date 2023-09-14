@@ -3,18 +3,20 @@ import React, { useEffect, useState } from 'react'
 import styles from "./settings.module.css"
 import { useRouter } from 'next/router'
 
-import Cache from '../../services/CacheService'
+import CookieService from '../../services/CookieService'
 import Modals from '../components/modals';
 import SVGServer from '../../services/svg/svgServer'
 import APIClient from "../../services/APIClient";
 import { Form } from "../components/form";
 import useModalStates from '../hooks/useModalStates'
 import { useSocketContext } from '../../util/SocketProvider'
+import useDataStates from '../hooks/useDataStates'
+import CacheService from '../../services/CacheService'
 
 export default function FeedSettings() {
     const router = useRouter()
-    const [activeUser, setActiveUser] = useState(Cache.getData("EchoUser"))
-    const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "light")
+    const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
+    const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
     const [userSettings, setUserSettings] = useState(null)
     const [updatedSettings, setUpdatedSettings] = useState({
         safeSearch: true,
@@ -22,6 +24,7 @@ export default function FeedSettings() {
     })
     const [alert, setAlert] = useState(null)
     const {modalStates, modalControl} = useModalStates()
+    const {dataStates, dataControl} = useDataStates()
     const {socket, socketMethods} = useSocketContext()
 
     const createAlert = (type, message) => {
@@ -55,7 +58,8 @@ export default function FeedSettings() {
     const pageControl = {
         title: "Settings",
         router,
-        cache: Cache,
+        cookies: CookieService,
+        cache: CacheService,
         activeUser,
         setActiveUser,
         activeTheme,
@@ -65,7 +69,9 @@ export default function FeedSettings() {
         alert,
         createAlert,
         ...modalStates,
-        ...modalControl
+        ...modalControl,
+        ...dataStates,
+        ...dataControl
     }
 
     return (

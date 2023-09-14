@@ -13,7 +13,7 @@ function ValidateGetAccounts(data) {
 function parseParams(params, data) {
     const result = {}
     for (let param of params) {
-        if (data[param]) result[param] = data[param]
+        if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
     }
     return result;
 }
@@ -23,6 +23,7 @@ export default async function GetAccounts(params, io) {
     params = parseParams([
         "accountID",
         "friends",
+        "filter",
         "page",
         "pageSize"
     ], params);
@@ -31,19 +32,25 @@ export default async function GetAccounts(params, io) {
         ValidateGetAccounts(params);
 
         const userAccount = await db.collection("accounts").findOne({ accountID: params.accountID })
-        let friendsList = (await db.collection("hearts").find({
-            $or: [
-                { accountID: params.accountID, userID: { $exists: true } },
-                { userID: params.accountID }
-            ]
-        }).toArray())
-        friendsList = friendsList.filter((friend) => friendsList.map((item) => item.userID).includes(friend.accountID)).map((obj) => obj.accountID).filter((x) => x !== params.accountID)
+        let blacklist = await db.collection("blacklists").find({ $or: [{ blocker: params.accountID }, { blockee: params.accountID}] }).toArray()
+        let friendsList = (await db.collection("friends").find({ accountID: params.accountID }).toArray()).map((friend) => friend.friendID)
 
         const filters = {
-            nodes: { $elemMatch: { nodeID: { $in: userAccount.nodes.map((node) => node.nodeID) } } }
+            $and: [
+                { accountID: { $nin: blacklist.filter((blck) => blck.blocker === params.accountID).map((obj) => obj.blockee) } },
+                { accountID: { $nin: blacklist.filter((blck) => blck.blockee === params.accountID).map((obj) => obj.blocker) } } 
+            ],
+            $or: []
         }
-        if (params.friends) filters.accountID = { $in: friendsList }
-        else filters.accountID = { $nin: friendsList, $ne: params.accountID }
+        if (params.friends === true) filters.accountID = { $in: friendsList }
+        else if (params.friends === false) filters.accountID = { $nin: friendsList, $ne: params.accountID }
+        if (params.filter) {
+            filters.$or.push({ firstName: { $regex: params.filter, $options: 'i' } })
+            filters.$or.push({ lastName: { $regex: params.filter, $options: 'i' } })
+        }
+        else {
+            filters.$or.push({ nodes: { $elemMatch: { nodeID: { $in: userAccount.nodes.map((node) => node.nodeID) } } } })
+        }
 
         const pagination = {
             page: parseInt(params.page),
@@ -64,6 +71,7 @@ export default async function GetAccounts(params, io) {
             let userLikee = await db.collection("hearts").findOne({ accountID: account.accountID, userID: params.accountID })
             let communityMembership = await db.collection("members").find({ accountID: account.accountID }).toArray()
             let communities = await db.collection("communities").find({ communityID: { $in: communityMembership.map((obj) => obj.communityID) } }).toArray()
+            let chat = await db.collection("chats").findOne({ accountID: params.accountID, targetID: account.accountID })
             
             accountData.push({
                 accountID: account.accountID,
@@ -100,6 +108,21 @@ export default async function GetAccounts(params, io) {
                 lastActive: account.lastActive,
                 userStatus: account.userStatus,
                 isVerified: account.isVerified,
+                userChat: chat ? {
+                    ...chat,
+                    origin: {
+                        accountID: userAccount.accountID,
+                        firstName: userAccount.firstName,
+                        lastName: userAccount.lastName,
+                        profileImage: userAccount.profileImage
+                    },
+                    target: {
+                        accountID: account.accountID,
+                        firstName: account.firstName,
+                        lastName: account.lastName,
+                        profileImage: account.profileImage
+                    }
+                } : null,
                 userLiked: userLiked ? true : false,
                 userLikee: userLikee ? true : false,
                 userFriend: userLiked && userLikee ? true : false

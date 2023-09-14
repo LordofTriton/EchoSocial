@@ -18,7 +18,7 @@ function ValidateCreateCommunity(data) {
 function parseParams(params, data) {
     const result = {}
     for (let param of params) {
-        if (data[param]) result[param] = data[param]
+        if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
     }
     return result;
 }
@@ -58,7 +58,7 @@ export default async function CreateCommunity(params, io) {
                 url: `/images/bckg1.jpg`
             },
             description: params.description,
-            nodes: params.nodes,
+            nodes: [...params.nodes, nodeData],
             node: nodeData.data,
             privacy: params.privacy,
             entryApproval: params.privacy === "private" ? true : false,
@@ -104,6 +104,6 @@ export async function CreateCommunityCallback(params, io, communityData) {
         content: `You created a new community! Send an echo to spread the word.`,
         image: `/images/profile.jpg`,
         clickable: true,
-        redirect: `${AppConfig.HOST}/communities/${communityData.communityID}`
+        redirect: `/communities/${communityData.communityID}`
     }, io)
 }

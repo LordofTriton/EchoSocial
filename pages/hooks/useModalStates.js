@@ -9,6 +9,16 @@ function useModalStates() {
     const [showCommunityCreator, updateShowCommunityCreator] = useState(false)
     const [showMessenger, updateShowMessenger] = useState(false)
     const [activeChat, updateActiveChat] = useState(null)
+    const [showChat, updateShowChat] = useState(false)
+    const [showSearch, updateShowSearch] = useState(false)
+
+    const setShowSearch = (data) => {
+        updateShowSearch(data)
+        if (data) {
+            updateShowEchoCreator(false)
+            setShowNotifications(false)
+        }
+    }
 
     const setShowEchoViewer = (data) => {
         updateShowEchoViewer(data)
@@ -55,11 +65,21 @@ function useModalStates() {
         }
     }
 
-    const setActiveChat = (data) => {
-        updateActiveChat(data)
+    const setShowChat = (data) => {
+        updateShowChat(data)
         if (data) {
             updateShowEchoCreator(false)
             setShowNotifications(false)
+        }
+    }
+
+    const setActiveChat = (data) => {
+        updateActiveChat(data)
+        updateShowChat(true)
+        if (data) {
+            updateShowEchoCreator(false)
+            setShowNotifications(false)
+            setShowMessenger(false)
         }
     }
 
@@ -68,11 +88,12 @@ function useModalStates() {
         if (data) {
             updateShowEchoCreator(false)
             setShowNotifications(false)
+            setShowChat(false)
         }
     }
 
-    const modalStates = {showEchoViewer, showEchoCreator, showMediaViewer, showNotifications, showNodeCreator, showCommunityCreator, activeChat, showMessenger}
-    const modalControl = {setShowEchoViewer, setShowEchoCreator, setShowMediaViewer, setShowNotifications, setShowNodeCreator, setShowCommunityCreator, setActiveChat, setShowMessenger}
+    const modalStates = {showEchoViewer, showEchoCreator, showMediaViewer, showNotifications, showNodeCreator, showCommunityCreator, activeChat, showMessenger, showChat, showSearch}
+    const modalControl = {setShowEchoViewer, setShowEchoCreator, setShowMediaViewer, setShowNotifications, setShowNodeCreator, setShowCommunityCreator, setActiveChat, setShowMessenger, setShowChat, setShowSearch}
 
     return { modalStates, modalControl };
 }

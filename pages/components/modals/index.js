@@ -11,10 +11,18 @@ import NodeCreator from "../node-creator";
 import CommunityCreator from "../community-creator";
 import MediaViewer from "../media-viewer";
 import Messenger from "../messenger";
+import Chat from "../chat";
+import Search from "../search";
+import BottomNav from "../bottomnav";
 
 export default function Modals({page}) {
     return (
         <>
+            {
+                page.setShowSearch ?
+                <Search toggle={page.showSearch} control={page.setShowSearch} page={page} />
+                : null
+            }
             {
                 page.setShowEchoViewer ?
                 <EchoViewer data={page.showEchoViewer} control={page.setShowEchoViewer} page={page} />
@@ -50,6 +58,11 @@ export default function Modals({page}) {
                 <Messenger toggle={page.showMessenger} control={page.setShowMessenger} page={page} />
                 : null
             }
+            {
+                page.setShowChat ?
+                <Chat toggle={page.showChat} data={page.activeChat} page={page} />
+                : null
+            }
             {   
                 page.alert ? 
                 <Alert type={page.alert.type} message={page.alert.message} /> 
@@ -58,6 +71,7 @@ export default function Modals({page}) {
             <TopNav page={page} />
             <LeftNav page={page} />
             <RightNav page={page} />
+            <BottomNav page={page} />
         </>
     )
 }

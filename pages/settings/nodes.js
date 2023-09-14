@@ -3,24 +3,27 @@ import React, { useEffect, useState } from 'react'
 import styles from "./settings.module.css"
 import { useRouter } from 'next/router'
 
-import Cache from '../../services/CacheService'
+import CookieService from '../../services/CookieService'
 import Modals from '../components/modals';
 import { Form } from "../components/form";
 import APIClient from "../../services/APIClient";
 import SVGServer from "../../services/svg/svgServer";
 import useModalStates from '../hooks/useModalStates'
 import { useSocketContext } from '../../util/SocketProvider'
+import useDataStates from '../hooks/useDataStates'
+import CacheService from '../../services/CacheService'
 
 export default function NodesSettings() {
     const router = useRouter()
-    const [activeUser, setActiveUser] = useState(Cache.getData("EchoUser"))
-    const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "light")
+    const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
+    const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
     const [userAccount, setUserAccount] = useState(activeUser)
     const [userNodes, setUserNodes] = useState(activeUser.nodes)
     const [nodeList, setNodeList] = useState([])
     const [searchQuery, setSearchQuery] = useState("")
     const [alert, setAlert] = useState(null)
     const {modalStates, modalControl} = useModalStates()
+    const {dataStates, dataControl} = useDataStates()
     const [showAccountDrop, setShowAccountDrop] = useState(true)
     const {socket, socketMethods} = useSocketContext()
 
@@ -52,7 +55,7 @@ export default function NodesSettings() {
             nodes: userNodes
         })
         createAlert("success", "Settings updated successfully.")
-        Cache.saveData("EchoUser", {...activeUser, nodes: userNodes})
+        CookieService.saveData("EchoActiveUser", {...activeUser, nodes: userNodes})
         updateNodeList()
     }
 
@@ -63,7 +66,8 @@ export default function NodesSettings() {
     const pageControl = {
         title: "Settings",
         router,
-        cache: Cache,
+        cookies: CookieService,
+        cache: CacheService,
         activeUser,
         setActiveUser,
         activeTheme,
@@ -73,7 +77,9 @@ export default function NodesSettings() {
         alert,
         createAlert,
         ...modalStates,
-        ...modalControl
+        ...modalControl,
+        ...dataStates,
+        ...dataControl
     }
 
     return (

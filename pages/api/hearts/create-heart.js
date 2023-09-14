@@ -4,6 +4,8 @@ import ResponseClient from "../../../services/validation/ResponseClient";
 import IDGenerator from "../../../services/generators/IDGenerator";
 import CreateNotification from "../notifications/create-notification";
 import AppConfig from "../../../util/config";
+import CreateChat from "../messenger/create-chat";
+import CreateFriend, { CreateFriendCallback } from "../friends/create-friend";
 
 function ValidateCreateHeart(data) {
     if (!data.accountID || !ParamValidator.isValidAccountID(data.accountID)) throw new Error("Missing or Invalid: accountID.")
@@ -15,7 +17,7 @@ function ValidateCreateHeart(data) {
 function parseParams(params, data) {
     const result = {}
     for (let param of params) {
-        if (data[param]) result[param] = data[param]
+        if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
     }
     return result;
 }
@@ -49,8 +51,10 @@ export default async function CreateHeart(params, io) {
         const createHeartResponse = await db.collection("hearts").insertOne(heartData)
         if (createHeartResponse.errors) throw new Error("An error occured when creating heart.");
 
+        const createdHeart = await db.collection("hearts").findOne({ heartID: heartData.heartID })
+
         const responseData = ResponseClient.DBModifySuccess({
-            data: createHeartResponse,
+            data: createdHeart,
             message: "Heart created successfully."
         })
         
@@ -107,7 +111,7 @@ export async function CreateHeartCallback(params, io) {
             content: `${userAccount.firstName} ${userAccount.lastName} liked your page! Click here to view their profile.`,
             image: userAccount.profileImage.url,
             clickable: true,
-            redirect: `${AppConfig.HOST}/user/${userAccount.accountID}`
+            redirect: `/user/${userAccount.accountID}`
         }, io)
         
         const reciprocation = await db.collection("hearts").findOne({
@@ -115,20 +119,13 @@ export async function CreateHeartCallback(params, io) {
             userID: params.accountID
         })
         if (reciprocation) {
-            const followee = await db.collection("accounts").findOne({ accountID: params.userID })
-            await CreateNotification({
-                accountID: userAccount.accountID,
-                content: `You are now friends with ${followee.firstName} ${followee.lastName}.`,
-                image: followee.profileImage.url,
-                clickable: true,
-                redirect: `${AppConfig.HOST}/user/${followee.accountID}`
+            await CreateFriend({
+                accountID: params.accountID,
+                friendID: params.userID
             }, io)
-            await CreateNotification({
-                accountID: followee.accountID,
-                content: `${userAccount.firstName} ${userAccount.lastName} liked your page! You are now friends. Click to view their profile.`,
-                image: userAccount.profileImage.url,
-                clickable: true,
-                redirect: `${AppConfig.HOST}/user/${userAccount.accountID}`
+            await CreateFriendCallback({
+                accountID: params.accountID,
+                friendID: params.userID
             }, io)
         }
     }

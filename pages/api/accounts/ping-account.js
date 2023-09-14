@@ -16,7 +16,7 @@ function ValidatePingAccount(data) {
 function parseParams(params, data) {
     const result = {}
     for (let param of params) {
-        if (data[param]) result[param] = data[param]
+        if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
     }
     return result;
 }
@@ -64,7 +64,7 @@ export async function PingAccountCallback(params, io) {
             content: `${userAccount.firstName} ${userAccount.lastName} followed you! Click here to view their profile.`,
             image: userAccount.profileImage.url,
             clickable: true,
-            redirect: `${AppConfig.HOST}/user/${userAccount.accountID}`
+            redirect: `/user/${userAccount.accountID}`
         }, io)
         
         const follower = await db.collection("accounts").findOne({ accountID: params.accountID })
@@ -75,14 +75,14 @@ export async function PingAccountCallback(params, io) {
                 content: `You are now friends with ${followee.firstName} ${followee.lastName}.`,
                 image: followee.profileImage.url,
                 clickable: true,
-                redirect: `${AppConfig.HOST}/user/${followee.accountID}`
+                redirect: `/user/${followee.accountID}`
             }, io)
             await CreateNotification({
                 accountID: followee.accountID,
                 content: `${follower.firstName} ${follower.lastName} followed you! You are now friends. Click to view their profile.`,
                 image: follower.profileImage.url,
                 clickable: true,
-                redirect: `${AppConfig.HOST}/user/${follower.accountID}`
+                redirect: `/user/${follower.accountID}`
             }, io)
         }
 

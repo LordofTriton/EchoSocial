@@ -1,10 +1,16 @@
 function isMoreThanOneMonthAgo(timestamp) {
-  const oneMonthInMilliseconds = 30 * 24 * 60 * 60 * 1000; // Assuming 30 days in a month
+  const oneMonthInMilliseconds = 7 * 24 * 60 * 60 * 1000; // Assuming 30 days in a month
 
   const currentTimestamp = Date.now();
   const difference = currentTimestamp - timestamp;
 
   return difference > oneMonthInMilliseconds;
+}
+
+function hoursBetween(stampOne, stampTwo) {
+  const difference = Math.abs(stampOne - stampTwo)
+  const hour = 60 * 60 * 1000
+  return Math.floor(difference / hour)
 }
 
 function GenerateDateInGMT() {
@@ -63,6 +69,9 @@ function GenerateDateTime(timestamp) {
 }
 
 const DateGenerator = {
+  isMoreThanOneMonthAgo,
+  hoursBetween,
+  
   GenerateDateInGMT,
   GenerateTimePassed,
   GenerateDateTime

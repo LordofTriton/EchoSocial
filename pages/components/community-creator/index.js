@@ -48,9 +48,9 @@ export default function CommunityCreator({toggle, control, page}) {
     return (
         <>
         <div className="modalOverlay" style={{display: toggle ? "block" : "none"}} onClick={() => control(false)}></div>
-        <div className={styles.communityCreatorContainer} style={{right: toggle ? "70px" : "-500px"}}>
+        <div className={styles.communityCreatorContainer} style={{right: !toggle ? "-700px" : null}}>
             <div className={styles.communityCreatorContainerHead}>
-                <span className={styles.communityCreatorContainerTitle}>Create a Community</span>
+                <span className={styles.communityCreatorContainerTitle}>Create a <span className="titleGradient">Community</span></span>
                 <span className={styles.communityCreatorContainerClose} onClick={() => control(false)} style={{ transform: "scale(1.3,1.3)" }}><SVGServer.CloseIcon color="var(--primary)" width="30px" height="30px" /></span>
             </div>
 

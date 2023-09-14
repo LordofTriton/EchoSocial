@@ -7,7 +7,7 @@ import styles from './nodes.module.css';
 import Link from 'next/link';
 
 import Alert from "../components/alert";
-import Cache from "../../services/CacheService";
+import CookieService from "../../services/CookieService";
 import APIClient from "../../services/APIClient";
 import { Form } from "../components/form";
 import SVGServer from '../../services/svg/svgServer';
@@ -15,8 +15,8 @@ import { useSocketContext } from '../../util/SocketProvider';
 
 export default function Nodes() {
     const router = useRouter()
-    const [activeUser, setActiveUser] = useState(Cache.getData("EchoUser"))
-    const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "light")
+    const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
+    const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
     const [selectedNodes, setSelectedNodes] = useState([])
     const [nodeLoader, setNodeLoader] = useState(false)
     const [submitLoader, setSubmitLoader] = useState(false)
@@ -39,7 +39,7 @@ export default function Nodes() {
                 accountID: activeUser.accountID,
                 filter: query,
                 page: 1,
-                pageSize: 10
+                pageSize: 20
             }, getNodes)
         }
     }
@@ -51,7 +51,7 @@ export default function Nodes() {
             accountID: activeUser.accountID,
             nodes: selectedNodes
         })
-        Cache.saveData("EchoUser", {...activeUser, nodes: selectedNodes})
+        CookieService.saveData("EchoActiveUser", {...activeUser, nodes: selectedNodes})
 
         router.push("/")
         
@@ -60,13 +60,51 @@ export default function Nodes() {
 
     return(
         <div className={styles.nodePage}>
-        <Head>
-            <title>Echo - Nodes</title>
-            <meta name="description" content="A simple social media." />
-            <link rel="icon" href="/favicon.ico" />
-            <link rel="stylesheet" href={`/styles/themes/${activeTheme === "dark" ? 'classic-dark.css' : 'classic-light.css'}`} />
-        </Head>
-            <div className={styles.nodeHeader}>
+            <Head>
+                <title>Echo - Nodes</title>
+                <meta name="description" content="A simple social media." />
+                <link rel="icon" href="/favicon.ico" />
+                <link rel="stylesheet" href={`/styles/themes/${activeTheme === "dark" ? 'classic-dark.css' : 'classic-light.css'}`} />
+            </Head>
+
+            <div className={styles.nodeBanner}>
+                <img src={`/images/vectors/three.png`} className={styles.nodeVector} alt="vector" />
+                <div className={styles.nodeLogoBox}>
+                    <img src={`/images/logo.png`} alt="logo" className={styles.nodeLogo} />
+                    <span className={styles.nodeTitle}>echo</span>
+                </div>
+            </div>
+            <div className={styles.nodeFormBox}>
+                <div className={styles.nodeForm}>
+                    <h3 className={styles.nodeFormTitle}>What are you into?</h3>
+                    <h3 className={styles.nodeFormTip} style={{marginBottom: "10px"}}>Help us show you what you want to see. Fear not, you can always update your choices in your settings.</h3>
+
+                    <h3 className={styles.nodeFormTip}>Select at least three.</h3>
+                    {
+                        nodeList && nodeList.length > 0 ?
+                        nodeList.map((node, index) => 
+                            <span 
+                                key={index}
+                                className={styles.node} 
+                                style={{backgroundColor: selectedNodes.includes(node) ? "var(--accent)" : "var(--primary)" }} 
+                                onClick={() => selectedNodes.includes(node) ? setSelectedNodes(selectedNodes.filter((item) => item.name !== node.name)) : setSelectedNodes(selectedNodes.concat(node))}
+                            >
+                                {node.emoji} {node.displayName}
+                            </span>
+                        ) : <div className="loader" style={{
+                                width: "70px",
+                                height: "70px",
+                                borderWidth: "7px",
+                                borderColor: "var(--primary) transparent",
+                                margin: "100px calc(50% - 35px) 0px calc(50% - 35px)"
+                            }}></div>
+                    }
+
+                    <button className={styles.nodeSubmitButton} style={{opacity: selectedNodes.length < 3 ? 0.5 : 1}} onClick={() => selectedNodes.length > 3 ? handleSubmit() : null}>Continue</button>
+                </div>
+            </div>
+            
+            {/* <div className={styles.nodeHeader}>
                 <img src={`/images/logo.png`} alt="logo" className={styles.nodeHeaderLogo} />
                 <span className={styles.nodeHeaderTitle}>echo</span>
             </div>
@@ -120,7 +158,7 @@ export default function Nodes() {
                     </div>
                     
                 </div>
-            </div>
+            </div> */}
 
             {alert ? <Alert type={alert.type} message={alert.message} control={setAlert} /> : null }
         </div>

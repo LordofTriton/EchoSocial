@@ -25,7 +25,7 @@ export default function MediaViewer({ data, control, page }) {
     return (
         <>
         <div className="modalOverlay" style={{display: mediaData ? "block" : "none"}} onClick={() => control(null)}></div>
-        <div className={styles.mediaViewerContainer} style={{right: mediaData ? "100px" : "-100%"}}>
+        <div className={styles.mediaViewerContainer} style={{right: !mediaData ? "-100%" : null}}>
             {
                 mediaData ?
                 <>
@@ -47,15 +47,8 @@ export default function MediaViewer({ data, control, page }) {
                         </span>
                         </>
                     }
-                    <div className={styles.mediaViewerHeadOptionIcon}>
-                        <SVGServer.OptionIcon color="var(--secondary)" width="25px" height="25px" />
-                        <div className={styles.mediaViewerHeadOptionBox}>
-                            { mediaData.accountID === page.activeUser.accountID ? <span className={styles.mediaViewerHeadOption}>Edit Post</span> : null}
-                            { mediaData.accountID === page.activeUser.accountID ? <span className={styles.mediaViewerHeadOption} onClick={() => handleDeleteEcho()}>Delete Post</span> : null }
-                            <span className={styles.mediaViewerHeadOption}>Save</span>
-                            <span className={styles.mediaViewerHeadOption}>Hide</span>
-                            <span className={styles.mediaViewerHeadOption}>Report</span>
-                        </div>
+                    <div className={styles.mediaViewerHeadCloseIcon} onClick={() => control(null)}>
+                        <SVGServer.CloseIcon color="var(--secondary)" width="30px" height="30px" />
                     </div>
                 </div>
                 <div className={styles.mediaContent}>

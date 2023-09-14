@@ -18,12 +18,13 @@
 }
 
 .settingsBodyNav {
-    width: 300px;
+    width: 100%;
     height: fit-content;
     background-color: var(--surface);
     border-radius: 5px;
     float: left;
     padding-bottom: 50px;
+    margin-bottom: 20px;
 }
 
 .settingsBodyNavTitle {
@@ -82,7 +83,7 @@
 }
 
 .settingsBodyContent {
-    width: calc(100% - 320px);
+    width: 100%;
     height: fit-content;
     background-color: var(--surface);
     border-radius: 5px;
@@ -261,4 +262,90 @@
     float: right;
     font-size: 15px;
     font-weight: 600;
+}
+
+.blacklist {
+    width: calc(50% - 20px);
+    height: 60px;
+    background-color: var(--surface);
+    border-radius: 5px;
+    padding: 10px 25px;
+    margin: 20px 25% 0px 10px;
+    float: left;
+}
+
+.blacklistProfile {
+    height: 100%;
+    aspect-ratio: 1;
+    border-radius: 100%;
+    float: left;
+    cursor: pointer;
+    background-size: cover;
+    background-position: center;
+}
+
+.blacklistName {
+    display: block;
+    color: var(--primary);
+    font-size: 15px;
+    font-weight: 500;
+    margin: 10px 20px 0px 20px;
+    float: left;
+}
+
+.blacklistName span { font-size: 10px; font-weight: 200; text-transform: uppercase; }
+
+.blacklistOptions {
+    width: 30px;
+    height: 100%;
+    float: right;
+    position: relative;
+    padding: 12px 5px;
+}
+
+.blacklistOptions:hover .blacklistOptionsDrop { display: block; }
+
+.blacklistOptionsDrop {
+    display: none;
+    width: 200px;
+    height: fit-content;
+    background-color: var(--surface);
+    box-shadow: 0 0 34px 0 rgba(63,66,87,.1);
+    border-radius: 5px;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.blacklistOption {
+    display: block;
+    font-size: 13px;
+    color: var(--primary);
+    cursor: pointer;
+    padding: 7px 20px;
+}
+
+.blacklistOption:hover {
+    background-color: var(--primary);
+    color: white;
+}
+
+@media screen and (min-width: 1125px) {
+    .settingsBodyNav {
+        width: 300px;
+        height: fit-content;
+        background-color: var(--surface);
+        border-radius: 5px;
+        float: left;
+        padding-bottom: 50px;
+    }
+    .settingsBodyContent {
+        width: calc(100% - 320px);
+        height: fit-content;
+        background-color: var(--surface);
+        border-radius: 5px;
+        float: right;
+    }
 }

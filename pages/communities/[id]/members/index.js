@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from 'next/router'
 import styles from '../community.module.css';
 
-import Cache from '../../../../services/CacheService'
+import CookieService from '../../../../services/CookieService'
 import Echo from "../../../components/echo";
 import APIClient from "../../../../services/APIClient";
 import SVGServer from "../../../../services/svg/svgServer";
@@ -15,15 +15,18 @@ import DuoMasonryLayout from '../../../components/masonry/duo-masonry';
 import QuadMasonryLayout from '../../../components/masonry/quad-masonry';
 import UserThumb from '../../../components/user-thumb';
 import CommunityHead from '../../../components/community-head';
+import useDataStates from '../../../hooks/useDataStates';
+import CacheService from '../../../../services/CacheService';
 
 export default function CommunityMembers() {
   const router = useRouter()
-  const [activeUser, setActiveUser] = useState(Cache.getData("EchoUser"))
-  const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "light")
-  const [communityData, setCommunityData] = useState(null)
-  const [alert, setAlert] = useState(null)
   const {modalStates, modalControl} = useModalStates()
+  const {dataStates, dataControl} = useDataStates()
   const {socket, socketMethods} = useSocketContext()
+  const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
+  const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
+  const [communityData, setCommunityData] = useState(dataStates.communityData(router.query.id) || null)
+  const [alert, setAlert] = useState(null)
   const [communityMembers, setCommunityMembers] = useState([])
   const [pagination, setPagination] = useState({
     page: 1,
@@ -80,7 +83,8 @@ export default function CommunityMembers() {
         communityNode: communityData.node
     } : null,
     router,
-    cache: Cache,
+    cookies: CookieService,
+    cache: CacheService,
     activeUser,
     setActiveUser,
     activeTheme,
@@ -90,7 +94,9 @@ export default function CommunityMembers() {
     alert,
     createAlert,
     ...modalStates,
-    ...modalControl
+    ...modalControl,
+    ...dataStates,
+    ...dataControl
   }
 
   const handleScroll = (event) => {
@@ -177,8 +183,8 @@ export default function CommunityMembers() {
                     </QuadMasonryLayout> : 
                     communityMembers.map((member, index) => 
                         <div className={styles.communityMember} key={index}>
-                            <div className={styles.communityMemberProfile} style={{backgroundImage: `url(${member.profileImage.url})`}}></div>
-                            <span className={styles.communityMemberName}>{member.firstName} {member.lastName}<br /><span>{member.role}</span></span>
+                            <div className={styles.communityMemberProfile} style={{backgroundImage: `url(${member.profileImage.url})`}} onClick={() => router.push(`/user/${member.accountID}`)}></div>
+                            <span className={styles.communityMemberName} onClick={() => router.push(`/user/${member.accountID}`)}>{member.firstName} {member.lastName}<br /><span>{member.role}</span></span>
                             { member.role !== "admin" ? 
                               <div className={styles.communityMemberOptions}>
                                   <SVGServer.OptionIcon color="var(--primary)" width="20px" height="20px" />

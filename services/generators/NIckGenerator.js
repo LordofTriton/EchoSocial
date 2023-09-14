@@ -27,7 +27,7 @@ export const nickDict = [
 ]
 
 function NickGenerator() {
-    return nickDict[Math.round(Math.random(0, nickDict.length - 1) * 10)]
+    return nickDict[Math.round(Math.random() * (nickDict.length - 1))]
 }
 
 export default NickGenerator;

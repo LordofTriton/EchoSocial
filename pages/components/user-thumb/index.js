@@ -18,6 +18,15 @@ export default function UserThumb({ data, page }) {
         })
     }
 
+    const handleClickChatButton = () => {
+        if (userData.userFriend) {
+            page.setActiveChat({
+                ...friend.userChat,
+                userFriend: data.userFriend
+            })
+        }
+    }
+
     return (
         <div className={styles.userThumb}>
             <div className={styles.userThumbCover} style={{backgroundImage: `url(${userData.profileCover.url})`}}></div>
@@ -37,7 +46,7 @@ export default function UserThumb({ data, page }) {
             }
             {
                 userData && userData.userFriend ?
-                <div className={styles.userThumbChatButton} onClick={() => null}>
+                <div className={styles.userThumbChatButton} onClick={() => handleClickChatButton()}>
                     <SVGServer.MessagesIcon color="var(--surface)" width="20px" height="20px" />
                 </div> : null
             }

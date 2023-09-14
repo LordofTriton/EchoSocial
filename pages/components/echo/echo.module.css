@@ -4,14 +4,12 @@
     background-color: var(--surface);
     border-radius: 5px;
     margin: 10px 0px;
-    /* border: 1px solid var(--secondary); */
     box-shadow: 0 0 8px 0 rgba(63,66,87,.1);
     padding: 25px 25px 25px 25px;
     overflow: hidden;
     display: inline-block;
     width: 100%;
-    margin-bottom: 10px; /* Adjust the space between items */
-    break-inside: avoid; /* Prevent items from being split across columns */
+    margin-bottom: 10px;
 }
 
 .echoHead {
@@ -35,7 +33,7 @@
     width: calc(100% - 80px);
     height: 100%;
     float: left;
-    padding: 5px 12px;
+    padding: 10px 12px;
     cursor: pointer;
 }
 
@@ -134,8 +132,9 @@
 }
 
 .echoText span {
-    color: var(--accent);
+    display: inline-block;
     cursor: pointer;
+    font-weight: 500;
 }
 
 .echoMedia {
@@ -239,4 +238,10 @@
     color: var(--primary);
     opacity: 0.5;
     margin: 5px 5px;
+}
+
+@media screen and (min-width: 1125px) {
+    .echoHeadData {
+        padding: 5px 12px;
+    }
 }

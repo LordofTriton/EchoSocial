@@ -10,7 +10,7 @@ function ValidateCreateNode(data) {
 function parseParams(params, data) {
     const result = {}
     for (let param of params) {
-        if (data[param]) result[param] = data[param]
+        if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
     }
     return result;
 }
@@ -27,7 +27,7 @@ export default async function CreateNode(params, io) {
         ValidateCreateNode(params)
 
         let userNode = await db.collection("nodes").findOne({ name: String(params.name).toLowerCase().replace(/\s/g, "").trim() })
-        if (userNode) throw new Error("Node with this email already exists.")
+        if (userNode) throw new Error("A node with this name already exists.")
 
         const nodeData = {
             nodeID: IDGenerator.GenerateNodeID(),

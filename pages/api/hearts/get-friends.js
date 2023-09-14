@@ -10,7 +10,7 @@ function ValidateGetFriends(data) {
 function parseParams(params, data) {
     const result = {}
     for (let param of params) {
-        if (data[param]) result[param] = data[param]
+        if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
     }
     return result;
 }
@@ -29,16 +29,10 @@ export default async function GetFriends(params, io) {
         if (params.userID) filter.accountID = params.userID;
         else filter.accountID = params.accountID;
 
-        let friendsList = (await db.collection("hearts").find({
-            $or: [
-                { accountID: filter.accountID, userID: { $exists: true } },
-                { userID: filter.accountID }
-            ]
-        }).toArray())
+        let friendsList = (await db.collection("friends").find({ accountID: params.accountID }).toArray()).map((friend) => friend.friendID)
 
         let friends = []
-        let friendsIDs = friendsList.filter((friend) => friendsList.map((item) => item.userID).includes(friend.accountID)).map((obj) => obj.accountID).filter((x) => x !== filter.accountID)
-        for (let friendID of friendsIDs) {
+        for (let friendID of friendsList) {
             const friend = await db.collection("accounts").findOne({ accountID: friendID })
             let userLiked = await db.collection("hearts").findOne({ accountID: params.accountID, userID: friend.accountID })
             let userLikee = await db.collection("hearts").findOne({ accountID: friend.accountID, userID: params.accountID })

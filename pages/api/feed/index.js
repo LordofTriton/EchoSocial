@@ -9,7 +9,7 @@ function ValidateFeed(data) {
 function parseParams(params, data) {
     const result = {}
     for (let param of params) {
-        if (data[param]) result[param] = data[param]
+        if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
     }
     return result;
 }
@@ -19,6 +19,7 @@ export default async function Feed(params, io) {
     params = parseParams([
         "accountID",
         "nodes",
+        "filter",
         "page",
         "pageSize"
     ], params);
@@ -29,26 +30,21 @@ export default async function Feed(params, io) {
         const userAccount = (await db.collection("accounts").findOne({ accountID: params.accountID }))
         let communities = await db.collection("members").find({ accountID: params.accountID }).toArray()
         let blacklist = await db.collection("blacklists").find({ $or: [{ blocker: params.accountID }, { blockee: params.accountID}] }).toArray()
-        let friendsList = (await db.collection("hearts").find({
-            $or: [
-                { accountID: params.accountID, userID: { $exists: true } },
-                { userID: params.accountID }
-            ]
-        }).toArray())
-        friendsList = friendsList.filter((friend) => friendsList.map((item) => item.userID).includes(friend.accountID)).map((obj) => obj.accountID).filter((x) => x !== params.accountID)
+        let friendsList = (await db.collection("friends").find({ accountID: params.accountID }).toArray()).map((friend) => friend.friendID)
         if (!userAccount) throw new Error("Account does not exist.")
 
-        const filters = { 
+        const filters = {
             $or: [ 
                 { nodes: { $in: params.nodes ? params.nodes : userAccount.nodes.map((node) => node.nodeID) } }, 
                 { communityID: { $in: communities.map((obj) => obj.communityID) } } 
             ],
             $and: [ 
                 { $or: [ { communityID: { $in: communities.map((obj) => obj.communityID) } }, { audience: "public" }, { audience: "friends", accountID: { $in: friendsList } }, { accountID: params.accountID } ] },
-                { accountID: { $nin: blacklist.map((obj) => obj.blockee) } },
-                { accountID: { $nin: blacklist.map((obj) => obj.blocker) } } 
+                { accountID: { $nin: blacklist.filter((blck) => blck.blocker === params.accountID).map((obj) => obj.blockee) } },
+                { accountID: { $nin: blacklist.filter((blck) => blck.blockee === params.accountID).map((obj) => obj.blocker) } } 
             ]
         }
+        if (params.filter) filters["content.text"] = { $regex: params.filter, $options: 'i' }
 
         const pagination = {
             page: parseInt(params.page),

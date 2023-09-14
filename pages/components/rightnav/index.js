@@ -1,17 +1,115 @@
 import React, {useEffect, useState} from "react";
 import APIClient from "../../../services/APIClient";
 import SVGServer from "../../../services/svg/svgServer";
+import Helpers from "../../../util/Helpers";
 import styles from "./rightnav.module.css"
 
+function Friend({data, page}) {
+    const [showPreview, setShowPreview] = useState(false)
+
+    useEffect(() => {
+        if (data.userChat.unread > 0) {
+            setShowPreview(true)
+            setTimeout(() => setShowPreview(false), 3000)
+        }
+    }, [data])
+
+    const getChat = (friend) => {
+        return {
+            ...friend.userChat,
+            origin: {
+                accountID: page.activeUser.accountID,
+                firstName: page.activeUser.firstName,
+                lastName: page.activeUser.lastName,
+                profileImage: page.activeUser.profileImage
+            },
+            target: {
+                accountID: friend.accountID,
+                firstName: friend.firstName,
+                lastName: friend.lastName,
+                profileImage: friend.profileImage
+            },
+            userFriend: true
+        }
+    }
+
+    return (
+        <div className={styles.rightnavChatBoxChat} style={{backgroundImage: `url(${data.profileImage.url})`}} onClick={() => getChat(data) ? page.setActiveChat(getChat(data)) : null}>
+            {
+                getChat(data).unread > 0 ?
+                <span className={styles.rightnavChatBoxChatUnread}>{getChat(data).unread}</span> :
+                <span className={styles.rightnavChatBoxChatOnline}></span>
+            }
+            <div className={styles.rightnavChatBoxChatPreview} style={{width: showPreview && getChat(data).unread > 0 ? "200px" : "0px"}}>
+                <span className={styles.rightnavChatBoxChatPreviewName}>{getChat(data).target.firstName}</span>
+                <span className={styles.rightnavChatBoxChatPreviewContent}>{getChat(data).latestMessage.text ? Helpers.textLimiter(getChat(data).latestMessage.text, 30) : <SVGServer.CameraIcon color="var(--surface)" width="10px" height="10px" />}</span>
+            </div>
+        </div>
+    )
+}
+
 export default function RightNav({ page }) {
-    const [userFriends, setUserFriends] = useState([])
+    const [userFriends, setUserFriends] = useState(page.messengerFriends || [])
 
     useEffect(() => {
         if (page.socket) {
-            const updateUserFriends = (data) => data.success ? setUserFriends(data.data) : null;
-            if (page.socket) page.socketMethods.socketRequest("GET_FRIENDS", { accountID: page.activeUser.accountID, userID: page.activeUser.accountID }, updateUserFriends)
+            const updateUserFriends = (data) => {
+                if (data.success) {
+                    setUserFriends(data.data);
+                    page.setMessengerFriends(data.data);
+                }
+            }
+            if (page.socket) page.socketMethods.socketRequest("GET_FRIENDS", { 
+                accountID: page.activeUser.accountID, 
+                userID: page.activeUser.accountID 
+            }, updateUserFriends)
         }
     }, [page.socket])
+
+    useEffect(() => {
+        if (page.socket) {
+            const updateFriends = (data) => {
+                page.setMessengerFriends(userFriends.concat(data))
+                setUserFriends((state) => state.concat(data))
+            }
+            page.socketMethods.socketListener(`NEW_FRIEND`, updateFriends)
+        }
+    }, [page.socket])
+
+    useEffect(() => {
+        if (page.socket) {
+            const updateChat = (data) => {
+                setUserFriends((state) => {
+                    const update = state.map((friend) => {
+                        if (friend.accountID === data.target.accountID) return {...friend, userChat: data}
+                        else return friend;
+                    })
+                    page.setMessengerFriends(update)
+                    return update;
+                })
+            }
+            page.socketMethods.socketListener(`UPDATED_CHAT_LIST`, updateChat)
+        }
+    }, [page.socket])
+
+    const getChat = (friend) => {
+        return {
+            ...friend.userChat,
+            origin: {
+                accountID: page.activeUser.accountID,
+                firstName: page.activeUser.firstName,
+                lastName: page.activeUser.lastName,
+                profileImage: page.activeUser.profileImage
+            },
+            target: {
+                accountID: friend.accountID,
+                firstName: friend.firstName,
+                lastName: friend.lastName,
+                profileImage: friend.profileImage
+            },
+            userFriend: true
+        }
+    }
 
     return (
         <div className={styles.rightnavContainer}>
@@ -19,9 +117,7 @@ export default function RightNav({ page }) {
                 {
                     userFriends.length > 0 ?
                     userFriends.slice(0, 11).map((friend, index) => 
-                    <div key={index} className={styles.rightnavChatBoxChat} style={{backgroundImage: `url(${friend.profileImage.url})`}}>
-                        <span></span>
-                    </div>
+                        <Friend data={friend} page={page} />
                     ) : null
                 }
                 {

@@ -15,7 +15,7 @@ function ValidateBlacklistMember(data) {
 function parseParams(params, data) {
     const result = {}
     for (let param of params) {
-        if (data[param]) result[param] = data[param]
+        if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
     }
     return result;
 }
@@ -39,12 +39,14 @@ export default async function BlacklistMember(params, io) {
 
         await DeleteMember({
             accountID: params.accountID,
-            userID: params.userID
+            userID: params.userID,
+            communityID: params.communityID
         })
         await CreateBlacklist({
             accountID: params.accountID,
             blocker: params.communityID,
-            blockee: params.userID
+            blockee: params.userID,
+            blockeeType: "user"
         })
 
         const community = await db.collection("communities").findOne({ communityID: params.communityID })

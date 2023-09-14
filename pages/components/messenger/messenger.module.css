@@ -1,16 +1,17 @@
-.messengerChatList {
-    width: 500px;
+.messenger {
+    width: 100%;
     height: calc(100% - 70px);
     background-color: var(--base);
     position: fixed;
-    top: 70px;
-    right: 70px;
+    top: 0px;
+    right: 0px;
     box-shadow: 0 0 34px 0 rgba(63,66,87,.1);
     overflow: hidden;
     overflow-y: auto;
+    z-index: 30;
 }
 
-.messengerChatListHead {
+.messengerHead {
     width: 100%;
     height: fit-content;
     overflow: hidden;
@@ -18,7 +19,7 @@
     padding: 20px 25px 0px 25px;
 }
 
-.messengerChatListTitle {
+.messengerTitle {
     color: var(--primary);
     font-size: 25px;
     font-weight: 700;
@@ -27,15 +28,16 @@
     float: left;
 }
 
-.messengerChatListTitleIcon {
+.messengerTitleIcon {
     width: fit-content;
     height: fit-content;
     float: right;
     display: block;
     margin: 8px 0px 0px 10px;
+    cursor: pointer;
 }
 
-.messengerChatListSearch {
+.messengerSearch {
     width: calc(100% - 50px);
     height: 50px;
     background-color: var(--surface);
@@ -43,18 +45,87 @@
     color: var(--primary);
     padding-left: 15px;
     padding-right: 15px;
-    margin: 0px 25px 50px 25px;
+    margin: 0px 25px 10px 25px;
 }
 
-.messengerChatListChat {
+.messengerChatRecents {
+    width: 100%;
+    height: fit-content;
+    padding: 10px 15px;
+    overflow: hidden;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.messengerChatRecentsTitle {
+    display: block;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--primary);
+    margin: 0px 0px 20px 10px;
+}
+
+.messengerChatRecent {
+    width: fit-content;
+    min-width: 70px;
+    height: fit-content;
+    margin: 0px 0px;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.messengerChatRecent div {
+    width: 50px;
+    height: 50px;
+    border-radius: 50px;
+    background-color: var(--primary);
+    background-size: cover;
+    background-position: center;
+    margin: 0px calc(50% - 25px);
+}
+
+.messengerChatRecent span {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--primary);
+    text-align: center;
+    margin-top: 5px;
+}
+
+.messengerDivider {
+    width: calc(100% - 30px);
+    margin: 20px 15px 30px 15px;
+    border-bottom: 2px solid var(--alt);
+    opacity: 0.1;
+}
+
+.messengerChatNotFound {
+    display: block;
+    text-align: center;
+    color: var(--primary);
+    font-size: 15px;
+    font-weight: 400;
+    margin: 50px 0px;
+    font-style: italic;
+}
+
+.messengerChats {
+    width: calc(100% - 40px);
+    height: fit-content;
+    margin: 20px;
+}
+
+.messengerChat {
     width: 100%;
     height: 70px;
     background-color: var(--surface);
     padding: 0px 25px;
     margin-bottom: 10px;
+    border-radius: 5px;
 }
 
-.messengerChatListChatProfile {
+.messengerChatProfile {
     width: 50px;
     height: 50px;
     border-radius: 40px;
@@ -67,15 +138,15 @@
     cursor: pointer;
 }
 
-.messengerChatListChatData {
+.messengerChatData {
     width: calc(100% - 80px);
     height: 100%;
     float: left;
-    padding: 15px 20px;
+    padding: 4px 20px;
     cursor: pointer;
 }
 
-.messengerChatListChatDataName {
+.messengerChatDataName {
     color: var(--primary);
     font-size: 15px;
     font-weight: 700;
@@ -83,15 +154,38 @@
     opacity: 0.9;
 }
 
-.messengerChatListChatDataText {
+.messengerChatDataName .messengerChatDataTime {
+    color: var(--primary);
+    opacity: 0.7;
+    font-size: 10px;
+    font-weight: 200;
+    font-style: italic;
+    margin-top: 13px;
+    display: inline-block;
+}
+
+.messengerChatDataName .messengerChatDataTime span { display: inline-block; width: 5px;  height: 5px; background-color: var(--primary); border-radius: 10px; margin: 0px 10px; transform: translate(0px, -3px); }
+
+.messengerChatDataText {
     color: var(--primary);
     opacity: 0.7;
     font-size: 13px;
-    font-weight: 200;
+    font-weight: 400;
     display: block;
+    margin-top: 5px;
 }
 
-.messengerChatListChatOptions {
+.messengerChatDataTime {
+    color: var(--primary);
+    opacity: 0.7;
+    font-size: 10px;
+    font-weight: 200;
+    display: block;
+    font-style: italic;
+    margin-top: 5px;
+}
+
+.messengerChatOptions {
     display: block;
     width: 30px;
     height: 100%;
@@ -101,9 +195,9 @@
     position: relative;
 }
 
-.messengerChatListChatOptions:hover .messengerChatListChatOptionBox { display: block; }
+.messengerChatOptions:hover .messengerChatOptionBox { display: block; }
 
-.messengerChatListChatOptionBox {
+.messengerChatOptionBox {
     display: none;
     position: absolute;
     width: 200px;
@@ -117,9 +211,9 @@
     padding: 10px 0px;
 }
 
-.messengerChatListChatOptionBox:hover { display: block; }
+.messengerChatOptionBox:hover { display: block; }
 
-.messengerChatListChatOption {
+.messengerChatOption {
     color: var(--primary);
     font-size: 15px;
     font-weight: 500;
@@ -127,231 +221,39 @@
     padding: 7px 25px;
 }
 
-.messengerChatListChatOption:hover { color: var(--accent); }
+.messengerChatOption:hover { color: var(--accent); }
 
-.messengerChat {
-    width: 500px;
-    height: calc(100% - 70px);
-    background-color: var(--primary);
-    position: fixed;
-    top: 70px;
-    right: 70px;
-    box-shadow: 0 0 34px 0 rgba(63,66,87,.1);
-    overflow: hidden;
-    overflow-y: auto;
-}
-
-.messengerChatHead {
-    width: 100%;
-    height: 300px;
-    position: relative;
-    overflow: hidden;
-}
-
-.messengerChatClose {
-    width: fit-content;
-    height: fit-content;
-    float: left;
+.messengerChatUnread {
     display: block;
-    margin: 25px 0px 0px 25px;
-}
-
-.messengerChatUserData {
-    display: block;
-    width: 100%;
-    height: fit-content;
-    text-align: center;
-    line-height: 20px;
-    overflow: hidden;
-    margin-top: 100px;
-}
-
-.messengerChatUserProfile {
-    width: 80px;
-    height: 80px;
-    border-radius: 40px;
-    background-color: var(--base);
-    background-image: url(/images/bckg1.jpg);
-    background-size: cover;
-    background-position: center;
-    margin: 10px 0px;
-    cursor: pointer;
-    display: inline-block;
-}
-
-.messengerChatUserName {
-    color: var(--primary);
-    font-size: 19px;
-    font-weight: 700;
-    display: block;
-}
-
-.messengerChatMessages {
-    width: 100%;
-    height: fit-content;
-    padding: 0px 25px 50px 25px;
-}
-
-.messengerChatMessageBox {
-    width: 100%;
-    height: fit-content;
-    overflow: hidden;
-    margin-bottom: 20px;
-    /* background-color: blueviolet; */
-}
-
-.messengerChatMessageReply {
-    width: 100%;
-    height: fit-content;
-    padding: 13px 13px 13px 13px;
-    float: right;
-    overflow: hidden;
+    color: white;
     background-color: var(--accent);
-}
-
-.messengerChatMessage {
-    width: 100%;
-    height: fit-content;
-    margin-bottom: 10px;
-    overflow: hidden;
-}
-
-.messengerChatMessageData {
-    width: 100%;
-    height: fit-content;
-    overflow: hidden;
-    background-color: var(--surface);
-    border-radius: 15px 15px 15px 15px !important;
-    padding-top: 9px;
-}
-
-.messengerChatMessageProfile {
-    width: 40px;
-    height: 40px;
-    border-radius: 50px;
-    background-color: blueviolet;
-    float: left;
-    background-size: cover;
-    background-position: center;
-    cursor: pointer;
-}
-
-.messengerChatMessageBody {
-    width: fit-content;
-    min-width: 100px;
-    max-width: calc(100% - 60px);
-    height: fit-content;
-    float: left;
-}
-
-.messengerChatMessageBodyHead {
-    display: block;
-    width: 100%;
-    padding: 5px 15px;
-    color: var(--accent);
-    font-size: 12px;
-    font-weight: 500;
-    cursor: pointer;
-}
-
-.messengerChatMessageBodyHead span {
-    color: var(--primary);
+    border-radius: 5px;
     font-size: 10px;
-    float: right;
-    font-weight: 200;
-    transform: translate(0px, 2px);
-    margin-left: 20px;
-}
-
-.messengerChatMessageBodyContent {
-    width: 100%;
-    height: fit-content;
-    padding: 0px 15px 10px 15px;
-}
-
-.messengerChatMessageBodyContentReply {
+    font-weight: 400;
+    padding: 3px 5px;
+    margin: 0px 10px 0px 0px;
     width: fit-content;
-    min-width: 100%;
-    height: 50px;
-    background-color: rgba(63,66,87,.1);
-    border-radius: 5px;
-    overflow: hidden;
-    margin-bottom: 8px;
-}
-
-.messengerChatMessageBodyContentReplyMedia {
-    width: 50px;
-    height: 50px;
     float: left;
-    background-size: cover;
-    background-position: center;
 }
 
-.messengerChatMessageBodyContentReplyBody {
-    width: fit-content;
-    float: right;
+.messengerOpenChat {
+    width: 70px;
+    height: 70px;
+    background-color: var(--accent);
+    border-radius: 70px;
+    position: fixed;
+    bottom: 70px;
+    right: 50px;
+}
+
+.messengerFriends {
+    width: 100%;
     height: 100%;
+    position: absolute;
+    top: 100%;
+    background-color: var(--surface);
 }
 
-.messengerChatMessageBodyContentReplyBody .messengerChatMessageBodyHead {
-    color: dimgray;
-}
-
-.messengerChatMessageBodyContentReplyBodyContent {
-    width: 100%;
-    height: fit-content;
-    padding: 0px 15px 10px 15px;
-}
-
-.messengerChatMessageReplyBodyContentText {
-    display: block;
-    width: 100%;
-    color: var(--surface);
-    font-size: 13px;
-    white-space: pre-wrap;
-}
-
-.messengerChatMessageBodyContentMedia {
-    min-width: 100%;
-    margin-top: 3px;
-}
-
-.messengerChatMessageBodyContentMediaImage {
-    width: 100%;
-    border-radius: 5px;
-    margin-bottom: 3px;
-}
-
-.messengerChatMessageBodyContentText {
-    display: block;
-    width: 100%;
-    color: var(--surface);
-    font-size: 15px;
-    white-space: pre-wrap;
-}
-
-.messengerChatMessageBody:hover .messengerChatMessageButtons { display: block; }
-
-.messengerChatMessageButtons {
-    display: none;
-    width: 100%;
-    height: fit-content;
-    overflow: hidden;
-    background-color: var(--primary);
-    border-radius: 0px 0px 5px 5px;
-}
-
-.messengerChatMessageButton {
-    display: block;
-    padding: 7px 15px 3px 15px;
-    float: right;
-    cursor: pointer;
-}
-
-.messengerChatMessageButton span {
-    color: var(--surface);
-    display: inline-block;
-    transform: translate(0px, -6px);
-    font-size: 12px;
-    margin-right: 5px;
+@media screen and (min-width: 1125px) {
+    .messenger { width: 500px; top: 70px; right: 70px; }
 }

@@ -3,23 +3,27 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from 'next/router'
 import styles from '../community.module.css';
 
-import Cache from '../../../../services/CacheService'
+import CookieService from '../../../../services/CookieService'
 import Echo from "../../../components/echo";
 import APIClient from "../../../../services/APIClient";
 import SVGServer from "../../../../services/svg/svgServer";
 import Modals from '../../../components/modals';
 import useModalStates from '../../../hooks/useModalStates';
+import useDataStates from '../../../hooks/useDataStates';
 import { useSocketContext } from '../../../../util/SocketProvider';
 import DateGenerator from '../../../../services/generators/DateGenerator';
 import DuoMasonryLayout from '../../../components/masonry/duo-masonry';
 import { Form } from '../../../components/form';
 import CommunityHead from '../../../components/community-head';
+import CacheService from '../../../../services/CacheService';
 
 export default function CommunitySettings() {
   const router = useRouter()
-  const [activeUser, setActiveUser] = useState(Cache.getData("EchoUser"))
-  const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "light")
-  const [communityData, setCommunityData] = useState(null)
+  const {modalStates, modalControl} = useModalStates()
+  const {dataStates, dataControl} = useDataStates()
+  const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
+  const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
+  const [communityData, setCommunityData] = useState(dataStates.communityData(router.query.id) || null)
   const [updatedCommunityData, setUpdatedCommunityData] = useState({
     communityID: "",
     name: "",
@@ -38,7 +42,6 @@ export default function CommunitySettings() {
   })
   const [communityApplications, setCommunityApplications] = useState([])
   const [alert, setAlert] = useState(null)
-  const { modalStates, modalControl } = useModalStates()
   const { socket, socketMethods } = useSocketContext()
   const [settingsPage, setSettingsPage] = useState("general")
 
@@ -71,7 +74,8 @@ export default function CommunitySettings() {
       communityNode: communityData.node
     } : null,
     router,
-    cache: Cache,
+    cookies: CookieService,
+    cache: CacheService,
     activeUser,
     setActiveUser,
     activeTheme,
@@ -81,7 +85,9 @@ export default function CommunitySettings() {
     alert,
     createAlert,
     ...modalStates,
-    ...modalControl
+    ...modalControl,
+    ...dataStates,
+    ...dataControl
   }
 
   const handleSubmitGeneral = async () => {
@@ -120,81 +126,90 @@ export default function CommunitySettings() {
             <div className={styles.communitySettingsBody}>
               <span className={styles.communitysettingsBodyTitle}>General</span>
               <div className={styles.communitySettingsBodyContent}>
-                <Form.TextInput
-                  label="Community Name"
-                  style={{ width: "calc(50% - 10px)", float: "left", marginBottom: "20px" }}
-                  value={updatedCommunityData.displayName}
-                  onChange={(e) => setUpdatedCommunityData({ ...updatedCommunityData, displayName: e.target.value })}
-                />
-                <Form.AreaInput
-                  label="Description"
-                  style={{ width: "calc(50% - 10px)", height: "146px", float: "right", marginBottom: "20px" }}
-                  value={updatedCommunityData.description}
-                  onChange={(e) => setUpdatedCommunityData({ ...updatedCommunityData, description: e.target.value })}
-                  placeholder="A brief description of this community."
-                />
-                <Form.SelectSingleInput
-                  label="Privacy"
-                  style={{ width: "calc(50% - 10px)", float: "left", marginBottom: "20px" }}
-                  value={updatedCommunityData.privacy}
-                  setValue={(value) => setUpdatedCommunityData({ ...updatedCommunityData, privacy: value })}
-                  options={[
-                    { label: "Public", value: "public" },
-                    { label: "Private", value: "private" }
-                  ]}
-                />
-                <Form.TextInput
-                  label="Website"
-                  style={{ width: "calc(33.33% - 14px)", float: "left", marginBottom: "20px" }}
-                  value={updatedCommunityData.website}
-                  onChange={(e) => setUpdatedCommunityData({ ...updatedCommunityData, website: e.target.value })}
-                  placeholder="The communitiy's official website."
-                />
-                <Form.SelectSingleInput
-                  label="Country"
-                  style={{ width: "calc(33.33% - 14px)", float: "left", marginBottom: "20px", marginLeft: "20px" }}
-                  value={updatedCommunityData.country}
-                  setValue={(value) => setUpdatedCommunityData({ ...updatedCommunityData, country: value })}
-                  options={[
-                    { label: "Nigeria", value: "Nigeria" },
-                    { label: "Ghana", value: "Ghana" },
-                    { label: "Cameroon", value: "Cameroon" },
-                    { label: "Niger", value: "Niger" }
-                  ]}
-                />
-                <Form.SelectSingleInput
-                  label="City"
-                  style={{ width: "calc(33.33% - 14px)", float: "right", marginBottom: "20px", marginLeft: "20px" }}
-                  value={updatedCommunityData.city}
-                  setValue={(value) => setUpdatedCommunityData({ ...updatedCommunityData, city: value })}
-                  options={[
-                    { label: "Lagos", value: "Lagos" },
-                    { label: "Abeokuta", value: "Abeokuta" },
-                    { label: "Akure", value: "Akure" },
-                    { label: "Ibadan", value: "Ibadan" },
-                  ]}
-                />
-                <Form.TextInput
-                  label="Facebook"
-                  style={{ width: "100%", float: "right", marginBottom: "20px" }}
-                  value={updatedCommunityData.fSocial}
-                  onChange={(e) => setUpdatedCommunityData({ ...updatedCommunityData, fSocial: e.target.value })}
-                  placeholder="The community's Facebook page."
-                />
-                <Form.TextInput
-                  label="X"
-                  style={{ width: "100%", float: "right", marginBottom: "20px" }}
-                  value={updatedCommunityData.tSocial}
-                  onChange={(e) => setUpdatedCommunityData({ ...updatedCommunityData, tSocial: e.target.value })}
-                  placeholder="The community's X page."
-                />
-                <Form.TextInput
-                  label="Instagram"
-                  style={{ width: "100%", float: "right", marginBottom: "20px" }}
-                  value={updatedCommunityData.iSocial}
-                  onChange={(e) => setUpdatedCommunityData({ ...updatedCommunityData, iSocial: e.target.value })}
-                  placeholder="The community's Instagram page."
-                />
+                <Form.HalfWrapper>
+                  <Form.TextInput
+                    label="Community Name"
+                    style={{ float: "left", marginBottom: "20px" }}
+                    value={updatedCommunityData.displayName}
+                    onChange={(e) => setUpdatedCommunityData({ ...updatedCommunityData, displayName: e.target.value })}
+                  />
+                  <Form.AreaInput
+                    label="Description"
+                    style={{ height: "146px", float: "right", marginBottom: "20px" }}
+                    value={updatedCommunityData.description}
+                    onChange={(e) => setUpdatedCommunityData({ ...updatedCommunityData, description: e.target.value })}
+                    placeholder="A brief description of this community."
+                  />
+                  <Form.SelectSingleInput
+                    label="Privacy"
+                    style={{ float: "left", marginBottom: "20px" }}
+                    value={updatedCommunityData.privacy}
+                    setValue={(value) => setUpdatedCommunityData({ ...updatedCommunityData, privacy: value })}
+                    options={[
+                      { label: "Public", value: "public" },
+                      { label: "Private", value: "private" }
+                    ]}
+                  />
+                </Form.HalfWrapper>
+
+                <Form.ThirdWrapper>
+                  <Form.TextInput
+                    label="Website"
+                    style={{ float: "left", marginBottom: "20px" }}
+                    value={updatedCommunityData.website}
+                    onChange={(e) => setUpdatedCommunityData({ ...updatedCommunityData, website: e.target.value })}
+                    placeholder="The communitiy's official website."
+                  />
+                  <Form.SelectSingleInput
+                    label="Country"
+                    style={{ float: "left", marginBottom: "20px" }}
+                    value={updatedCommunityData.country}
+                    setValue={(value) => setUpdatedCommunityData({ ...updatedCommunityData, country: value })}
+                    options={[
+                      { label: "Nigeria", value: "Nigeria" },
+                      { label: "Ghana", value: "Ghana" },
+                      { label: "Cameroon", value: "Cameroon" },
+                      { label: "Niger", value: "Niger" }
+                    ]}
+                  />
+                  <Form.SelectSingleInput
+                    label="City"
+                    style={{ float: "left", marginBottom: "20px" }}
+                    value={updatedCommunityData.city}
+                    setValue={(value) => setUpdatedCommunityData({ ...updatedCommunityData, city: value })}
+                    options={[
+                      { label: "Lagos", value: "Lagos" },
+                      { label: "Abeokuta", value: "Abeokuta" },
+                      { label: "Akure", value: "Akure" },
+                      { label: "Ibadan", value: "Ibadan" },
+                    ]}
+                  />
+                </Form.ThirdWrapper>
+                
+                <Form.FullWrapper>
+                  <Form.TextInput
+                    label="Facebook"
+                    style={{ float: "left", marginBottom: "20px" }}
+                    value={updatedCommunityData.fSocial}
+                    onChange={(e) => setUpdatedCommunityData({ ...updatedCommunityData, fSocial: e.target.value })}
+                    placeholder="The community's Facebook page."
+                  />
+                  <Form.TextInput
+                    label="X"
+                    style={{ float: "left", marginBottom: "20px" }}
+                    value={updatedCommunityData.tSocial}
+                    onChange={(e) => setUpdatedCommunityData({ ...updatedCommunityData, tSocial: e.target.value })}
+                    placeholder="The community's X page."
+                  />
+                  <Form.TextInput
+                    label="Instagram"
+                    style={{ float: "left", marginBottom: "20px" }}
+                    value={updatedCommunityData.iSocial}
+                    onChange={(e) => setUpdatedCommunityData({ ...updatedCommunityData, iSocial: e.target.value })}
+                    placeholder="The community's Instagram page."
+                  />
+                </Form.FullWrapper>
+
                 <div className={styles.communitySettingsFormButtons}>
                   <button className={styles.communitySettingsFormRevertHalf} onClick={() => setUpdatedCommunityData(communityData)}>Revert Changes</button>
                   <button className={styles.communitySettingsFormSubmitHalf} onClick={() => handleSubmitGeneral()}>Save Changes</button>

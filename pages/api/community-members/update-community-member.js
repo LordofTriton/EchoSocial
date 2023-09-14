@@ -12,7 +12,7 @@ function ValidateUpdateMember(data) {
 function parseParams(params, data) {
     const result = {}
     for (let param of params) {
-        if (data[param]) result[param] = data[param]
+        if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
     }
     return result;
 }
@@ -31,7 +31,16 @@ export default async function UpdateMember(params, io) {
     try {
         ValidateUpdateMember(params);
 
-        const member = await db.collection("members").findOneAndUpdate({ accountID: params.userID, communityID: params.communityID }, {$set: params})
+        const filter = {
+            accountID: params.userID,
+            communityID: params.communityID
+        }
+        const update = {}
+        if (params.muted) update.muted = params.muted;
+        if (params.status) update.status = params.status;
+        if (params.role) update.role = params.role;
+
+        const member = await db.collection("members").findOneAndUpdate(filter, {$set: update})
         if (!member) throw new Error("Member does not exist!")
 
         const responseData = ResponseClient.GenericSuccess({

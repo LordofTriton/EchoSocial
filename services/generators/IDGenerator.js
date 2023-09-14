@@ -48,6 +48,10 @@ function GenerateBlacklistID() {
     return String(new ObjectId())
 }
 
+function GenerateMessageID() {
+    return String(new ObjectId())
+}
+
 const IDGenerator = {
     GenerateAccountID,
     GenerateCommunityID,
@@ -60,7 +64,8 @@ const IDGenerator = {
     GenerateMemberID,
     GenerateApplicationID,
     GenerateSaveID,
-    GenerateBlacklistID
+    GenerateBlacklistID,
+    GenerateMessageID
 }
 
 export default IDGenerator;

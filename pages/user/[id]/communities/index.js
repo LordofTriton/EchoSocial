@@ -3,26 +3,29 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from 'next/router'
 import styles from '../user.module.css';
 
-import Cache from '../../../../services/CacheService'
+import CookieService from '../../../../services/CookieService'
 import APIClient from "../../../../services/APIClient";
 import SVGServer from "../../../../services/svg/svgServer";
 import Modals from '../../../components/modals';
 import useModalStates from '../../../hooks/useModalStates';
+import useDataStates from '../../../hooks/useDataStates';
 import { useSocketContext } from '../../../../util/SocketProvider';
 import QuadMasonryLayout from '../../../components/masonry/quad-masonry';
 import UserThumb from '../../../components/user-thumb';
 import CommunityThumb from '../../../components/community-thumb';
 import UserHead from '../../../components/user-head';
+import CacheService from '../../../../services/CacheService';
 
 export default function UserCommunities() {
     const router = useRouter()
-    const [activeUser, setActiveUser] = useState(Cache.getData("EchoUser"))
-    const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "light")
-    const [userData, setUserData] = useState(null)
+    const {modalStates, modalControl} = useModalStates()
+    const {dataStates, dataControl} = useDataStates()
+    const {socket, socketMethods} = useSocketContext()
+    const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
+    const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
+    const [userData, setUserData] = useState(dataStates.userData(router.query.id) || null)
     const [alert, setAlert] = useState(null)
     const [userCommunities, setUserCommunities] = useState([])
-    const { modalStates, modalControl } = useModalStates()
-    const { socket, socketMethods } = useSocketContext()
     const [communityPage, setCommunityPage] = useState(1)
     const [pagination, setPagination] = useState({
         page: 1,
@@ -74,7 +77,8 @@ export default function UserCommunities() {
     const pageControl = {
         title: userData ? `${userData.firstName} ${userData.lastName}` : "User",
         router,
-        cache: Cache,
+        cookies: CookieService,
+        cache: CacheService,
         activeUser,
         setActiveUser,
         activeTheme,
@@ -85,7 +89,9 @@ export default function UserCommunities() {
         socket,
         createAlert,
         ...modalStates,
-        ...modalControl
+        ...modalControl,
+        ...dataStates,
+        ...dataControl
     }
 
     const handleScroll = (event) => {

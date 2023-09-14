@@ -10,7 +10,7 @@ function ValidateGetAccount(data) {
 function parseParams(params, data) {
     const result = {}
     for (let param of params) {
-        if (data[param]) result[param] = data[param]
+        if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
     }
     return result;
 }
@@ -24,6 +24,7 @@ export default async function GetAccount(params, io) {
 
     try {
         ValidateGetAccount(params);
+        const userAccount = await db.collection("accounts").findOne({ accountID: params.accountID })
 
         const filters = {}
         if (params.userID) filters.accountID = params.userID;
@@ -38,8 +39,9 @@ export default async function GetAccount(params, io) {
         let userHearted = params.userID && params.userID !== params.accountID ? await db.collection("hearts").findOne({ accountID: params.accountID, userID: params.userID }) : false;
         let userLiked = await db.collection("hearts").findOne({ accountID: params.accountID, userID: fetchAccountResponse.accountID })
         let userLikee = await db.collection("hearts").findOne({ accountID: fetchAccountResponse.accountID, userID: params.accountID })
+        let chat = await db.collection("chats").findOne({ accountID: params.accountID, targetID: fetchAccountResponse.accountID })
         
-        const userAccount = {
+        const userData = {
             accountID: fetchAccountResponse.accountID,
             firstName: fetchAccountResponse.firstName,
             lastName: fetchAccountResponse.lastName,
@@ -74,13 +76,28 @@ export default async function GetAccount(params, io) {
             lastActive: fetchAccountResponse.lastActive,
             userStatus: fetchAccountResponse.userStatus,
             isVerified: fetchAccountResponse.isVerified,
+            userChat: chat ? {
+                ...chat,
+                origin: {
+                    accountID: userAccount.accountID,
+                    firstName: userAccount.firstName,
+                    lastName: userAccount.lastName,
+                    profileImage: userAccount.profileImage
+                },
+                target: {
+                    accountID: fetchAccountResponse.accountID,
+                    firstName: fetchAccountResponse.firstName,
+                    lastName: fetchAccountResponse.lastName,
+                    profileImage: fetchAccountResponse.profileImage
+                }
+            } : null,
             userLiked: userLiked ? true : false,
             userLikee: userLikee ? true : false,
             userFriend: userLiked && userLikee ? true : false
         }
 
         const responseData = ResponseClient.GenericSuccess({
-            data: userAccount,
+            data: userData,
             message: "Account fetched successfully."
         })
         return responseData;

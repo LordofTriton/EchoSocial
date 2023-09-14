@@ -1,23 +1,29 @@
-import Cookies from 'js-cookie';
+const cache = require('memory-cache');
 
-function saveData(key, value) {
-    if (!key || !value) return;
-    const data = JSON.stringify(value);
-    Cookies.set(key, data, { expires: 1 });
+async function saveData(key, value) {
+    if (key == null || value == null) return;
+    await cache.put(key, value)
 }
 
 function getData(key) {
-    if (key) {
-        const data = Cookies.get(key);
-        return data ? JSON.parse(data) : {};
-    }
+    if (key != null) return cache.get(key)
     return null;    
 }
 
 function deleteData(key) {
-    if (key) Cookies.remove(key);
+    if (key != null) cache.del(key)
+    return null;    
 }
 
-const Cache = { saveData, getData, deleteData }
+function clearData() {
+    cache.clear()
+}
 
-export default Cache;
+const CacheService = {
+    saveData,
+    getData,
+    deleteData,
+    clearData
+}
+
+export default CacheService;

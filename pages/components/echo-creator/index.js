@@ -81,7 +81,7 @@ export default function EchoCreator({toggle, control, page}) {
             echoMedia.forEach((file) => { formData.append(`media`, file) });
             const uploadedFiles = (await APIClient.post("/cloud/upload", formData, {'Content-Type': "multipart/form-data"})).data;
             if (!uploadedFiles.success) {
-                createAlert({type: "error", message: uploadedFiles.message})
+                page.createAlert({type: "error", message: uploadedFiles.message})
                 return;
             }
             media = media.concat(uploadedFiles.data.map((file) => { return { ...file, type: Helpers.getFileType(file.url) }}))
@@ -113,7 +113,7 @@ export default function EchoCreator({toggle, control, page}) {
             echoMedia.forEach((file) => { formData.append(`media`, file) });
             const uploadedFiles = (await APIClient.post("/cloud/upload", formData, {'Content-Type': "multipart/form-data"})).data;
             if (!uploadedFiles.success) {
-                createAlert({type: "error", message: uploadedFiles.message})
+                page.createAlert({type: "error", message: uploadedFiles.message})
                 return;
             }
             media = media.concat(uploadedFiles.data.map((file) => { return { ...file, type: Helpers.getFileType(file.url) }}))
@@ -140,9 +140,9 @@ export default function EchoCreator({toggle, control, page}) {
     return (
         <>
         <div className="modalOverlay" style={{display: toggle ? "block" : "none"}} onClick={() => control(false)}></div>
-        <div className={styles.echoCreatorContainer} style={{right: toggle ? "70px" : "-500px"}}>
+        <div className={styles.echoCreatorContainer} style={{right: !toggle ? "-700px" : null}}>
             <div className={styles.echoCreatorContainerHead}>
-                <span className={styles.echoCreatorContainerTitle}>{toggle.echoID ? "Edit" : "Create an"} Echo</span>
+                <span className={styles.echoCreatorContainerTitle}>{toggle.echoID ? "Edit" : "Create an"} <span className="titleGradient">Echo</span></span>
                 <span className={styles.echoCreatorContainerClose} onClick={() => control(false)} style={{ transform: "scale(1.3,1.3)" }}><SVGServer.CloseIcon color="var(--primary)" width="30px" height="30px" /></span>
             </div>
 

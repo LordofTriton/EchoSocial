@@ -5,20 +5,24 @@
 }
 
 .duoMasonryColumn {
-    width: calc(50% - 15px);
+    width: 100%;
     height: fit-content;
 }
 
 .triMasonryColumn {
-    width: calc(33.33% - 20px);
+    width: 100%;
     height: fit-content;
     float: left;
-    margin: 0px 10px;
 }
 
 .quadMasonryColumn {
-    width: calc(25% - 20px);
+    width: 100%;
     height: fit-content;
     float: left;
-    margin: 0px 10px;
+}
+
+@media screen and (min-width: 1125px) {
+    .duoMasonryColumn { width: calc(50% - 20px); margin: 0px 10px; }
+    .triMasonryColumn { width: calc(33.33% - 20px); margin: 0px 10px; }
+    .quadMasonryColumn { width: calc(25% - 20px); margin: 0px 10px; }
 }

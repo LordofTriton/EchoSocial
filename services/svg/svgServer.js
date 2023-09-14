@@ -368,21 +368,27 @@ function ExitIcon({color, width, height}) {
     )
 }
 
-function b({color, width, height}) {
+function CalendarIcon({color, width, height}) {
     return (
-       <div></div>
+        <svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} viewBox="0 0 24 24">
+            <path fill={color} d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5v-5Z"/>
+        </svg>
     )
 }
 
-function c({color, width, height}) {
+function EnterIcon({color, width, height}) {
     return (
-       <div></div>
+        <svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} viewBox="0 0 24 24">
+            <path fill="none" stroke={color} strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 4h3a2 2 0 0 1 2 2v1m-5 13h3a2 2 0 0 0 2-2v-1M4.425 19.428l6 1.8A2 2 0 0 0 13 19.312V4.688a2 2 0 0 0-2.575-1.916l-6 1.8A2 2 0 0 0 3 6.488v11.024a2 2 0 0 0 1.425 1.916zM9.001 12H9m12 0h-5m0 0l2-2m-2 2l2 2"/>
+        </svg>
     )
 }
 
-function d({color, width, height}) {
+function BlockIcon({color, width, height}) {
     return (
-       <div></div>
+        <svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} viewBox="0 0 24 24">
+            <path fill={color} d="M12 22q-2.075 0-3.9-.788t-3.175-2.137q-1.35-1.35-2.137-3.175T2 12q0-2.075.788-3.9t2.137-3.175q1.35-1.35 3.175-2.137T12 2q2.075 0 3.9.788t3.175 2.137q1.35 1.35 2.138 3.175T22 12q0 2.075-.788 3.9t-2.137 3.175q-1.35 1.35-3.175 2.138T12 22Zm0-2q3.35 0 5.675-2.325T20 12q0-1.35-.438-2.6T18.3 7.1L7.1 18.3q1.05.825 2.3 1.263T12 20Zm-6.3-3.1L16.9 5.7q-1.05-.825-2.3-1.262T12 4Q8.65 4 6.325 6.325T4 12q0 1.35.437 2.6T5.7 16.9Z"/>
+        </svg>
     )
 }
 
@@ -562,7 +568,10 @@ const SVGServer = {
     FacebookIcon,
     InstagramIcon,
     XIcon,
-    ExitIcon
+    ExitIcon,
+    EnterIcon,
+    CalendarIcon,
+    BlockIcon
 }
 
 export default SVGServer;

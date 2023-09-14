@@ -9,7 +9,7 @@ function ValidateFeed(data) {
 function parseParams(params, data) {
     const result = {}
     for (let param of params) {
-        if (data[param]) result[param] = data[param]
+        if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
     }
     return result;
 }
@@ -43,12 +43,15 @@ export default async function CommunityFeed(params, io) {
             $and: [ 
                 { communityID: params.communityID }, 
                 { communityID: { $in: communities.map((obj) => obj.communityID) } }, 
-                { communityID: { $nin: blacklist.map((obj) => obj.blockee) } }, 
-                { communityID: { $nin: blacklist.map((obj) => obj.blocker) } }
+                { communityID: { $nin: blacklist.filter((blck) => blck.blocker === params.accountID).map((obj) => obj.blockee) } }, 
+                { communityID: { $nin: blacklist.filter((blck) => blck.blockee === params.accountID).map((obj) => obj.blocker) } },
+                { accountID: { $nin: blacklist.filter((blck) => blck.blocker === params.accountID).map((obj) => obj.blockee) } }, 
+                { accountID: { $nin: blacklist.filter((blck) => blck.blockee === params.accountID).map((obj) => obj.blocker) } }
             ]
         }
         if (params.hasMedia) filters["content.media"] = { $ne: null }
         if (params.mediaType) filters["content.media.type"] = params.mediaType
+        if (params.filter) filters.$or = [{ "content.text": { $regex: params.filter, $options: 'i' } }]
 
         const pagination = {
             page: parseInt(params.page),

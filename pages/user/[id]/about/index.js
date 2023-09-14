@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from 'next/router'
 import styles from '../user.module.css';
 
-import Cache from '../../../../services/CacheService'
+import CookieService from '../../../../services/CookieService'
 import APIClient from "../../../../services/APIClient";
 import SVGServer from "../../../../services/svg/svgServer";
 import Modals from '../../../components/modals';
@@ -13,15 +13,18 @@ import QuadMasonryLayout from '../../../components/masonry/quad-masonry';
 import UserThumb from '../../../components/user-thumb';
 import AppConfig from '../../../../util/config';
 import UserHead from '../../../components/user-head';
+import useDataStates from '../../../hooks/useDataStates';
+import CacheService from '../../../../services/CacheService';
 
 export default function UserAbout() {
     const router = useRouter()
-    const [activeUser, setActiveUser] = useState(Cache.getData("EchoUser"))
-    const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "light")
-    const [userData, setUserData] = useState(null)
-    const [alert, setAlert] = useState(null)
     const {modalStates, modalControl} = useModalStates()
+    const {dataStates, dataControl} = useDataStates()
     const {socket, socketMethods} = useSocketContext()
+    const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
+    const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
+    const [userData, setUserData] = useState(dataStates.userData(router.query.id) || null)
+    const [alert, setAlert] = useState(null)
 
     useEffect(() => {
         const updateUserData = (data) => {
@@ -45,7 +48,8 @@ export default function UserAbout() {
     const pageControl = {
         title: userData ? `${userData.firstName} ${userData.lastName}` : "User",
         router,
-        cache: Cache,
+        cookies: CookieService,
+        cache: CacheService,
         activeUser,
         setActiveUser,
         activeTheme,
@@ -56,7 +60,9 @@ export default function UserAbout() {
         socket,
         createAlert,
         ...modalStates,
-        ...modalControl
+        ...modalControl,
+        ...dataStates,
+        ...dataControl
     }
 
     return (
@@ -147,7 +153,7 @@ export default function UserAbout() {
                             <span className={styles.userAboutSocial} style={{backgroundColor: "var(--primary)"}} onClick={() => router.push(`/user/${userData.accountID}`)}>
                                 <span className={styles.userAboutSocialIcon}><SVGServer.FeedIcon color="white" width="20px" height="20px" /></span>
                                 Echo
-                                <span className={styles.userAboutSocialLink}>{`${AppConfig.HOST}/user/${userData.accountID}`}</span>
+                                <span className={styles.userAboutSocialLink}>{`/user/${userData.accountID}`}</span>
                             </span> : null
                         }
                         {

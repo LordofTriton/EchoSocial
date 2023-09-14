@@ -61,6 +61,13 @@ body {
   background-color: var(--accent);
 }
 
+.titleGradient {
+  background-image: linear-gradient(to bottom right, blueviolet, #F58A2Aff);
+  -webkit-background-clip: text; /* WebKit/Blink browsers */
+  background-clip: text; /* Standard syntax */
+  color: transparent;
+}
+
 .loader {
   border-top: 3px solid transparent;
   border-left: 3px solid currentColor;
@@ -92,5 +99,11 @@ body {
   width: 100%;
   height: fit-content;
   min-height: 100%;
-  padding: 80px 120px 120px 120px;
+  padding: 80px 10px 120px 10px;
+}
+
+@media screen and (min-width: 1125px) {
+  .pageContent {
+    padding: 80px 120px 120px 120px;
+  }
 }

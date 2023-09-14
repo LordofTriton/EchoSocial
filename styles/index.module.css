@@ -38,6 +38,7 @@
   margin: 5px 10px;
   color: var(--primary);
   cursor: pointer;
+  font-size: 12px;
 }
 
 .feed {
@@ -45,4 +46,10 @@
   height: fit-content;
   column-count: 3;
   column-gap: 10px;
+}
+
+@media screen and (min-width: 1125px) {
+  .feedFilter {
+    font-size: 16px;
+  }
 }

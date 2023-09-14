@@ -5,25 +5,34 @@
     position: absolute;
     /* background-image: url(/images/bckg1.jpg);
     background-size: cover; */
-}
-
-.loginHeader {
-    width: 100%;
-    height: 70px;
-    background-color: var(--primary);
-    padding: 0px 5%;
     overflow: hidden;
+    overflow-y: auto;
 }
 
-.loginHeaderLogo {
+.loginBanner {
+    width: 100%;
+    height: 90px;
+    float: left;
+    background-color: var(--base);
+    position: relative;
+}
+
+.loginLogoBox {
+    width: 100%;
+    height: fit-content;
+    overflow: hidden;
+    padding: 10px;
+}
+
+.loginLogo {
     width: 60px;
     height: 60px;
     margin: 5px 10px 5px 0px;
     float: left;
 }
 
-.loginHeaderTitle {
-    color: var(--surface);
+.loginTitle {
+    color: var(--primary);
     font-family: Title;
     font-size: 40px;
     font-weight: 700;
@@ -31,44 +40,51 @@
     margin: 10px 0px 0px 0px;
 }
 
-.loginContainer {
-    background-color: var(--surface);
-    width: 900px;
-    height: 450px;
+.loginVector {
+    display: none;
+    max-width: 100%;
+    max-height: 100%;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    border-radius: 10px;
-    box-shadow: 0 0 34px 0 rgba(63,66,87,.1);
+}
+
+.loginFormBox {
+    width: 100%;
+    height: fit-content;
+    min-height: calc(100% - 90px);
     overflow: hidden;
-}
-
-.loginContainerVectorBox {
-    width: 40%;
-    height: 100%;
-    float: left;
-}
-
-.loginContainerVector {
-    height: 100%;
-}
-
-.loginContainerFormBox {
-    width: 50%;
-    height: 100%;
+    overflow-y: auto;
     float: right;
-    padding: 30px 50px 30px 30px;
+    background-color: var(--surface);
+    padding: 50px 50px;
+    border-radius: 20px 20px 0px 0px;
 }
 
-.loginContainerFormBoxTitle {
+.loginForm {
+    width: 100%;
+    height: fit-content;
+    float: right;
+    padding: 30px 0px 30px 0px;
+}
+
+.loginFormTitle {
     color: var(--primary);
     font-size: 30px;
     padding: 0px;
-    margin: 0px 0px 80px 0px;
+    margin: 0px 0px 30px 0px;
 }
 
-.loginContainerFormField {
+.loginFormTip {
+    color: var(--primary);
+    font-size: 15px;
+    font-weight: 400;
+    padding: 0px;
+    margin: 0px 0px 50px 0px;
+}
+
+.loginFormField {
     width: 100%;
     height: 50px;
     background-color: var(--base);
@@ -83,7 +99,7 @@
     background-repeat: no-repeat;
 }
 
-.loginContainerFormFYP {
+.loginFormFYP {
     font-size: 13px;
     display: block;
     float: right;
@@ -91,11 +107,11 @@
     cursor: pointer;
 }
 
-.loginContainerFormFYP:hover {
+.loginFormFYP:hover {
     color: var(--accent);
 }
 
-.loginContainerFormSubmit {
+.loginFormSubmit {
     width: 100%;
     height: 50px;
     background-color: var(--primary);
@@ -105,19 +121,27 @@
     cursor: pointer;
 }
 
-.loginContainerFormSubmit:hover {
+.loginFormSubmit:hover {
     background-color: var(--accent);
 }
 
-.loginContainerSignUp {
+.loginSignUp {
     display: block;
     text-align: center;
-    font-size: 13px;
+    font-size: 15px;
     color: var(--primary);
-    margin-top: 15px;
+    margin-top: 25px;
 }
 
-.loginContainerSignUp span {
+.loginSignUp span {
     color: var(--accent);
     cursor: pointer;
+    font-weight: 500;
+}
+
+@media screen and (min-width: 1125px) {
+    .loginBanner { width: calc(100% - 450px); height: 100%; }
+    .loginFormBox { width: 450px; height: 100%; border-radius: 0px; padding: 100px 30px; }
+    .loginLogoBox { padding: 30px; }
+    .loginVector { display: block; }
 }

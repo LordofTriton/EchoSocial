@@ -1,26 +1,35 @@
 .accountNavContainer {
-    width: 300px;
-    height: fit-content;
+    width: 100%;
+    height: calc(100% - 70px);
     background-color: var(--surface);
     position: fixed;
     top: -100vh;
-    right: 80px;
+    right: 0px;
     border-radius: 0px 0px 5px 5px;
     box-shadow: 0 0 34px 0 rgba(63,66,87,.1);
+    overflow: hidden;
+    overflow-y: auto;
 }
 
 .accountNavContainer hr {
-    border-bottom: 1px solid var(--alt);
+    border-bottom: 2px solid var(--base);
     margin: 0px 0px 10px 0px;
 }
 
 .accountNavTitle {
-    color: var(--primary);
-    font-size: 13px;
+    color: transparent;
+    font-size: 17px;
     display: block;
-    padding: 10px 20px;
-    border-bottom: 1px solid var(--alt);
+    font-weight: 500;
+    padding: 8px 20px 10px 20px;
+    border-bottom: 2px solid var(--base);
     margin-bottom: 10px;
+}
+
+.accountNavClose {
+    display: block;
+    float: right;
+    cursor: pointer;
 }
 
 .accountNavButton {
@@ -47,4 +56,28 @@
     font-size: 15px;
     font-weight: 500;
     margin: 4px 0px 0px 10px;
+}
+
+@media screen and (min-width: 1125px) {
+    .accountNavContainer {
+        width: 300px;
+        height: fit-content;
+        background-color: var(--surface);
+        position: fixed;
+        top: -100vh;
+        right: 80px;
+        border-radius: 0px 0px 5px 5px;
+        box-shadow: 0 0 34px 0 rgba(63,66,87,.1);
+    }
+    .accountNavTitle {
+        color: var(--primary);
+        font-size: 13px;
+        display: block;
+        padding: 10px 20px;
+        border-bottom: 2px solid var(--base);
+        margin-bottom: 10px;
+    }
+    .accountNavClose {
+        display: none;
+    }
 }

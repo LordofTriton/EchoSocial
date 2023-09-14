@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import io from 'socket.io-client';
-import Cache from '../../services/CacheService';
+import CookieService from '../../services/CookieService';
 
 let socketInstance = null;
 let socketRequestCount = 0;
 let socketURL = "/api/socket";
 
 function getAccountID() {
-    const account = Cache.getData("EchoUser");
+    const account = CookieService.getData("EchoActiveUser");
     return account.accountID;
 }
 
@@ -103,12 +103,12 @@ export default useSocket;
 
 import { useEffect, useState } from 'react';
 import io from 'socket.io-client';
-import Cache from '../../services/CacheService';
+import CookieService from '../../services/CookieService';
 
 let socket;
 
 function getActiveUser() {
-    return Cache.getData("EchoUser");
+    return CookieService.getData("EchoActiveUser");
 }
 
 async function connectSocket() {

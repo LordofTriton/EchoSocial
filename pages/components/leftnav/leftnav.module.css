@@ -1,4 +1,5 @@
 .leftnavContainer {
+    display: none;
     width: 70px;
     height: 100%;
     background-color: var(--surface);
@@ -79,4 +80,10 @@
 
 .leftnavCommunityButtonProfile .leftnavMenuButtonLabel {
     top: -5px;
+}
+
+@media screen and (min-width: 1125px) {
+    .leftnavContainer {
+        display: block;
+    }
 }

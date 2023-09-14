@@ -4,13 +4,14 @@ import styles from "./leftnav.module.css"
 import SVGServer from "../../../services/svg/svgServer";
 
 export default function LeftNav({ page }) {
-    const [userCommunities, setUserCommunities] = useState([])
+    const [userCommunities, setUserCommunities] = useState(page.recentCommunities || [])
     const [communityLoader, setCommunityLoader] = useState(true)
 
     useEffect(() => {
         const updateUserCommunities = (data) => {
             if (data.success) {
                 setUserCommunities(data.data)
+                page.setRecentCommunities(data.data);
             }
             setCommunityLoader(false)
         }

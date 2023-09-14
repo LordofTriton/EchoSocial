@@ -3,21 +3,24 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from 'next/router'
 import styles from '../communities.module.css';
 
-import Cache from '../../../services/CacheService'
+import CookieService from '../../../services/CookieService'
 import APIClient from "../../../services/APIClient";
 import Modals from "../../components/modals";
 import TriMasonryLayout from "../../components/masonry/tri-masonry";
 import CommunityThumb from "../../components/community-thumb";
 import useModalStates from "../../hooks/useModalStates";
 import { useSocketContext } from "../../../util/SocketProvider";
+import useDataStates from "../../hooks/useDataStates";
+import CacheService from "../../../services/CacheService";
 
 export default function CommunitiesFeed() {
     const router = useRouter()
-    const [activeUser, setActiveUser] = useState(Cache.getData("EchoUser"))
-    const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "light")
+    const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
+    const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
     const [alert, setAlert] = useState(null)
     const {modalStates, modalControl} = useModalStates()
-    const [communities, setCommunities] = useState([])
+    const {dataStates, dataControl} = useDataStates()
+    const [communities, setCommunities] = useState(dataStates.galleryCommunities || [])
     const [searchQuery, setSearchQuery] = useState("")
     const {socket, socketMethods} = useSocketContext()
     const [communitiesPage, setCommunitiesPage] = useState(1)
@@ -30,10 +33,18 @@ export default function CommunitiesFeed() {
     const [communityLoader, setCommunityLoader] = useState(true)
 
     useEffect(() => {
+        if (searchQuery.length > 0) return;
         if (socket) {
             const updateCommunities = (data) => {
                 if (data.success) {
-                    setCommunities((state) => state.concat(data.data))
+                    if (communitiesPage === 1) {
+                        setCommunities(data.data)
+                        if (communitiesPage < 3) dataControl.setGalleryCommunities(data.data)
+                    }
+                    else {
+                        setCommunities((state) => state.concat(data.data))
+                        if (communitiesPage < 3) dataControl.setGalleryCommunities(communities.concat(data.data))
+                    }
                     setPagination(data.pagination)
                 }
                 setCommunityLoader(false)
@@ -70,7 +81,7 @@ export default function CommunitiesFeed() {
                 updateCommunities
             )
         }
-    }, [searchQuery, socket])
+    }, [communitiesPage, searchQuery, socket])
 
     const createAlert = (type, message) => {
         setAlert({type, message})
@@ -80,7 +91,8 @@ export default function CommunitiesFeed() {
     const pageControl = {
         title: "Communities",
         router,
-        cache: Cache,
+        cookies: CookieService,
+        cache: CacheService,
         activeUser,
         setActiveUser,
         activeTheme,
@@ -90,7 +102,9 @@ export default function CommunitiesFeed() {
         alert,
         createAlert,
         ...modalStates,
-        ...modalControl
+        ...modalControl,
+        ...dataStates,
+        ...dataControl
     }
 
     const handleScroll = (event) => {
@@ -115,15 +129,15 @@ export default function CommunitiesFeed() {
             <div className="pageContent" style={{backgroundColor: "var(--base)"}}>
                 <div className={styles.communitiesHead}>
                     <div className={styles.communitiesHeadBanner}>
-                        <span className={styles.communitiesHeadBannerTitle}>Communities</span>
+                        <span className={styles.communitiesHeadBannerTitle}><span className="titleGradient">Communities</span></span>
                         <span className={styles.communitiesHeadBannerSubTitle}>Find people who share your passion. From gaming, to music, to learning, there`s a place for you.</span>
-                        <input type="text" className={styles.communitiesHeadBannerSearch} />
+                        <input type="text" className={styles.communitiesHeadBannerSearch} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
                     </div>
                     <div className={styles.communitiesHeadNav}>
                         <span className={styles.communitiesHeadNavButton} onClick={() => router.push("/communities")}>Feed</span>
                         <span className={styles.communitiesHeadNavButton} onClick={() => router.push("/communities/gallery")} style={{color: "var(--accent)"}}>Your Communities</span>
                         <span className={styles.communitiesHeadNavButton} onClick={() => router.push("/communities/discover")}>Discover</span>
-                        <span className={styles.communitiesHeadNavButton} onClick={() => modalControl.setShowCommunityCreator(true)} style={{float: "right"}}>Create New Community</span>
+                        <span className={styles.communitiesHeadNavButton} onClick={() => modalControl.setShowCommunityCreator(true)}>Create Community</span>
                     </div>
                 </div>
                 <div className={styles.communitiesBody}>

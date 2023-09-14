@@ -3,26 +3,36 @@
     height: 100%;
     background-color: var(--base);
     position: absolute;
-}
-
-.signupHeader {
-    width: 100%;
-    height: 70px;
-    background-color: var(--primary);
-    padding: 0px 5%;
+    /* background-image: url(/images/bckg1.jpg);
+    background-size: cover; */
     overflow: hidden;
-    box-shadow: 0 0 34px 0 rgba(63,66,87,.1);
+    overflow-y: auto;
 }
 
-.signupHeaderLogo {
+.signupBanner {
+    width: 100%;
+    height: 90px;
+    float: left;
+    background-color: var(--base);
+    position: relative;
+}
+
+.signupLogoBox {
+    width: 100%;
+    height: fit-content;
+    overflow: hidden;
+    padding: 10px;
+}
+
+.signupLogo {
     width: 60px;
     height: 60px;
     margin: 5px 10px 5px 0px;
     float: left;
 }
 
-.signupHeaderTitle {
-    color: var(--surface);
+.signupTitle {
+    color: var(--primary);
     font-family: Title;
     font-size: 40px;
     font-weight: 700;
@@ -30,66 +40,61 @@
     margin: 10px 0px 0px 0px;
 }
 
-.signupContainer {
-    background-color: var(--surface);
-    width: 900px;
-    height: 450px;
+.signupVector {
+    display: none;
+    max-width: 100%;
+    max-height: 100%;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    box-shadow: 0 0 34px 0 rgba(63,66,87,.1);
-    border-radius: 10px;
+}
+
+.signupFormBox {
+    width: 100%;
+    height: fit-content;
+    min-height: calc(100% - 90px);
     overflow: hidden;
-}
-
-.signupContainerVectorBox {
-    width: 40%;
-    height: 100%;
-    float: left;
-}
-
-.signupContainerVector {
-    height: 100%;
-}
-
-.signupContainerFormBox {
-    width: 50%;
-    height: 100%;
+    overflow-y: auto;
     float: right;
-    padding: 30px 50px 30px 30px;
+    background-color: var(--surface);
+    padding: 50px 50px;
+    border-radius: 20px 20px 0px 0px;
 }
 
-.signupContainerFormBoxTitle {
+.signupForm {
+    width: 100%;
+    height: fit-content;
+    float: right;
+    padding: 30px 0px 30px 0px;
+}
+
+.signupFormTitle {
     color: var(--primary);
     font-size: 30px;
     padding: 0px;
     margin: 0px 0px 30px 0px;
 }
 
-.signupContainerFormFieldHalf {
-    width: calc(50% - 10px);
-    height: 50px;
-    background-color: var(--base);
-    border-radius: 5px;
-    padding-left: 50px;
-    padding-right: 15px;
-    border: 0px;
-    outline: 0px;
+.signupFormTip {
     color: var(--primary);
-    margin-bottom: 20px;
-    background-size: 25px 25px;
-    background-position: 13px 13px;
-    background-repeat: no-repeat;
+    font-size: 15px;
+    font-weight: 400;
+    padding: 0px;
+    margin: 0px 0px 50px 0px;
 }
 
-.signupContainerFormFieldFull {
+.signupFormTip span {
+    color: var(--accent);
+    font-weight: 500;
+}
+
+.signupFormField {
     width: 100%;
     height: 50px;
     background-color: var(--base);
     border-radius: 5px;
     padding-left: 50px;
-    padding-right: 15px;
     border: 0px;
     outline: 0px;
     color: var(--primary);
@@ -99,7 +104,19 @@
     background-repeat: no-repeat;
 }
 
-.signupContainerFormSubmit {
+.signupFormFYP {
+    font-size: 13px;
+    display: block;
+    float: right;
+    color: var(--primary);
+    cursor: pointer;
+}
+
+.signupFormFYP:hover {
+    color: var(--accent);
+}
+
+.signupFormSubmit {
     width: 100%;
     height: 50px;
     background-color: var(--primary);
@@ -109,19 +126,28 @@
     cursor: pointer;
 }
 
-.signupContainerFormSubmit:hover {
+.signupFormSubmit:hover {
     background-color: var(--accent);
 }
 
-.signupContainerLogIn {
+.signupLogIn {
     display: block;
     text-align: center;
-    font-size: 13px;
+    font-size: 15px;
     color: var(--primary);
-    margin-top: 15px;
+    margin-top: 25px;
 }
 
-.signupContainerLogIn span {
+.signupLogIn span {
     color: var(--accent);
     cursor: pointer;
+    font-weight: 500;
+}
+
+@media screen and (min-width: 1125px) {
+    .signupPage { overflow: hidden; }
+    .signupBanner { width: calc(100% - 450px); height: 100%; }
+    .signupFormBox { width: 450px; height: 100%; border-radius: 0px; padding: 30px 30px; }
+    .signupLogoBox { padding: 30px; }
+    .signupVector { display: block; }
 }

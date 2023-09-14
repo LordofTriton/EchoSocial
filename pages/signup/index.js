@@ -8,7 +8,7 @@ import { useRouter } from 'next/router'
 import Link from 'next/link'
 
 import Alert from "../components/alert";
-import Cache from "../../services/CacheService";
+import CookieService from "../../services/CookieService";
 import APIClient from "../../services/APIClient";
 
 export default function Signup() {
@@ -30,7 +30,7 @@ export default function Signup() {
         if (signupDetails.password.trim() === signupDetails.confirmPassword.trim()) {
             const authResult = (await APIClient.post("/accounts/create-account", signupDetails)).data;
             if (authResult.success) {
-                Cache.saveData("EchoUser", authResult.data)
+                CookieService.saveData("EchoActiveUser", authResult.data)
                 router.push("/nodes")
             }
             else {
@@ -52,28 +52,31 @@ export default function Signup() {
             <link rel="icon" href="/favicon.ico" />
             <link rel="stylesheet" href={`/styles/themes/classic-light.css`} />
         </Head>
-        <div className={styles.signupHeader}>
-            <img src={`/images/logo.png`} alt="logo" className={styles.signupHeaderLogo} />
-            <span className={styles.signupHeaderTitle}>echo</span>
-        </div>
-            <div className={styles.signupContainer}>
-                <div className={styles.signupContainerVectorBox}>
-                    <img src={`/images/vectors/signup.jpg`} className={styles.signupContainerVector} alt="vector" />
+
+        <div className={styles.signupBanner}>
+                <img src={`/images/vectors/one.png`} className={styles.signupVector} alt="vector" />
+                <div className={styles.signupLogoBox}>
+                    <img src={`/images/logo.png`} alt="logo" className={styles.signupLogo} />
+                    <span className={styles.signupTitle}>echo</span>
                 </div>
-                <div className={styles.signupContainerFormBox}>
-                    <h3 className={styles.signupContainerFormBoxTitle}>Sign Up</h3>
+            </div>
+            <div className={styles.signupFormBox}>
+
+                <div className={styles.signupForm}>
+                    <h3 className={styles.signupFormTitle}>Welcome to <span className="titleGradient">Echo!</span></h3>
+                    <h3 className={styles.signupFormTip}>Discover a world of interesting stuff by creating a free Echo account! Already have an account? <span>Log In</span></h3>
                     <div>
                         <form onSubmit={handleSubmit}>
-                            <input type="text" className={styles.signupContainerFormFieldHalf} placeholder="First Name" value={signupDetails.firstName} onChange={(e) => setSignupDetails({...signupDetails, firstName: e.target.value.trim()})} style={{backgroundImage: `url(/images/icons/user1.png)`, float: "left"}} required/>
-                            <input type="text" className={styles.signupContainerFormFieldHalf} placeholder="Last Name" value={signupDetails.lastName} onChange={(e) => setSignupDetails({...signupDetails, lastName: e.target.value.trim()})} style={{backgroundImage: `url(/images/icons/user1.png)`, float: "right"}} required/>
-                            <input type="text" className={styles.signupContainerFormFieldFull} placeholder="Email Address" value={signupDetails.email} onChange={(e) => setSignupDetails({...signupDetails, email: e.target.value.trim()})} style={{backgroundImage: `url(/images/icons/email.png)`}} required/>
-                            <input type="password" className={styles.signupContainerFormFieldHalf} placeholder="Password" value={signupDetails.password} onChange={(e) => setSignupDetails({...signupDetails, password: e.target.value.trim()})} style={{backgroundImage: `url(/images/icons/password.png)`, float: "left"}} required/>
-                            <input type="password" className={styles.signupContainerFormFieldHalf} placeholder="Confirm Password" value={signupDetails.confirmPassword} onChange={(e) => setSignupDetails({...signupDetails, confirmPassword: e.target.value.trim()})} style={{backgroundImage: `url(/images/icons/password.png)`, float: "right"}} required/>
+                            <input type="text" className={styles.signupFormField} placeholder="First Name" value={signupDetails.firstName} onChange={(e) => setSignupDetails({...signupDetails, firstName: e.target.value.trim()})} style={{backgroundImage: `url(/images/icons/user1.png)`, float: "left"}} required/>
+                            <input type="text" className={styles.signupFormField} placeholder="Last Name" value={signupDetails.lastName} onChange={(e) => setSignupDetails({...signupDetails, lastName: e.target.value.trim()})} style={{backgroundImage: `url(/images/icons/user1.png)`, float: "right"}} required/>
+                            <input type="text" className={styles.signupFormField} placeholder="Email Address" value={signupDetails.email} onChange={(e) => setSignupDetails({...signupDetails, email: e.target.value.trim()})} style={{backgroundImage: `url(/images/icons/email.png)`}} required/>
+                            <input type="password" className={styles.signupFormField} placeholder="Password" value={signupDetails.password} onChange={(e) => setSignupDetails({...signupDetails, password: e.target.value.trim()})} style={{backgroundImage: `url(/images/icons/password.png)`, float: "left"}} required/>
+                            <input type="password" className={styles.signupFormField} placeholder="Confirm Password" value={signupDetails.confirmPassword} onChange={(e) => setSignupDetails({...signupDetails, confirmPassword: e.target.value.trim()})} style={{backgroundImage: `url(/images/icons/password.png)`, float: "right"}} required/>
 
-                            <button className={styles.signupContainerFormSubmit}>{ 
+                            <button className={styles.signupFormSubmit}>{ 
                                 signupLoader ? <center><div className="loader" style={{width: "30px", height: "30px"}}></div></center> : "SIGN UP" 
                             }</button>
-                            <span className={styles.signupContainerLogIn}>Already have an account? <Link href="/login"><span>Sign In</span></Link>!</span>
+                            <span className={styles.signupLogIn}>Already have an account? <Link href="/login"><span>Sign In</span></Link>!</span>
                         </form>
                     </div>
                 </div>

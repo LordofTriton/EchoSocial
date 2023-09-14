@@ -13,9 +13,17 @@ function textLimiter(text, limit, fullText) {
     else return text;
 }
 
+function clearUserData() {
+    localStorage.removeItem("EchoActiveUser")
+    localStorage.removeItem("EchoFeedEchoFeed")
+    localStorage.removeItem("EchoMessengerFriends")
+    localStorage.removeItem("EchoRecentCommunities")
+}
+
 const Helpers = {
     getFileType,
-    textLimiter
+    textLimiter,
+    clearUserData
 }
 
 export default Helpers;

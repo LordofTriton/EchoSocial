@@ -30,22 +30,13 @@ export default async (req, res) => {
 
             try {
                 const files = req.files;
-
-                // const results = [];
-                // for (let file of files) {
-                //     const dataURI = await readFileAsDataURL(file.path);
-                //     results.push(dataURI);
-                // }
-
-                // Handle file uploads to Cloudinary
+                
                 const uploadedFiles = await Promise.all(
                     files.map((file) => CloudinaryService.UploadFile(file.path))
                 );
 
-                // Clean up temporary files after processing
-                // cleanupTemporaryFiles(files);
+                cleanupTemporaryFiles(files);
 
-                // Respond with the appropriate data
                 const responseData = ResponseClient.DBModifySuccess({
                     data: uploadedFiles.map((file) => {return {publicID: file.public_id, url: file.url}}),
                     message: "Files uploaded successfully.",

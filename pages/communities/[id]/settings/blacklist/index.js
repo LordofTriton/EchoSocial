@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from 'next/router'
 import styles from '../../community.module.css';
 
-import Cache from '../../../../../services/CacheService'
+import CookieService from '../../../../../services/CookieService'
 import Echo from "../../../../components/echo";
 import APIClient from "../../../../../services/APIClient";
 import SVGServer from "../../../../../services/svg/svgServer";
@@ -14,16 +14,19 @@ import DateGenerator from '../../../../../services/generators/DateGenerator';
 import DuoMasonryLayout from '../../../../components/masonry/duo-masonry';
 import { Form } from '../../../../components/form';
 import CommunityHead from '../../../../components/community-head';
+import useDataStates from '../../../../hooks/useDataStates';
+import CacheService from '../../../../../services/CacheService';
 
 export default function CommunitySettings() {
     const router = useRouter()
-    const [activeUser, setActiveUser] = useState(Cache.getData("EchoUser"))
-    const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "light")
-    const [communityData, setCommunityData] = useState(null)
+    const {modalStates, modalControl} = useModalStates()
+    const {dataStates, dataControl} = useDataStates()
+    const {socket, socketMethods} = useSocketContext()
+    const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
+    const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
+    const [communityData, setCommunityData] = useState(dataStates.communityData(router.query.id) || null)
     const [communityBanned, setCommunityBanned] = useState([])
     const [alert, setAlert] = useState(null)
-    const {modalStates, modalControl} = useModalStates()
-    const {socket, socketMethods} = useSocketContext()
     const [pagination, setPagination] = useState({
       page: 1,
       pageSize: 10,
@@ -35,6 +38,15 @@ export default function CommunitySettings() {
 
     useEffect(() => {
         const updateCommunityData = (data) => (data.success) ? setCommunityData(data.data) : null;
+        if (router.query.id && socket) {
+            socketMethods.socketRequest("GET_COMMUNITY", {
+                accountID: activeUser.accountID,
+                communityID: router.query.id
+            }, updateCommunityData)
+        }
+    }, [router.query, socket])
+
+    useEffect(() => {
         const updateCommunityBanned = (data) => {
             if (data.success) {
                 setCommunityBanned((state) => state.concat(data.data))
@@ -43,10 +55,6 @@ export default function CommunitySettings() {
             setBannedLoader(false)
         }
         if (router.query.id && socket) {
-            socketMethods.socketRequest("GET_COMMUNITY", {
-                accountID: activeUser.accountID,
-                communityID: router.query.id
-            }, updateCommunityData)
             socketMethods.socketRequest("GET_BLACKLISTS", {
                 accountID: activeUser.accountID,
                 blocker: router.query.id,
@@ -54,7 +62,7 @@ export default function CommunitySettings() {
                 pageSize: 10
             }, updateCommunityBanned)
         }
-    }, [router.query, socket])
+    }, [router.query, bannedPage, socket])
 
     const createAlert = (type, message) => {
         setAlert({ type, message })
@@ -70,7 +78,8 @@ export default function CommunitySettings() {
             communityNode: communityData.node
         } : null,
         router,
-        cache: Cache,
+        cookies: CookieService,
+        cache: CacheService,
         activeUser,
         setActiveUser,
         activeTheme,
@@ -80,7 +89,9 @@ export default function CommunitySettings() {
         alert,
         createAlert,
         ...modalStates,
-        ...modalControl
+        ...modalControl,
+        ...dataStates,
+        ...dataControl
     }
 
     const handleLiftBan = async (blockee) => {
@@ -126,7 +137,7 @@ export default function CommunitySettings() {
                                     communityBanned.map((banned, index) => 
                                         <div className={styles.communityMember} key={index} style={{backgroundColor: "var(--base)"}}>
                                             <div className={styles.communityMemberProfile} style={{backgroundImage: `url(${banned.profileImage.url})`}}></div>
-                                            <span className={styles.communityMemberName} style={{color: "var(--primary)"}}>{banned.firstName} {banned.lastName}<br /><span>NEW MEMBER</span></span>
+                                            <span className={styles.communityMemberName} style={{color: "var(--primary)", marginTop: "10px"}}>{banned.firstName} {banned.lastName}</span>
                                             <div className={styles.communityMemberOptions}>
                                                 <SVGServer.OptionIcon color="var(--primary)" width="20px" height="20px" />
                                                 <div className={styles.communityMemberOptionsDrop}>

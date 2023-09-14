@@ -11,7 +11,7 @@ function ValidateGetComments(data) {
 function parseParams(params, data) {
     const result = {}
     for (let param of params) {
-        if (data[param]) result[param] = data[param]
+        if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
     }
     return result;
 }
@@ -28,8 +28,14 @@ export default async function GetComments(params, io) {
 
     try {
         ValidateGetComments(params);
+        let blacklist = await db.collection("blacklists").find({ $or: [{ blocker: params.accountID }, { blockee: params.accountID}] }).toArray()
 
-        const filters = {}
+        const filters = {
+            $and: [
+                { accountID: { $nin: blacklist.filter((blck) => blck.blocker === params.accountID).map((obj) => obj.blockee) } },
+                { accountID: { $nin: blacklist.filter((blck) => blck.blockee === params.accountID).map((obj) => obj.blocker) } } 
+            ]
+        }
         if (params.commentID) filters.commentID = params.commentID;
         if (params.echoID) filters.echoID = params.echoID;
 
@@ -63,7 +69,7 @@ export default async function GetComments(params, io) {
 
         const responseData = ResponseClient.DBFetchSuccess({
             data: commentData.reverse(),
-            message: "Commentes fetched successfully.",
+            message: "Comments fetched successfully.",
             page: pagination.page,
             pageSize: pagination.pageSize,
             totalItems: commentCount,

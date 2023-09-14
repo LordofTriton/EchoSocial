@@ -26,7 +26,7 @@ export default function UserHead({ data, page, title }) {
             accountID: page.activeUser.accountID,
             profileCover: uploadedFile.data[0]
         })
-        page.cache.saveData("EchoUser", { ...userData, profileCover: uploadedFile.data[0] })
+        page.cookies.saveData("EchoActiveUser", { ...userData, profileCover: uploadedFile.data[0] })
         page.setActiveUser({ ...page.activeUser, profileCover: uploadedFile.data[0] })
     }
 
@@ -45,7 +45,7 @@ export default function UserHead({ data, page, title }) {
             accountID: page.activeUser.accountID,
             profileImage: uploadedFile.data[0]
         })
-        page.cache.saveData("EchoUser", { ...userData, profileImage: uploadedFile.data[0] })
+        page.cookies.saveData("EchoActiveUser", { ...userData, profileImage: uploadedFile.data[0] })
         page.setActiveUser({ ...page.activeUser, profileImage: uploadedFile.data[0] })
     }
 
@@ -58,19 +58,17 @@ export default function UserHead({ data, page, title }) {
             accountID: page.activeUser.accountID,
             userID: userData.accountID
         })
-        page.createAlert("success", "User liked successfully.")
     }
 
     const blockUser = async () => {
-        if (page.socket & page.activeUser.accountID !== userData.accountID) {
-            const blockedUser = (data) => {
-                page.createAlert(data.success ? "success" : "error", data.success ? "User blocked successfully." : data.message)
-            }
-            page.socketMethods.socketRequest("CREATE_BLACKLIST", {
+        if (page.socket && page.activeUser.accountID !== userData.accountID) {
+            page.socketMethods.socketEmitter("CREATE_BLACKLIST", {
                 accountID: page.activeUser.accountID,
                 blocker: page.activeUser.accountID,
-                blockee: userData.accountID
-            }, blockedUser)
+                blockee: userData.accountID,
+                blockeeType: "user"
+            })
+            page.createAlert("success", "User blocked successfully.")
         }
     }
 
@@ -95,7 +93,7 @@ export default function UserHead({ data, page, title }) {
                         }
                     </div>
                     <div className={styles.userHeadNames}>
-                        <span className={styles.userHeadName}>{userData ? `${userData.firstName} ${userData.lastName}` : " "}</span>
+                        <span className={styles.userHeadName}><span className="titleGradient">{userData ? `${userData.firstName} ${userData.lastName}` : " "}</span></span>
                         <span className={styles.userHeadNickName}>{userData ? userData.nickname : ""}</span>
                     </div>
                 </div>
@@ -110,21 +108,25 @@ export default function UserHead({ data, page, title }) {
                             </div>
                             </> :
                         <>
-                            <div className={styles.userHeadButton} onClick={() => handleFollowButtonClick()} style={{borderColor: userData && userData.userHearted ? "var(--accent)" : null}}>
+                            <div className={styles.userHeadButton} onClick={() => handleFollowButtonClick()} style={{backgroundColor: userData && userData.userHearted ? "var(--accent)" : "var(--surface)"}}>
                                 {
                                     userData && userData.userHearted ?
-                                        <SVGServer.HeartFilledIcon color="var(--accent)" width="20px" height="20px" /> :
+                                        <SVGServer.HeartFilledIcon color="var(--surface)" width="20px" height="20px" /> :
                                         <SVGServer.HeartLineIcon color="var(--primary)" width="20px" height="20px" />
                                 }
-                                <span style={{color: userData && userData.userHearted ? "var(--accent)" : null}}>{userData && userData.userHearted ? "Liked" : "Like"}</span>
+                                <span style={{color: userData && userData.userHearted ? "var(--surface)" : "var(--primary)"}}>{userData && userData.userHearted ? "Liked" : "Like"}</span>
                             </div>
                             {
                                 userData && userData.userFriend ?
-                                <div className={styles.userHeadButton} onClick={() => handleFollowButtonClick()}>
+                                <div className={styles.userHeadButton} onClick={() => page.setActiveChat(userData.userChat)}>
                                     <SVGServer.ChatIcon color="var(--primary)" width="20px" height="20px" />
                                     <span>Message</span>
                                 </div> : null
                             }
+                            <div className={styles.userHeadButton} onClick={() => blockUser()} style={{backgroundColor: userData && userData.userBlocked ? "var(--accent)" : "var(--surface)"}}>
+                                <SVGServer.BlockIcon color={userData && userData.userBlocked ? "var(--surface)" : "var(--primary)"} width="20px" height="20px" />
+                                <span style={{color: userData && userData.userBlocked ? "var(--surface)" : "var(--primary)"}}>{userData && userData.userBlocked ? "Unblock" : "Block"}</span>
+                            </div>
                         </>
                 }
             </div>
@@ -137,18 +139,6 @@ export default function UserHead({ data, page, title }) {
             <span className={styles.userHeadNavLink} style={{color: title === "communities" ? "var(--accent)" : null}} onClick={() => page.router.push(`/user/${userData.accountID}/communities`)}>Communities</span>
             <span className={styles.userHeadNavLink} style={{color: title === "media" ? "var(--accent)" : null}} onClick={() => page.router.push(`/user/${userData.accountID}/media`)}>Media</span>
             { userData && userData.accountID === page.activeUser.accountID ? <span className={styles.userHeadNavLink} style={{color: title === "media" ? "var(--accent)" : null}} onClick={() => page.router.push(`/user/${userData.accountID}/saved`)}>Saved</span> : null }
-            {
-                userData && userData.accountID !== page.activeUser.accountID ? 
-                <div className={styles.userHeadOptions}>
-                    <span className={styles.userHeadNavLink}>
-                        <SVGServer.OptionIcon color="var(--primary)" width="25px" height="25px" />
-                    </span>
-                    <div className={styles.userHeadOptionBox}>
-                        <span className={styles.userHeadOption} onClick={() => blockUser()}>Block {userData ? userData.firstName : "User"}</span>
-                        <span className={styles.userHeadOption}>Report {userData ? userData.firstName : "User"}</span>
-                    </div>
-                </div> : null
-            }
         </div>
         </>
     )

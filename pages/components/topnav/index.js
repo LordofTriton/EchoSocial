@@ -5,10 +5,12 @@ import styles from "./topnav.module.css"
 import SVGServer from "../../../services/svg/svgServer";
 import APIClient from "../../../services/APIClient";
 import AccountNav from "../accountnav";
+import Search from "../search";
 
 export default function TopNav({ page }) {
     const [userNotifications, setUserNotifications] = useState([])
     const [searchQuery, setSearchQuery] = useState("")
+    const [searchResults, setSearchResults] = useState(null)
     const [openAccountNav, setOpenAccountNav] = useState(false)
 
     useEffect(() => {
@@ -34,10 +36,11 @@ export default function TopNav({ page }) {
         <>
             <AccountNav toggle={openAccountNav} control={setOpenAccountNav} page={page} />
             <div className={styles.topnavContainer}>
+                <img className={styles.topnavLogo} src={`/images/logo.png`} alt="logo" />
                 <span className={styles.topnavTitle}>{page.title.toUpperCase()}</span>
-                <div className={styles.topnavSearchBar}>
+                <div className={styles.topnavSearchBar} onClick={() => page.setShowSearch(true)}>
                     <form>
-                        <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search people, echoes, and communities..." />
+                        <input id="searchButton" type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search people, echoes, and communities..." />
                     </form>
                 </div>
                 <div className={styles.topnavAccount} onMouseEnter={() => setOpenAccountNav(true)} onMouseLeave={() => setOpenAccountNav(false)}>
@@ -49,7 +52,7 @@ export default function TopNav({ page }) {
                             page.activeUser?.firstName && page.activeUser?.lastName ? `${page.activeUser.firstName} ${page.activeUser.lastName}` : ""
                         }</span>
                         <span className={styles.topnavAccountNickName}>{
-                            page.activeUser?.nickname ? page.activeUser.nickname : "Overlord"
+                            page.activeUser?.nickname ? page.activeUser.nickname : "Astronaut"
                         }</span>
                     </div>
                 </div>
@@ -59,7 +62,10 @@ export default function TopNav({ page }) {
                 <div className={styles.topnavButton} style={{ paddingTop: "18px" }} onClick={() => page.setShowEchoCreator(true)}>
                     <SVGServer.CreatePostIcon color="currentColor" width="35px" height="35px" />
                 </div>
-                <div className={styles.topnavButton} style={{ paddingTop: "20px", marginRight: "5px" }}>
+                <div id="searchButton" className={`${styles.topnavButton} ${styles.topnavSearchButton}`} style={{ paddingTop: "20px", marginRight: "5px" }} onClick={() => page.setShowSearch(true)}>
+                    <SVGServer.SearchIcon color="currentColor" width="35px" height="35px" />
+                </div>
+                <div id="chatButton" className={`${styles.topnavButton} ${styles.topnavChatButton}`} style={{ paddingTop: "20px", marginRight: "5px" }} onClick={() => page.setShowMessenger(true)}>
                     <SVGServer.ChatIcon color="currentColor" width="35px" height="35px" />
                 </div>
             </div>

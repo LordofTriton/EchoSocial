@@ -10,7 +10,7 @@ function ValidateGetBlacklists(data) {
 function parseParams(params, data) {
     const result = {}
     for (let param of params) {
-        if (data[param]) result[param] = data[param]
+        if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
     }
     return result;
 }
@@ -20,6 +20,7 @@ export default async function GetBlacklists(params, io) {
     params = parseParams([
         "accountID",
         "blocker",
+        "blockeeType",
         "page",
         "pageSize"
     ], params);
@@ -31,6 +32,7 @@ export default async function GetBlacklists(params, io) {
             accountID: params.accountID,
             blocker: params.blocker
         }
+        if (params.blockeeType) filters.blockeeType = params.blockeeType;
 
         const pagination = {
             page: parseInt(params.page),

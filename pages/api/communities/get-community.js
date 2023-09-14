@@ -9,7 +9,7 @@ function ValidateGetCommunity(data) {
 function parseParams(params, data) {
     const result = {}
     for (let param of params) {
-        if (data[param]) result[param] = data[param]
+        if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
     }
     return result;
 }
@@ -25,6 +25,7 @@ export default async function GetCommunity(params, io) {
         ValidateGetCommunity(params);
 
         let fetchCommunityResponse = await db.collection("communities").findOne({ communityID: params.communityID });
+        const echoCount = await db.collection("echoes").countDocuments({ communityID: params.communityID })
         let memberCount = await db.collection("members").countDocuments({ communityID: params.communityID });
         const userMember = await db.collection("members").findOne({ accountID: params.accountID, communityID: params.communityID })
         const userApplied = userMember ? true : await db.collection("applications").findOne({ accountID: params.accountID, communityID: params.communityID })
@@ -39,6 +40,7 @@ export default async function GetCommunity(params, io) {
             description: fetchCommunityResponse.description,
             nodes: fetchCommunityResponse.nodes,
             node: fetchCommunityResponse.node,
+            echoCount,
             memberCount,
             applications: fetchCommunityResponse.applications,
             privacy: fetchCommunityResponse.privacy,

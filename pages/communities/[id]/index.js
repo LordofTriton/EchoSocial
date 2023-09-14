@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from 'next/router'
 import styles from './community.module.css';
 
-import Cache from '../../../services/CacheService'
+import CookieService from '../../../services/CookieService'
 import Echo from "../../components/echo";
 import APIClient from "../../../services/APIClient";
 import SVGServer from "../../../services/svg/svgServer";
@@ -13,19 +13,22 @@ import { useSocketContext } from '../../../util/SocketProvider';
 import DateGenerator from '../../../services/generators/DateGenerator';
 import DuoMasonryLayout from '../../components/masonry/duo-masonry';
 import CommunityHead from '../../components/community-head';
+import useDataStates from '../../hooks/useDataStates';
+import CacheService from '../../../services/CacheService';
 
 export default function Community() {
   const router = useRouter()
-  const [activeUser, setActiveUser] = useState(Cache.getData("EchoUser"))
-  const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "light")
-  const [communityData, setCommunityData] = useState(null)
+  const {modalStates, modalControl} = useModalStates()
+  const {dataStates, dataControl} = useDataStates()
+  const {socket, socketMethods} = useSocketContext()
+  const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
+  const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
+  const [communityData, setCommunityData] = useState(dataStates.communityData(router.query.id) || null)
   const [alert, setAlert] = useState(null)
-  const [communityEchoes, setCommunityEchoes] = useState([])
+  const [communityEchoes, setCommunityEchoes] = useState(dataStates.communityFeed(router.query.id) || [])
   const [communityMediaEchoes, setCommunityMediaEchoes] = useState([])
   const [communityMembers, setCommunityMembers] = useState([])
-  const {modalStates, modalControl} = useModalStates()
   const [feedPage, setFeedPage] = useState(1)
-  const {socket, socketMethods} = useSocketContext()
   const [pagination, setPagination] = useState({
     page: 1,
     pageSize: 10,
@@ -40,6 +43,7 @@ export default function Community() {
     const updateCommunityData = (data) => {
       if (data.success) {
         setCommunityData(data.data)
+        dataControl.setCommunityData(data.data)
       }
     }
     const showEcho = (data) => data.success ? modalControl.setShowEchoViewer(data.data) : null
@@ -61,7 +65,14 @@ export default function Community() {
   useEffect(() => {
     const updateCommunityEchoes = (data) => {
       if (data.success) {
+        if (feedPage === 1) {
+            setCommunityEchoes(data.data)
+            if (feedPage < 3) dataControl.setCommunityFeed(router.query.id, data.data)
+        }
+        else {
           setCommunityEchoes((state) => state.concat(data.data))
+            if (feedPage < 3) dataControl.setCommunityFeed(router.query.id, communityEchoes.concat(data.data))
+        }
           setPagination(data.pagination)
       }
       setEchoLoader(false)
@@ -109,7 +120,8 @@ export default function Community() {
         communityNode: communityData.node
     } : null,
     router,
-    cache: Cache,
+    cookies: CookieService,
+    cache: CacheService,
     activeUser,
     setActiveUser,
     activeTheme,
@@ -119,7 +131,9 @@ export default function Community() {
     alert,
     createAlert,
     ...modalStates,
-    ...modalControl
+    ...modalControl,
+    ...dataStates,
+    ...dataControl
   }
 
   const handleScroll = (event) => {
@@ -151,11 +165,11 @@ export default function Community() {
               <span className={styles.communityTimelineDataIntro}>{communityData?.description ? communityData.description : `Loading description...`}</span>
 
               <div className={styles.communityTimelineDataBox}>
-                <span className={styles.communityTimelineDataBoxIcon}><SVGServer.HeartFilledIcon color="var(--primary)" width="25px" height="25px" /></span>
+                <span className={styles.communityTimelineDataBoxIcon}><SVGServer.PeopleIcon color="var(--primary)" width="25px" height="25px" /></span>
                 <span className={styles.communityTimelineDataBoxDataText}>{communityData?.memberCount ? communityData.memberCount : 0}</span>
               </div>
               <div className={styles.communityTimelineDataBox}>
-                <span className={styles.communityTimelineDataBoxIcon}><SVGServer.BirthdayIcon color="var(--primary)" width="25px" height="25px" /></span>
+                <span className={styles.communityTimelineDataBoxIcon}><SVGServer.CalendarIcon color="var(--primary)" width="25px" height="25px" /></span>
                 <span className={styles.communityTimelineDataBoxDataText}>{communityData?.dateCreated ? `Created ${DateGenerator.GenerateDateTime(communityData.dateCreated)}` : "None."}</span>
               </div>
               <br />

@@ -22,7 +22,7 @@
     font-size: 30px;
     font-weight: 700;
     display: block;
-    margin: 50px 0px 0px 50px;
+    margin: 35px 0px 0px 20px;
 }
 
 .peopleHeadBannerSubTitle {
@@ -30,19 +30,20 @@
     font-size: 12px;
     font-weight: 300;
     display: block;
-    width: 500px;
-    margin: 10px 0px 20px 50px;
+    width: 100%;
+    padding: 10px 20px 20px 20px;
+    white-space: pre-wrap;
 }
 
 .peopleHeadBannerSearch {
-    width: 400px;
+    width: calc(100% - 40px);
     height: 50px;
     background-color: white;
     border-radius: 5px;
-    color: var(--surface);
+    color: black;
     padding-left: 50px;
     padding-right: 15px;
-    margin: 20px 0px 0px 50px;
+    margin: 20px 0px 0px 20px;
     background-image: url(/images/icons/search.png);
     background-size: 25px 25px;
     background-position: 13px 13px;
@@ -51,18 +52,23 @@
 
 .peopleHeadNav {
     width: 100%;
-    height: 70px;
+    height: 60px;
     background-color: var(--surface);
-    padding-left: 50px;
+    border-radius: 5px;
+    box-shadow: 0 0 8px 0 rgba(63,66,87,.1);
+    margin-top: 5px;
+    padding: 5px 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    overflow-x: auto;
 }
 
 .peopleHeadNavButton {
-    display: block;
+    display: inline-block;
+    font-size: 15px;
+    font-weight: 500;
     color: var(--primary);
-    float: left;
-    font-size: 17px;
-    font-weight: 600;
-    margin: 25px 50px 0px 0px;
+    padding: 15px 20px;
     cursor: pointer;
 }
 
@@ -109,4 +115,25 @@
     height: fit-content;
     padding: 0px 0px;
     overflow: hidden;
+}
+
+@media screen and (min-width: 1125px) {
+    .peopleHeadBanner {
+        background-size: cover;
+        background-position: center;
+    }
+    .peopleHeadBannerTitle {
+        margin: 50px 0px 0px 50px;
+    }
+    .peopleHeadBannerSubTitle {
+        padding: 10px 0px 20px 50px;
+    }
+    .peopleHeadBannerSearch {
+        width: 400px;
+        margin: 20px 0px 0px 50px;
+    }
+    .peopleHeadNav {
+        height: 50px;
+        padding: 0px 30px;
+    }
 }

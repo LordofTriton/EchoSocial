@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from 'next/router'
 import styles from '../../community.module.css';
 
-import Cache from '../../../../../services/CacheService'
+import CookieService from '../../../../../services/CookieService'
 import Echo from "../../../../components/echo";
 import APIClient from "../../../../../services/APIClient";
 import SVGServer from "../../../../../services/svg/svgServer";
@@ -14,19 +14,22 @@ import DateGenerator from '../../../../../services/generators/DateGenerator';
 import DuoMasonryLayout from '../../../../components/masonry/duo-masonry';
 import { Form } from '../../../../components/form';
 import CommunityHead from '../../../../components/community-head';
+import useDataStates from '../../../../hooks/useDataStates';
+import CacheService from '../../../../../services/CacheService';
 
 export default function CommunitySettings() {
     const router = useRouter()
-    const [activeUser, setActiveUser] = useState(Cache.getData("EchoUser"))
-    const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "light")
-    const [communityData, setCommunityData] = useState(null)
+    const {modalStates, modalControl} = useModalStates()
+    const {dataStates, dataControl} = useDataStates()
+    const {socket, socketMethods} = useSocketContext()
+    const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
+    const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
+    const [communityData, setCommunityData] = useState(dataStates.communityData(router.query.id) || null)
     const [updatedCommunityData, setUpdatedCommunityData] = useState({
       entryApproval: false,
       echoApproval: false
     })
     const [alert, setAlert] = useState(null)
-    const {modalStates, modalControl} = useModalStates()
-    const {socket, socketMethods} = useSocketContext()
 
     useEffect(() => {
         const updateCommunityData = (data) => {
@@ -57,7 +60,8 @@ export default function CommunitySettings() {
             communityNode: communityData.node
         } : null,
         router,
-        cache: Cache,
+        cookies: CookieService,
+        cache: CacheService,
         activeUser,
         setActiveUser,
         activeTheme,
@@ -67,7 +71,9 @@ export default function CommunitySettings() {
         alert,
         createAlert,
         ...modalStates,
-        ...modalControl
+        ...modalControl,
+        ...dataStates,
+        ...dataControl
     }
 
     const handleSubmit = async () => {

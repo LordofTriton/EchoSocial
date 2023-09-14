@@ -113,12 +113,12 @@ export default function EchoViewer({ data, control, page }) {
     return (
         <>
             <div className="modalOverlay" style={{ display: echoData ? "block" : "none" }} onClick={() => control(false)}></div>
-            <div className={styles.echoViewerEchoContainer} style={{ right: echoData ? "570px" : "-500px" }}>
+            <div className={styles.echoViewerEchoContainer} style={{ right: !echoData ? "-700px" : null }}>
                 {echoData ? <Echo data={echoData} page={page} fullText={true} /> : null}
             </div>
-            <div className={styles.echoViewerCommentsContainer} style={{ right: echoData ? "70px" : "-500px" }}>
+            <div className={styles.echoViewerCommentsContainer} style={{ right: !echoData ? "-700px" : null }}>
                 <div className={styles.echoViewerCommentsContainerHead}>
-                    <span className={styles.echoViewerCommentsContainerHeadTitle}>Conversation</span>
+                    <span className={styles.echoViewerCommentsContainerHeadTitle}><span className="titleGradient">Conversation</span></span>
                     <span className={styles.echoViewerCommentsContainerClose} onClick={() => control(false)} style={{ transform: "scale(1.3,1.3)" }}><SVGServer.CloseIcon color="var(--primary)" width="30px" height="30px" /></span>
                 </div>
                 <div className={styles.echoViewerCommentsContainerBody}>

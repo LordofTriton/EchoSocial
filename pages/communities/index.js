@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from 'next/router'
 import styles from './communities.module.css';
 
-import Cache from '../../services/CacheService'
+import CookieService from '../../services/CookieService'
 import APIClient from "../../services/APIClient";
 import Modals from "../components/modals";
 import Head from "next/head";
@@ -10,16 +10,19 @@ import DuoMasonryLayout from "../components/masonry/duo-masonry";
 import Echo from "../components/echo";
 import useModalStates from "../hooks/useModalStates";
 import { useSocketContext } from "../../util/SocketProvider";
+import useDataStates from "../hooks/useDataStates";
+import CacheService from "../../services/CacheService";
 
 export default function CommunitiesFeed() {
     const router = useRouter()
-    const [activeUser, setActiveUser] = useState(Cache.getData("EchoUser"))
-    const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "light")
+    const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
+    const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
     const [alert, setAlert] = useState(null)
     const {modalStates, modalControl} = useModalStates()
+    const {dataStates, dataControl} = useDataStates()
     const [communities, setCommunities] = useState([])
     const [searchQuery, setSearchQuery] = useState("")
-    const [echoFeed, setEchoFeed] = useState([])
+    const [echoFeed, setEchoFeed] = useState(dataStates.communitiesFeed || [])
     const [feedPage, setFeedPage] = useState(1)
     const {socket, socketMethods} = useSocketContext()
     const [pagination, setPagination] = useState({
@@ -31,16 +34,25 @@ export default function CommunitiesFeed() {
     const [feedLoader, setFeedLoader] = useState(true)
 
     useEffect(() => {
+        if (searchQuery.length > 0 && searchQuery.length % 3 !== 0) return;
         if (socket) {
             const updateFeed = (data) => {
                 if (data.success) {
-                    setEchoFeed((state) => state.concat(data.data))
+                    if (feedPage === 1) {
+                        setEchoFeed(data.data)
+                        if (feedPage < 3) dataControl.setCommunitiesFeed(data.data)
+                    }
+                    else {
+                        setEchoFeed((state) => state.concat(data.data))
+                        if (feedPage < 3) dataControl.setCommunitiesFeed(echoFeed.concat(data.data))
+                    }
                     setPagination(data.pagination)
                 }
                 setFeedLoader(false)
             }
             socketMethods.socketRequest("COMMUNITIES_FEED", {
                     accountID: activeUser.accountID,
+                    filter: searchQuery ? searchQuery : null,
                     page: feedPage,
                     pageSize: 10
                 },
@@ -61,7 +73,8 @@ export default function CommunitiesFeed() {
     const pageControl = {
         title: "Communities",
         router,
-        cache: Cache,
+        cookies: CookieService,
+        cache: CacheService,
         activeUser,
         setActiveUser,
         activeTheme,
@@ -71,7 +84,9 @@ export default function CommunitiesFeed() {
         alert,
         createAlert,
         ...modalStates,
-        ...modalControl
+        ...modalControl,
+        ...dataStates,
+        ...dataControl
     }
 
     const handleScroll = (event) => {
@@ -96,15 +111,15 @@ export default function CommunitiesFeed() {
             <div className="pageContent" style={{backgroundColor: "var(--base)"}}>
                 <div className={styles.communitiesHead}>
                     <div className={styles.communitiesHeadBanner}>
-                        <span className={styles.communitiesHeadBannerTitle}>Communities</span>
+                        <span className={styles.communitiesHeadBannerTitle}><span className="titleGradient">Communities</span></span>
                         <span className={styles.communitiesHeadBannerSubTitle}>Find people who share your passion. From gaming, to music, to learning, there`s a place for you.</span>
-                        <input type="text" className={styles.communitiesHeadBannerSearch} />
+                        <input type="text" className={styles.communitiesHeadBannerSearch} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
                     </div>
                     <div className={styles.communitiesHeadNav}>
                         <span className={styles.communitiesHeadNavButton} onClick={() => router.push("/communities")} style={{color: "var(--accent)"}}>Feed</span>
                         <span className={styles.communitiesHeadNavButton} onClick={() => router.push("/communities/gallery")}>Your Communities</span>
                         <span className={styles.communitiesHeadNavButton} onClick={() => router.push("/communities/discover")}>Discover</span>
-                        <span className={styles.communitiesHeadNavButton} onClick={() => modalControl.setShowCommunityCreator(true)} style={{float: "right"}}>Create New Community</span>
+                        <span className={styles.communitiesHeadNavButton} onClick={() => modalControl.setShowCommunityCreator(true)}>Create Community</span>
                     </div>
                 </div>
                 <div className={styles.communitiesBody}>

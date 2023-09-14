@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from 'next/router'
 import styles from '../community.module.css';
 
-import Cache from '../../../../services/CacheService'
+import CookieService from '../../../../services/CookieService'
 import Echo from "../../../components/echo";
 import APIClient from "../../../../services/APIClient";
 import SVGServer from "../../../../services/svg/svgServer";
@@ -15,17 +15,20 @@ import DuoMasonryLayout from '../../../components/masonry/duo-masonry';
 import CommunityHead from '../../../components/community-head';
 import TriMasonryLayout from '../../../components/masonry/tri-masonry';
 import Helpers from '../../../../util/Helpers';
+import useDataStates from '../../../hooks/useDataStates';
+import CacheService from '../../../../services/CacheService';
 
 export default function CommunityMedia() {
   const router = useRouter()
-  const [activeUser, setActiveUser] = useState(Cache.getData("EchoUser"))
-  const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "light")
-  const [communityData, setCommunityData] = useState(null)
+  const {modalStates, modalControl} = useModalStates()
+  const {dataStates, dataControl} = useDataStates()
+  const {socket, socketMethods} = useSocketContext()
+  const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
+  const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
+  const [communityData, setCommunityData] = useState(dataStates.communityData(router.query.id) || null)
   const [alert, setAlert] = useState(null)
   const [communityMediaEchoes, setCommunityMediaEchoes] = useState([])
-  const {modalStates, modalControl} = useModalStates()
   const [echoPage, setEchoPage] = useState(1)
-  const {socket, socketMethods} = useSocketContext()
   const [pagination, setPagination] = useState({
       page: 1,
       pageSize: 10,
@@ -81,7 +84,8 @@ export default function CommunityMedia() {
         communityNode: communityData.node
     } : null,
     router,
-    cache: Cache,
+    cookies: CookieService,
+    cache: CacheService,
     activeUser,
     setActiveUser,
     activeTheme,
@@ -91,7 +95,9 @@ export default function CommunityMedia() {
     alert,
     createAlert,
     ...modalStates,
-    ...modalControl
+    ...modalControl,
+    ...dataStates,
+    ...dataControl
   }
 
   const handleScroll = (event) => {

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from 'next/router'
 import styles from '../../community.module.css';
 
-import Cache from '../../../../../services/CacheService'
+import CookieService from '../../../../../services/CookieService'
 import Echo from "../../../../components/echo";
 import APIClient from "../../../../../services/APIClient";
 import SVGServer from "../../../../../services/svg/svgServer";
@@ -14,18 +14,21 @@ import DateGenerator from '../../../../../services/generators/DateGenerator';
 import DuoMasonryLayout from '../../../../components/masonry/duo-masonry';
 import { Form } from '../../../../components/form';
 import CommunityHead from '../../../../components/community-head';
+import useDataStates from '../../../../hooks/useDataStates';
+import CacheService from '../../../../../services/CacheService';
 
 export default function CommunitySettings() {
     const router = useRouter()
-    const [activeUser, setActiveUser] = useState(Cache.getData("EchoUser"))
-    const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "light")
-    const [communityData, setCommunityData] = useState(null)
+    const {modalStates, modalControl} = useModalStates()
+    const {dataStates, dataControl} = useDataStates()
+    const {socket, socketMethods} = useSocketContext()
+    const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
+    const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
+    const [communityData, setCommunityData] = useState(dataStates.communityData(router.query.id) || null)
     const [communityNodes, setCommunityNodes] = useState([])
     const [searchQuery, setSearchQuery] = useState("")
     const [nodeList, setNodeList] = useState([])
     const [alert, setAlert] = useState(null)
-    const {modalStates, modalControl} = useModalStates()
-    const {socket, socketMethods} = useSocketContext()
 
     useEffect(() => {
         const updateCommunityData = (data) => {
@@ -43,18 +46,25 @@ export default function CommunitySettings() {
     }, [router.query, socket])
 
     useEffect(() => {
-        const updateNodes = (data) => data.success ? setNodeList(data.data) : null;
-        if (socket) socketMethods.socketRequest("GET_NODES", {
-            accountID: activeUser.accountID,
-            filter: searchQuery,
-            page: 1,
-            pageSize: 10
-        }, updateNodes)
-    }, [searchQuery])
+        updateNodeList()
+    }, [searchQuery, socket])
 
     const createAlert = (type, message) => {
         setAlert({ type, message })
         setTimeout(() => setAlert(null), 5000)
+    }
+
+    const updateNodeList = async () => {
+        if (searchQuery.length % 2 === 0) {
+            const query = String(searchQuery).toLowerCase().replace(/\s/g, "").trim()
+            const updateNodes = (data) => data.success ? setNodeList(data.data) : null;
+            if (socket) socketMethods.socketRequest("GET_NODES", {
+                accountID: activeUser.accountID,
+                filter: query,
+                page: 1,
+                pageSize: 10
+            }, updateNodes)
+        }
     }
 
     const pageControl = {
@@ -66,7 +76,8 @@ export default function CommunitySettings() {
             communityNode: communityData.node
         } : null,
         router,
-        cache: Cache,
+        cookies: CookieService,
+        cache: CacheService,
         activeUser,
         setActiveUser,
         activeTheme,
@@ -76,16 +87,19 @@ export default function CommunitySettings() {
         alert,
         createAlert,
         ...modalStates,
-        ...modalControl
+        ...modalControl,
+        ...dataStates,
+        ...dataControl
     }
 
     const handleSubmit = async () => {
         if (socket) socketMethods.socketEmitter("UPDATE_COMMUNITY", {
             accountID: activeUser.accountID,
+            communityID: router.query.id,
             nodes: communityData.nodes
         })
         createAlert("success", "Settings updated successfully.")
-        Cache.saveData("EchoUser", {...activeUser, nodes: communityNodes})
+        CookieService.saveData("EchoActiveUser", {...activeUser, nodes: communityNodes})
         updateNodeList()
     }
 

@@ -3,6 +3,7 @@ import React, { createContext, useContext, useEffect } from 'react';
 import useSocket from '../pages/hooks/useSocket';
 
 const SocketContext = createContext();
+const authLess = ["/login", "/signup", "/password-reset"]
 
 export const SocketProvider = ({ children }) => {
     const socketProps = useSocket();
@@ -12,7 +13,7 @@ export const SocketProvider = ({ children }) => {
         const renewSocket = async () => {
             if (socketProps.socket) {
                 socketProps.socketMethods.disconnectSocket();
-                await socketProps.socketMethods.connectSocket();
+                if (!authLess.includes(router.route)) await socketProps.socketMethods.connectSocket();
             }
         }
         renewSocket()

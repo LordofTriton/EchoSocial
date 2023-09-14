@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import styles from "./settings.module.css"
 import { useRouter } from 'next/router'
 
-import Cache from '../../services/CacheService'
+import CookieService from '../../services/CookieService'
 import Modals from '../components/modals';
 import SVGServer from '../../services/svg/svgServer'
 import APIClient from "../../services/APIClient";
@@ -11,11 +11,13 @@ import { Form } from "../components/form";
 import useModalStates from '../hooks/useModalStates'
 import { useSocketContext } from '../../util/SocketProvider'
 import { nickDict } from '../../services/generators/NIckGenerator'
+import useDataStates from '../hooks/useDataStates'
+import CacheService from '../../services/CacheService'
 
 export default function ProfileSettings() {
     const router = useRouter()
-    const [activeUser, setActiveUser] = useState(Cache.getData("EchoUser"))
-    const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "light")
+    const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
+    const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
     const [userAccount, setUserAccount] = useState(activeUser)
     const [updatedData, setUpdatedData] = useState({
         firstName: activeUser.firstName,
@@ -37,6 +39,7 @@ export default function ProfileSettings() {
     })
     const [alert, setAlert] = useState(null)
     const {modalStates, modalControl} = useModalStates()
+    const {dataStates, dataControl} = useDataStates()
     const [showAccountDrop, setShowAccountDrop] = useState(true)
     const {socket, socketMethods} = useSocketContext()
 
@@ -61,7 +64,7 @@ export default function ProfileSettings() {
         if (socket) socketMethods.socketEmitter("UPDATE_ACCOUNT", updatedData)
         createAlert("success", "Settings updated successfully.")
         setActiveUser({...activeUser, ...updatedData})
-        Cache.saveData("EchoUser", {...activeUser, ...updatedData})
+        CookieService.saveData("EchoActiveUser", {...activeUser, ...updatedData})
     }
 
     const handleRevert = () => {
@@ -71,7 +74,8 @@ export default function ProfileSettings() {
     const pageControl = {
         title: "Settings",
         router,
-        cache: Cache,
+        cookies: CookieService,
+        cache: CacheService,
         activeUser,
         setActiveUser,
         activeTheme,
@@ -81,7 +85,9 @@ export default function ProfileSettings() {
         alert,
         createAlert,
         ...modalStates,
-        ...modalControl
+        ...modalControl,
+        ...dataStates,
+        ...dataControl
     }
 
     return (
@@ -134,127 +140,139 @@ export default function ProfileSettings() {
                         <div className={styles.formContainer}>
                             <span className={styles.formContainerTitle}>Profile Information</span>
                             <div className={styles.formContainerForm}>
-                                <Form.TextInput
-                                    label="First Name"
-                                    style={{ width: "calc(50% - 10px)", float: "left", marginBottom: "20px" }}
-                                    value={updatedData.firstName}
-                                    onChange={(e) => setUpdatedData({ ...updatedData, firstName: e.target.value })}
-                                />
-                                <Form.TextInput
-                                    label="Last Name"
-                                    style={{ width: "calc(50% - 10px)", float: "right", marginBottom: "20px" }}
-                                    value={updatedData.lastName}
-                                    onChange={(e) => setUpdatedData({ ...updatedData, lastName: e.target.value })}
-                                />
-                                <Form.TextInput
-                                    label="Nickname"
-                                    style={{ width: "calc(50% - 10px)", float: "right", marginBottom: "20px" }}
-                                    value={updatedData.nickname}
-                                    onChange={(e) => setUpdatedData({ ...updatedData, nickname: e.target.value })}
-                                    placeholder="A fun nickname for yourself."
-                                />
-                                <Form.TextInput
-                                    label="Email"
-                                    style={{ width: "calc(50% - 10px)", float: "left", marginBottom: "20px" }}
-                                    value={updatedData.email}
-                                    onChange={(e) => setUpdatedData({ ...updatedData, email: e.target.value })}
-                                />
-                                <Form.SelectSingleInput
-                                    label="Gender"
-                                    style={{ width: "calc(50% - 10px)", float: "right", marginBottom: "20px" }}
-                                    value={updatedData.gender}
-                                    setValue={(value) => setUpdatedData({ ...updatedData, gender: value })}
-                                    options={[
-                                        { label: "Male", value: "Male" },
-                                        { label: "Female", value: "Female" },
-                                        { label: "Non Binary", value: "Non Binary" },
-                                        { label: "Prefer not to say", value: "None" }
-                                    ]}
-                                />
-                                <Form.DateInput
-                                    label="Birthday"
-                                    style={{ width: "calc(50% - 10px)", float: "left", marginBottom: "20px" }}
-                                    value={updatedData.dateOfBirth}
-                                    onChange={(e) => setUpdatedData({ ...updatedData, dateOfBirth: e.target.value })}
-                                />
-                                <Form.TextInput
-                                    label="Phone"
-                                    style={{ width: "calc(33.33% - 14px)", float: "left", marginBottom: "20px" }}
-                                    value={updatedData.phone}
-                                    onChange={(e) => setUpdatedData({ ...updatedData, phone: e.target.value })}
-                                    placeholder="Your phone number."
-                                />
-                                <Form.SelectSingleInput
-                                    label="Country"
-                                    style={{ width: "calc(33.33% - 14px)", float: "left", marginBottom: "20px", marginLeft: "20px" }}
-                                    value={updatedData.country}
-                                    setValue={(value) => setUpdatedData({ ...updatedData, country: value })}
-                                    options={[
-                                        { label: "Nigeria", value: "Nigeria" },
-                                        { label: "Ghana", value: "Ghana" },
-                                        { label: "Cameroon", value: "Cameroon" },
-                                        { label: "Niger", value: "Niger" }
-                                    ]}
-                                />
-                                <Form.SelectSingleInput
-                                    label="City"
-                                    style={{ width: "calc(33.33% - 14px)", float: "right", marginBottom: "20px", marginLeft: "20px" }}
-                                    value={updatedData.city}
-                                    setValue={(value) => setUpdatedData({ ...updatedData, city: value })}
-                                    options={[
-                                        { label: "Lagos", value: "Lagos" },
-                                        { label: "Abeokuta", value: "Abeokuta" },
-                                        { label: "Akure", value: "Akure" },
-                                        { label: "Ibadan", value: "Ibadan" },
-                                    ]}
-                                />
-                                <Form.AreaInput
-                                    label="Bio"
-                                    style={{ width: "calc(50% - 10px)", float: "left", marginBottom: "20px" }}
-                                    value={updatedData.bio}
-                                    onChange={(e) => setUpdatedData({ ...updatedData, bio: e.target.value })}
-                                    placeholder="A few words about you."
-                                />
-                                <Form.TextInput
-                                    label="Occupation"
-                                    style={{ width: "calc(50% - 10px)", float: "right", marginBottom: "20px" }}
-                                    value={updatedData.occupation}
-                                    onChange={(e) => setUpdatedData({ ...updatedData, occupation: e.target.value })}
-                                    placeholder="What do you do?"
-                                />
-                                <Form.SelectSingleInput
-                                    label="Marital Status"
-                                    style={{ width: "calc(50% - 10px)", float: "right", marginBottom: "20px" }}
-                                    value={updatedData.maritalStatus}
-                                    setValue={(value) => setUpdatedData({ ...updatedData, maritalStatus: value })}
-                                    options={[
-                                        { label: "Single", value: "Single" },
-                                        { label: "Married", value: "Married" },
-                                        { label: "Divorced", value: "Divorced" },
-                                        { label: "It's Complicated", value: "It's Complicated" }
-                                    ]}
-                                />
-                                <Form.TextInput
-                                    label="Facebook"
-                                    style={{ width: "100%", float: "right", marginBottom: "20px" }}
-                                    value={updatedData.fSocial}
-                                    onChange={(e) => setUpdatedData({ ...updatedData, fSocial: e.target.value })}
-                                    placeholder="Link your Facebook page."
-                                />
-                                <Form.TextInput
-                                    label="X"
-                                    style={{ width: "100%", float: "right", marginBottom: "20px" }}
-                                    value={updatedData.tSocial}
-                                    onChange={(e) => setUpdatedData({ ...updatedData, tSocial: e.target.value })}
-                                    placeholder="Link your X page."
-                                />
-                                <Form.TextInput
-                                    label="Instagram"
-                                    style={{ width: "100%", float: "right", marginBottom: "20px" }}
-                                    value={updatedData.iSocial}
-                                    onChange={(e) => setUpdatedData({ ...updatedData, iSocial: e.target.value })}
-                                    placeholder="Link your Instagram page."
-                                />
+                                <Form.HalfWrapper>
+                                    <Form.TextInput
+                                        label="First Name"
+                                        style={{ float: "left", marginBottom: "20px" }}
+                                        value={updatedData.firstName}
+                                        onChange={(e) => setUpdatedData({ ...updatedData, firstName: e.target.value })}
+                                    />
+                                    <Form.TextInput
+                                        label="Last Name"
+                                        style={{ float: "right", marginBottom: "20px" }}
+                                        value={updatedData.lastName}
+                                        onChange={(e) => setUpdatedData({ ...updatedData, lastName: e.target.value })}
+                                    />
+                                    <Form.TextInput
+                                        label="Nickname"
+                                        style={{ float: "right", marginBottom: "20px" }}
+                                        value={updatedData.nickname}
+                                        onChange={(e) => setUpdatedData({ ...updatedData, nickname: e.target.value })}
+                                        placeholder="A fun nickname for yourself."
+                                    />
+                                    <Form.TextInput
+                                        label="Email"
+                                        style={{ float: "left", marginBottom: "20px" }}
+                                        value={updatedData.email}
+                                        onChange={(e) => setUpdatedData({ ...updatedData, email: e.target.value })}
+                                    />
+                                    <Form.SelectSingleInput
+                                        label="Gender"
+                                        style={{ float: "right", marginBottom: "20px" }}
+                                        value={updatedData.gender}
+                                        setValue={(value) => setUpdatedData({ ...updatedData, gender: value })}
+                                        options={[
+                                            { label: "Male", value: "Male" },
+                                            { label: "Female", value: "Female" },
+                                            { label: "Non Binary", value: "Non Binary" },
+                                            { label: "Prefer not to say", value: "None" }
+                                        ]}
+                                    />
+                                    <Form.DateInput
+                                        label="Birthday"
+                                        style={{ float: "left", marginBottom: "20px" }}
+                                        value={updatedData.dateOfBirth}
+                                        onChange={(e) => setUpdatedData({ ...updatedData, dateOfBirth: e.target.value })}
+                                    />
+                                </Form.HalfWrapper>
+
+                                <Form.ThirdWrapper>
+                                    <Form.TextInput
+                                        label="Phone"
+                                        style={{ float: "left", marginBottom: "20px" }}
+                                        value={updatedData.phone}
+                                        onChange={(e) => setUpdatedData({ ...updatedData, phone: e.target.value })}
+                                        placeholder="Your phone number."
+                                    />
+                                    <Form.SelectSingleInput
+                                        label="Country"
+                                        style={{ float: "left", marginBottom: "20px" }}
+                                        value={updatedData.country}
+                                        setValue={(value) => setUpdatedData({ ...updatedData, country: value })}
+                                        options={[
+                                            { label: "Nigeria", value: "Nigeria" },
+                                            { label: "Ghana", value: "Ghana" },
+                                            { label: "Cameroon", value: "Cameroon" },
+                                            { label: "Niger", value: "Niger" }
+                                        ]}
+                                    />
+                                    <Form.SelectSingleInput
+                                        label="City"
+                                        style={{ float: "right", marginBottom: "20px" }}
+                                        value={updatedData.city}
+                                        setValue={(value) => setUpdatedData({ ...updatedData, city: value })}
+                                        options={[
+                                            { label: "Lagos", value: "Lagos" },
+                                            { label: "Abeokuta", value: "Abeokuta" },
+                                            { label: "Akure", value: "Akure" },
+                                            { label: "Ibadan", value: "Ibadan" },
+                                        ]}
+                                    />
+                                </Form.ThirdWrapper>
+
+                                <Form.HalfWrapper>
+                                    <Form.AreaInput
+                                        label="Bio"
+                                        style={{ float: "left", marginBottom: "20px" }}
+                                        value={updatedData.bio}
+                                        onChange={(e) => setUpdatedData({ ...updatedData, bio: e.target.value })}
+                                        placeholder="A few words about you."
+                                    />
+                                    <Form.TextInput
+                                        label="Occupation"
+                                        style={{ float: "right", marginBottom: "20px" }}
+                                        value={updatedData.occupation}
+                                        onChange={(e) => setUpdatedData({ ...updatedData, occupation: e.target.value })}
+                                        placeholder="What do you do?"
+                                    />
+                                    <Form.SelectSingleInput
+                                        label="Marital Status"
+                                        style={{ float: "right", marginBottom: "20px" }}
+                                        value={updatedData.maritalStatus}
+                                        setValue={(value) => setUpdatedData({ ...updatedData, maritalStatus: value })}
+                                        options={[
+                                            { label: "Single", value: "Single" },
+                                            { label: "Married", value: "Married" },
+                                            { label: "Divorced", value: "Divorced" },
+                                            { label: "It's Complicated", value: "It's Complicated" }
+                                        ]}
+                                    />
+                                </Form.HalfWrapper>
+
+                                <Form.FullWrapper>
+                                    <Form.TextInput
+                                        label="Facebook"
+                                        style={{ float: "right", marginBottom: "20px" }}
+                                        value={updatedData.fSocial}
+                                        onChange={(e) => setUpdatedData({ ...updatedData, fSocial: e.target.value })}
+                                        placeholder="Link your Facebook page."
+                                    />
+                                    <Form.TextInput
+                                        label="X"
+                                        style={{ float: "right", marginBottom: "20px" }}
+                                        value={updatedData.tSocial}
+                                        onChange={(e) => setUpdatedData({ ...updatedData, tSocial: e.target.value })}
+                                        placeholder="Link your X page."
+                                    />
+                                    <Form.TextInput
+                                        label="Instagram"
+                                        style={{ float: "right", marginBottom: "20px" }}
+                                        value={updatedData.iSocial}
+                                        onChange={(e) => setUpdatedData({ ...updatedData, iSocial: e.target.value })}
+                                        placeholder="Link your Instagram page."
+                                    />
+                                </Form.FullWrapper>
+
                                 <div className={styles.formContainerFormButtons}>
                                     <button className={styles.formContainerFormRevertHalf} onClick={() => handleRevert()}>Revert Changes</button>
                                     <button className={styles.formContainerFormSubmitHalf} onClick={() => handleSubmit()}>Save Changes</button>

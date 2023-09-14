@@ -81,7 +81,7 @@ export default function Echo({ data, page, fullText=false, saved=false }) {
                     <>
                     <div className={styles.echoHeadProfile} style={{ backgroundImage: `url(${echoData.userData.profileImage.url})` }} onClick={() => page.router.push(`/user/${echoData.accountID}`)}></div>
                     <span className={styles.echoHeadData} onClick={() => page.router.push(`/user/${echoData.accountID}`)}>
-                        <span className={styles.echoHeadDataUser}>{`${echoData.userData.firstName} ${echoData.userData.lastName}`}{ echoData.communityData ? <span>{ echoData.communityData.userRole }</span> : null }</span>
+                        <span className={styles.echoHeadDataUser}>{`${echoData.userData.firstName} ${echoData.userData.lastName}`}{ echoData.communityData ? <span>{ echoData.communityData.userRole || "EX MEMBER" }</span> : null }</span>
                         <span className={styles.echoHeadDataDateTime}>{DateGenerator.GenerateDateTime(echoData.datetime)}</span>
                     </span>
                     </>
@@ -92,13 +92,12 @@ export default function Echo({ data, page, fullText=false, saved=false }) {
                         { echoData.accountID === page.activeUser.accountID ? <span className={styles.echoHeadOption} onClick={() => page.setShowEchoCreator(echoData)}>Edit Post</span> : null}
                         { echoData.accountID === page.activeUser.accountID ? <span className={styles.echoHeadOption} onClick={() => handleDeleteEcho()}>Delete Post</span> : null }
                         { echoData.accountID !== page.activeUser.accountID ? <span className={styles.echoHeadOption} onClick={() => echoSaved ? handleUnsaveEcho() : handleSaveEcho()}>{echoSaved ? "Unsave" : "Save"}</span> : null }
-                        { echoData.accountID !== page.activeUser.accountID ? <span className={styles.echoHeadOption}>Hide</span> : null }
                         { echoData.accountID !== page.activeUser.accountID ? <span className={styles.echoHeadOption}>Report</span> : null }
                     </div>
                 </div>
             </div>
             <div className={styles.echoContent}>
-                { echoData.content.text ? <pre className={styles.echoText}>{Helpers.textLimiter(echoData.content.text, 180, fullText)} { echoData.content.text.length > 180 && !fullText ? <span onClick={() => page.setShowEchoViewer(echoData)}>See more</span> : null }</pre> : null}
+                { echoData.content.text ? <pre className={styles.echoText}>{Helpers.textLimiter(echoData.content.text, 180, fullText)} { echoData.content.text.length > 180 && !fullText ? <span className="titleGradient" onClick={() => page.setShowEchoViewer(echoData)}>See more</span> : null }</pre> : null}
                 { 
                     echoData.content.media && echoData.content.media.length > 0 ?
                     <div className={styles.echoMedia} onClick={() => page.setShowMediaViewer(echoData)}>

@@ -2,13 +2,20 @@
     width: 100%;
     height: 70px;
     background-color: var(--primary);
-    padding: 0px 100px;
+    padding: 0px 20px;
     position: fixed;
     top: 0px;
     left: 0px;
 }
 
+.topnavLogo {
+    height: 60px;
+    float: left;
+    margin: 5px 0px 0px 0px;
+}
+
 .topnavTitle {
+    display: none;
     color: var(--surface);
     font-size: 15px;
     font-weight: 500;
@@ -17,10 +24,12 @@
 }
 
 .topnavSearchBar {
+    display: none;
     width: 400px;
     height: 100%;
     float: left;
     background-color: #ffffff10;
+    position: relative;
 }
 
 .topnavSearchBar input {
@@ -35,6 +44,7 @@
     background-position-x: right;
     background-position: 90% 23px;
     background-repeat: no-repeat;
+    pointer-events: none;
 }
 
 .topnavSearchBar input::placeholder {
@@ -54,6 +64,9 @@
 }
 
 .topnavButton:hover { transform: scale(1.1, 1.1) };
+
+.topnavSearchButton { display: inline-block; }
+.topnavChatButton { display: none; }
 
 .topnavNotificationDot {
     width: 11px;
@@ -98,6 +111,7 @@
 }
 
 .topnavAccountData {
+    display: none;
     width: fit-content;
     height: 60px;
     float: right;
@@ -121,4 +135,14 @@
     margin: 0px;
     text-transform: uppercase;
     text-align: right;
+}
+
+@media screen and (min-width: 1125px) {
+    .topnavContainer { padding: 0px 100px; }
+    .topnavSearchBar {display: block;}
+    .topnavAccountData {display: block;}
+    .topnavLogo { display: none; }
+    .topnavTitle { display: block; }
+    .topnavSearchButton { display: none; }
+    .topnavChatButton { display: inline-block; }
 }

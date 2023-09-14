@@ -17,7 +17,7 @@ function ValidateCreateEcho(data) {
 function parseParams(params, data) {
     const result = {}
     for (let param of params) {
-        if (data[param]) result[param] = data[param]
+        if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
     }
     return result;
 }
@@ -48,14 +48,15 @@ export default async function CreateEcho(params, io) {
                 link: params.content.link
             },
             datetime: Date.now(),
-            url: `${AppConfig.HOST}/${params.communityID ? "communities" : "user"}/${params.communityID ? params.communityID : params.accountID}?echo=${echoID}`
+            url: `/${params.communityID ? "communities" : "user"}/${params.communityID ? params.communityID : params.accountID}?echo=${echoID}`
         }
 
         const createEchoResponse = await db.collection("echoes").insertOne(echoData)
         if (createEchoResponse.errors) throw new Error("An error occured when creating echo.");
 
+        const createdEcho = await db.collection("echoes").findOne({ echoID: echoData.echoID })
         const responseData = ResponseClient.DBModifySuccess({
-            data: createEchoResponse,
+            data: createdEcho,
             message: "Echo created successfully."
         })
 

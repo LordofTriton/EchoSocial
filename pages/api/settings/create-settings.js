@@ -15,7 +15,7 @@ function ValidateCreateSettings(data) {
 function parseParams(params, data) {
     const result = {}
     for (let param of params) {
-        if (data[param]) result[param] = data[param]
+        if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
     }
     return result;
 }
@@ -57,7 +57,7 @@ export default async function CreateSettings(params, io) {
 
         userSettings = await db.collection("settings").findOne({ accountID: params.accountID })
         const responseData = ResponseClient.DBModifySuccess({
-            data: settingsData,
+            data: userSettings,
             message: "Settings created successfully."
         })
         return responseData;

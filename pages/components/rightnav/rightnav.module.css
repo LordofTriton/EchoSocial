@@ -1,4 +1,5 @@
 .rightnavContainer {
+    display: none;
     width: 70px;
     height: calc(100% - 70px);
     background-color: var(--surface);
@@ -6,18 +7,17 @@
     top: 70px;
     right: 0px;
     box-shadow: 0 0 34px 0 rgba(63,66,87,.1);
+    z-index: 40;
 }
 
 .rightnavContainer::-webkit-scrollbar {
-    width: 0px;
+    width: 0px !important;
 }
 
 .rightnavChatBox {
     width: 100%;
     height: calc(100% - 100px);
     padding: 30px 0px 20px 0px;
-    overflow: hidden;
-    overflow-y: auto;
 }
 
 .rightnavChatBoxChat {
@@ -32,7 +32,22 @@
     cursor: pointer;
 }
 
-.rightnavChatBoxChat span {
+.rightnavChatBoxChatUnread {
+    font-size: 8px;
+    font-weight: 400;
+    padding: 3px 6px;
+    background-color: red;
+    border-radius: 15px;
+    position: absolute;
+    bottom: 0px;
+    left: 50%;
+    transform: translate(-50%, 8px);
+    display: block;
+    border: 3px solid var(--surface);
+    color: white;
+}
+
+.rightnavChatBoxChatOnline {
     width: 15px;
     aspect-ratio: 1;
     background-color: lime;
@@ -45,12 +60,47 @@
     border: 3px solid var(--surface);
 }
 
+.rightnavChatBoxChatPreview {
+    width: 150px;
+    height: 50px;
+    background-color: var(--surface);
+    border-radius: 5px 0px 0px 5px;
+    position: absolute;
+    top: 0px;
+    right: calc(100% + 15px);
+    white-space: nowrap;
+    overflow: hidden;
+    transform: translate(0px, -5px);
+}
+
+.rightnavChatBoxChatPreviewName {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 6px 20px 3px 20px;
+    display: block;
+}
+
+.rightnavChatBoxChatPreviewContent {
+    font-size: 10px;
+    font-weight: 400;
+    color: var(--accent);
+    margin: 0px 20px 0px 20px;
+    display: block;
+}
+
 .rightnavButton {
     width: 100%;
     height: 100px;
-    background-color: var(--accent);
+    background-image: linear-gradient(to bottom left, blueviolet, #F58A2Aff);
     position: fixed;
     bottom: 0px;
     padding: 30px 15px;
     cursor: pointer;
+}
+
+@media screen and (min-width: 1125px) {
+    .rightnavContainer {
+        display: block;
+    }
 }

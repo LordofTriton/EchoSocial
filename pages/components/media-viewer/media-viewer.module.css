@@ -1,13 +1,12 @@
 .mediaViewerContainer {
-    width: fit-content;
-    max-width: calc(100% - 200px);
-    height: calc(100% - 130px);
+    width: 100%;
+    height: calc(100% - 70px);
     background-color: var(--surface);
-    border-radius: 5px;
     position: fixed;
-    top: 100px;
-    right: 100px;
+    top: 0px;
+    right: 0px;
     padding: 25px;
+    z-index: 30;
 }
 
 .mediaViewerHead {
@@ -68,43 +67,15 @@
     transform: translate(0px, -2px);
 }
 
-.mediaViewerHeadOptionIcon {
+.mediaViewerHeadCloseIcon {
     display: block;
     width: 30px;
     height: 100%;
     float: right;
-    padding: 12.5px 2.5px;
+    padding: 7.5px 2.5px;
     cursor: pointer;
     position: relative;
 }
-
-.mediaViewerHeadOptionIcon:hover .mediaViewerHeadOptionBox { display: block; }
-
-.mediaViewerHeadOptionBox {
-    display: none;
-    position: absolute;
-    width: 200px;
-    height: fit-content;
-    background-color: var(--surface);
-    border-radius: 5px;
-    top: 0px;
-    right: 0px;
-    z-index: 2;
-    box-shadow: 0 0 34px 0 rgba(63,66,87,.1);
-    padding: 10px 0px;
-}
-
-.mediaViewerHeadOptionBox:hover { display: block; }
-
-.mediaViewerHeadOption {
-    color: var(--primary);
-    font-size: 15px;
-    font-weight: 500;
-    display: block;
-    padding: 7px 25px;
-}
-
-.mediaViewerHeadOption:hover { color: var(--accent); }
 
 .mediaContent {
     width: 100%;
@@ -183,4 +154,16 @@
     display: block;
     float: left;
     margin: 5px 10px;
+}
+
+@media screen and (min-width: 1125px) {
+    .mediaViewerContainer {
+        width: fit-content;
+        min-width: 400px;
+        max-width: calc(100% - 100px); 
+        top: 100px; 
+        right: 100px; 
+        height: calc(100% - 130px);
+        border-radius: 5px;
+    }
 }

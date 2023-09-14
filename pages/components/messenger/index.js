@@ -3,288 +3,186 @@ import styles from "./messenger.module.css"
 
 import DateGenerator from "../../../services/generators/DateGenerator";
 import SVGServer from "../../../services/svg/svgServer";
-import Echo from "../echo";
-import EchoComment from "../echo-comment";
-import APIClient from "../../../services/APIClient";
-import ScrollTrigger from "../scroll-trigger";
 import Helpers from "../../../util/Helpers";
-
-function Message({ data, page }) {
-
-    const isUserMessage = () => {
-        return data.accountID === page.activeUser.accountID;
-    }
-
-    const participantName = (accountID) => {
-        if (accountID === page.activeUser.accountID) return "You"
-        else return page.activeChat.participants.find((participant) => participant.accountID === accountID).name;
-    }
-
-    return (
-        <div className={styles.messengerChatMessage}>
-            <div className={styles.messengerChatMessageBody} style={{float: isUserMessage() ? "right" : "left"}}>
-                <div className={styles.messengerChatMessageData} style={{backgroundColor: isUserMessage() ? "var(--accent)" : "var(--base)", borderRadius: isUserMessage() ? "15px 15px 5px 15px" : "15px 15px 15px 5px"}}>
-                    <div className={styles.messengerChatMessageBodyContent}>
-                        {
-                            data.content.media ?
-                                <div className={styles.messengerChatMessageBodyContentMedia}>
-                                    {Helpers.getFileType(data.content.media) === "image" ? <img className={styles.messengerChatMessageBodyContentMediaImage} src={data.content.media} alt="media" /> : null}
-                                    {Helpers.getFileType(data.content.media) === "unknown" ? <div className={styles.messengerChatMessageBodyContentMediaUnknown}><span>Unknown File Type</span></div> : null}
-                                </div> : null
-                        }
-                        {
-                            data.repliedTo ?
-                                <div className={styles.messengerChatMessageBodyContentReply}>
-                                    {data.repliedTo.media ? <div className={styles.messengerChatMessageBodyContentReplyMedia} style={{ backgroundImage: `url(${data.repliedTo.media})` }}></div> : null}
-                                    <div className={styles.messengerChatMessageBodyContentReplyBody}>
-                                        <span className={styles.messengerChatMessageBodyHead}>{participantName(data.repliedTo.accountID)}<span>{DateGenerator.GenerateDateTime(data.repliedTo.datetime)}</span></span>
-                                        <div className={styles.messengerChatMessageBodyContentReplyBodyContent}>{data.repliedTo.text ? <pre className={styles.messengerChatMessageReplyBodyContentText} style={{color: isUserMessage() ? "var(--surface)" : "var(--primary)"}}>{data.repliedTo.text}</pre> : null}</div>
-                                    </div>
-                                </div> : null
-                        }
-                        { data.content.text ? <pre className={styles.messengerChatMessageBodyContentText} style={{color: isUserMessage() ? "var(--surface)" : "var(--primary)"}}>{data.content.text}</pre> : null }
-                    </div>
-                </div>
-            </div>
-        </div>
-    )
-}
 
 export default function Messenger({ toggle, control, page }) {
     const [userChats, setUserChats] = useState([])
-    const [newMessageMedia, setNewMessageMedia] = useState(null)
+    const [searchQuery, setSearchQuery] = useState("")
+    const [searchChats, setSearchChats] = useState([])
+    const [chatPage, setChatPage] = useState(1)
+    const [chatsLoader, setChatsLoader] = useState(true)
+    const [pagination, setPagination] = useState({
+      page: 1,
+      pageSize: 10,
+      totalItems: 0,
+      totalPages: 1
+    })
 
     useEffect(() => {
-        if (!page.socket) return;
-        page.socket.on('new_message', (data) => {
-            const parsedData = JSON.parse(data.message)
-            setUserChats([parsedData, ...userNotifications])
-        });
-    }, [page.socket]);
-
-    useEffect(() => {
-        if (!toggle) page.setActiveChat(null)
-    }, [toggle])
-
-    const handleFileSelect = (event) => {
-        const file = event.target.files[0];
-        if (!file) return;
-
-        setNewMessageMedia(file);
-    };
-
-    const createMessage = async () => {
-        let uploadedFile;
-        if (newCommentMedia) {
-            const formData = new FormData();
-            formData.append(`media`, newCommentMedia)
-            uploadedFile = (await APIClient.post("/cloud/upload", formData, { 'Content-Type': "multipart/form-data" })).data;
-            if (!uploadedFile.success) {
-                createAlert({ type: "error", message: uploadedFile.message })
-                return;
+        if (page.socket) {
+            const updateChat = (data) => {
+                page.setChats([data, ...(userChats.filter((chat) => chat.chatID !== data.chatID))])
+                setUserChats((state) => [data, ...(state.filter((chat) => chat.chatID !== data.chatID))])
             }
+            page.socketMethods.socketListener(`UPDATED_CHAT_LIST`, updateChat)
         }
+    }, [page.socket])
 
-        const response = (await APIClient.post("/comments/create-comment", {
-            echoID: echoData.echoID,
-            accountID: page.activeUser.accountID,
-            content: {
-                text: newCommentText ? newCommentText : null,
-                media: uploadedFile ? uploadedFile.data[0].url : null,
-                link: null
-            },
-            datetime: Date.now(),
-            hearts: [page.activeUser.accountID],
-            repliedTo: newCommentReply ? newCommentReply : null
-        })).data;
-        page.createAlert(response.success ? "success" : "error", response.message)
-        if (response.success) {
-            setEchoNewComments(echoNewComments.concat(response.data))
+    useEffect(() => {
+        if (page.socket) {
+            const updateChats = (data) => {
+                if (data.success) {
+                    if (chatPage === 1) {
+                        setUserChats(data.data)
+                        page.setChats(data.data)
+                    }
+                    else {
+                        setUserChats((state) => state.concat(data.data))
+                        page.setChats(userChats.concat(data.data))
+                    }
+                    setPagination(data.pagination)
+                }
+                setChatsLoader(false)
+            }
+            page.socketMethods.socketRequest("GET_CHATS", { 
+                accountID: page.activeUser.accountID,
+                page: chatPage,
+                pageSize: 10
+            }, updateChats)
         }
-        setShowCommentEditor(false)
-    }
+    }, [page.socket, chatPage])
+
+    useEffect(() => {
+        if (searchQuery.length < 2) {
+            setSearchChats([])
+            return;
+        }
+        if (searchQuery.length % 2 === 0) {
+            setChatsLoader(true)
+            const getSearchChats = (data) => {
+                if (data.success) {
+                    setSearchChats(data.data)
+                }
+                setChatsLoader(false)
+            }
+            if (page.socket) page.socketMethods.socketRequest("SEARCH_CHATS", { 
+                accountID: page.activeUser.accountID,
+                filter: searchQuery,
+                page: 1,
+                pageSize: 10
+            }, getSearchChats)
+        }
+    }, [searchQuery])
 
     const handleScroll = (event) => {
         const { scrollTop, scrollHeight, clientHeight } = event.target;
         const isAtBottom = scrollTop + clientHeight >= scrollHeight - 10;
-
-        if (isAtBottom) {
-            if (Math.ceil(echoData.comments / 10) > commentPage) setCommentPage(commentPage + 1);
+    
+        if (isAtBottom && chatPage < pagination.totalPages && !chatsLoader) {
+          setChatPage(chatPage + 1);
+          setChatsLoader(true)
         }
     };
-
-    const testChat = {
-        chatID: "1",
-        participants: [
-            { accountID: "1234567", name: "Halo McGee" },
-            { accountID: "7654321", name: "Agboola Joshua" }
-        ],
-        history: [
-            {
-                messageID: "11",
-                accountID: "1234567",
-                content: {
-                    text: "Hello!",
-                    media: null,
-                    link: null
-                },
-                datetime: Date.now(),
-                repliedTo: null
-            },
-            {
-                messageID: "11",
-                accountID: "1234567",
-                content: {
-                    text: "Hi! How are you doing?",
-                    media: null,
-                    link: null
-                },
-                datetime: Date.now(),
-                repliedTo: {
-                    text: "Hello!",
-                    media: null,
-                    link: null
-                }
-            }
-        ]
-    }
-
-    const testMessages = [
-        {
-            chatID: "1234567",
-            accountID: page.activeUser.accountID,
-            content: {
-                text: "Hello!",
-                media: null,
-                link: null
-            },
-            datetime: Date.now(),
-            repliedTo: null
-        },
-        {
-            chatID: "1234567",
-            accountID: "7654321",
-            content: {
-                text: "What's up?",
-                media: null,
-                link: null
-            },
-            datetime: Date.now(),
-            repliedTo: {
-                accountID: page.activeUser.accountID,
-                text: "Hello!",
-                media: null,
-                link: null
-            }
-        },
-        {
-            chatID: "1234567",
-            accountID: page.activeUser.accountID,
-            content: {
-                text: "I'm good!",
-                media: `/images/bckg1.jpg`,
-                link: null
-            },
-            datetime: Date.now(),
-            repliedTo: null
-        },
-        {
-            chatID: "1234567",
-            accountID: "7654321",
-            content: {
-                text: "What's the image for?",
-                media: null,
-                link: null
-            },
-            datetime: Date.now(),
-            repliedTo: {
-                accountID: page.activeUser.accountID,
-                text: "I'm good!",
-                media: `/images/bckg1.jpg`,
-                link: null
-            }
-        },
-    ]
 
     return (
         <>
             <div className="modalOverlay" style={{ display: toggle ? "block" : "none" }} onClick={() => control(false)}></div>
-            <div className={styles.messengerChat} style={{ right: page.activeChat ? "570px" : "-500px" }}>
-                <div className={styles.messengerChatHead}>
-                    <span className={styles.messengerChatClose}><SVGServer.CloseIcon color="var(--primary)" width="30px" height="30px" /></span>
-                    <span className={styles.messengerChatUserData}>
-                        <span className={styles.messengerChatUserProfile}></span>
-                        <span className={styles.messengerChatUserName}>Halo</span>
+            <div className={styles.messenger} style={{ right: !toggle ? "-700px" : null }} onScroll={handleScroll}>
+                <div className={styles.messengerHead}>
+                    <span className={styles.messengerTitle}>
+                        <span className="titleGradient">Messages</span>
                     </span>
+                    <span className={styles.messengerTitleIcon} style={{ transform: "scale(1.5,1.5)" }} onClick={() => control(false)}><SVGServer.CloseIcon color="var(--primary)" width="30px" height="30px" /></span>
+                    {/* <span className={styles.messengerTitleIcon} onClick={() => setShowSearch(true)}><SVGServer.SearchIcon color="var(--primary)" width="30px" height="30px" /></span> */}
                 </div>
 
-                <div className={styles.messengerChatMessages}>
+                <input type="text" className={styles.messengerSearch} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search friends..." />
+
+                {/* <div className={styles.messengerChatRecents}>
+                    <div className={styles.messengerChatRecent} onClick={() => page.setActiveChat(testChat)}>
+                        <div style={{backgroundImage: `url(/images/bckg1.jpg)`}}></div>
+                        <span>{Helpers.textLimiter("Veronica", 10)}</span>
+                    </div>
+                    <div className={styles.messengerChatRecent} onClick={() => page.setActiveChat(testChat)}>
+                        <div style={{backgroundImage: `url(/images/bckg1.jpg)`}}></div>
+                        <span>{Helpers.textLimiter("Halo", 10)}</span>
+                    </div>
+                    <div className={styles.messengerChatRecent} onClick={() => page.setActiveChat(testChat)}>
+                        <div style={{backgroundImage: `url(/images/bckg1.jpg)`}}></div>
+                        <span>{Helpers.textLimiter("Joshua", 10)}</span>
+                    </div>
+                </div> */}
+
+                <div className={styles.messengerChats}>
                     {
-                        testMessages && testMessages.length ?
-                            testMessages.map((message, index) =>
-                                <Message data={message} page={page} key={index} />
-                            ) : null
+                        searchQuery.length > 1 ?
+                        searchChats && searchChats.length > 0 ?
+                            searchChats.map((chat) => 
+                                <div className={styles.messengerChat}>
+                                    <div className={styles.messengerChatProfile}  onClick={() => page.router.push(`/user/${chat.target.accountID}`)} style={{backgroundImage: `url(${chat.target.profileImage.url})`}}></div>
+                                    <div className={styles.messengerChatData} onClick={() => page.setActiveChat(chat)}>
+                                        <span className={styles.messengerChatDataName}>
+                                            {chat.target.firstName} {chat.target.lastName}
+                                            <span className={styles.messengerChatDataTime}><span></span>{DateGenerator.GenerateDateTime(chat.lastUpdated)}</span>
+                                        </span>
+                                        { chat.latestMessage ? 
+                                            chat.latestMessage.text ?
+                                            <span className={styles.messengerChatDataText}>{ chat.unread > 0 ? <span className={styles.messengerChatUnread}>{chat.unread}</span> : null }{Helpers.textLimiter(chat.latestMessage.text, 40)}</span> 
+                                            : <span className={styles.messengerChatDataText}>{ chat.unread > 0 ? <span className={styles.messengerChatUnread}>{chat.unread}</span> : null }<SVGServer.CameraIcon color="var(--primary)" width="10px" height="10px" /></span> 
+                                            : <span className={styles.messengerChatDataText}>Say Hi to {chat.target.firstName}!</span> 
+                                        }
+                                    </div>
+                                    <div className={styles.messengerChatOptions}>
+                                        <SVGServer.OptionIcon color="var(--secondary)" width="25px" height="25px" />
+                                        <div className={styles.messengerChatOptionBox}>
+                                            <span className={styles.messengerChatOption}>Mute</span>
+                                            <span className={styles.messengerChatOption}>Delete</span>
+                                            <span className={styles.messengerChatOption}>Block</span>
+                                            <span className={styles.messengerChatOption}>Report</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            )
+                            : chatsLoader ? null : <span className={styles.messengerChatNotFound}>No results found.</span>
+                        :
+                        userChats && userChats.length > 0 ?
+                        userChats.map((chat) =>
+                            <div className={styles.messengerChat}>
+                                <div className={styles.messengerChatProfile}  onClick={() => page.router.push(`/user/${chat.target.accountID}`)} style={{backgroundImage: `url(${chat.target.profileImage.url})`}}></div>
+                                <div className={styles.messengerChatData} onClick={() => page.setActiveChat(chat)}>
+                                    <span className={styles.messengerChatDataName}>
+                                        {chat.target.firstName} {chat.target.lastName}
+                                        <span className={styles.messengerChatDataTime}><span></span>{DateGenerator.GenerateDateTime(chat.lastUpdated)}</span>
+                                    </span>
+                                    { chat.latestMessage ? 
+                                        chat.latestMessage.text ?
+                                        <span className={styles.messengerChatDataText}>{ chat.unread > 0 ? <span className={styles.messengerChatUnread}>{chat.unread}</span> : null }{Helpers.textLimiter(chat.latestMessage.text, 40)}</span> 
+                                        : <span className={styles.messengerChatDataText}>{ chat.unread > 0 ? <span className={styles.messengerChatUnread}>{chat.unread}</span> : null }<SVGServer.CameraIcon color="var(--primary)" width="10px" height="10px" /></span> 
+                                        : <span className={styles.messengerChatDataText}>Say Hi to {chat.target.firstName}!</span> 
+                                    }
+                                </div>
+                                <div className={styles.messengerChatOptions}>
+                                    <SVGServer.OptionIcon color="var(--secondary)" width="25px" height="25px" />
+                                    <div className={styles.messengerChatOptionBox}>
+                                        <span className={styles.messengerChatOption}>Mute</span>
+                                        <span className={styles.messengerChatOption}>Delete</span>
+                                        <span className={styles.messengerChatOption}>Block</span>
+                                        <span className={styles.messengerChatOption}>Report</span>
+                                    </div>
+                                </div>
+                            </div>
+                        )
+                        : null
                     }
-                </div>
-            </div>
-            <div className={styles.messengerChatList} style={{ right: toggle ? "70px" : "-500px" }} onScroll={handleScroll}>
-                <div className={styles.messengerChatListHead}>
-                    <span className={styles.messengerChatListTitle}>
-                        Messages
-                    </span>
-                    <span className={styles.messengerChatListTitleIcon} style={{ transform: "scale(1.5,1.5)" }}><SVGServer.CloseIcon color="var(--primary)" width="30px" height="30px" /></span>
-                    <span className={styles.messengerChatListTitleIcon}><SVGServer.SearchIcon color="var(--primary)" width="30px" height="30px" /></span>
-                </div>
-
-                <input type="text" className={styles.messengerChatListSearch} placeholder="Search chats and friends..." />
-
-                <div className={styles.messengerChatListChat}>
-                    <div className={styles.messengerChatListChatProfile}></div>
-                    <div className={styles.messengerChatListChatData}>
-                        <span className={styles.messengerChatListChatDataName}>Halo McGee</span>
-                        <span className={styles.messengerChatListChatDataText}>{Helpers.textLimiter("Hi. I've been trying to reach you about your car's extended warranty...", 50)}</span>
-                    </div>
-                    <div className={styles.messengerChatListChatOptions}>
-                        <SVGServer.OptionIcon color="var(--secondary)" width="25px" height="25px" />
-                        <div className={styles.messengerChatListChatOptionBox}>
-                            <span className={styles.messengerChatListChatOption}>Mute</span>
-                            <span className={styles.messengerChatListChatOption}>Delete</span>
-                            <span className={styles.messengerChatListChatOption}>Block</span>
-                            <span className={styles.messengerChatListChatOption}>Report</span>
-                        </div>
-                    </div>
-                </div>
-                <div className={styles.messengerChatListChat} onClick={() => page.setActiveChat(true)}>
-                    <div className={styles.messengerChatListChatProfile}></div>
-                    <div className={styles.messengerChatListChatData}>
-                        <span className={styles.messengerChatListChatDataName}>Halo McGee</span>
-                        <span className={styles.messengerChatListChatDataText}>{Helpers.textLimiter("Hi. I've been trying to reach you about your car's extended warranty...", 50)}</span>
-                    </div>
-                    <div className={styles.messengerChatListChatOptions}>
-                        <SVGServer.OptionIcon color="var(--secondary)" width="25px" height="25px" />
-                        <div className={styles.messengerChatListChatOptionBox}>
-                            <span className={styles.messengerChatListChatOption}>Mute</span>
-                            <span className={styles.messengerChatListChatOption}>Delete</span>
-                            <span className={styles.messengerChatListChatOption}>Block</span>
-                            <span className={styles.messengerChatListChatOption}>Report</span>
-                        </div>
-                    </div>
-                </div>
-                <div className={styles.messengerChatListChat}>
-                    <div className={styles.messengerChatListChatProfile}></div>
-                    <div className={styles.messengerChatListChatData}>
-                        <span className={styles.messengerChatListChatDataName}>Halo McGee</span>
-                        <span className={styles.messengerChatListChatDataText}>{Helpers.textLimiter("Hi. I've been trying to reach you about your car's extended warranty...", 50)}</span>
-                    </div>
-                    <div className={styles.messengerChatListChatOptions}>
-                        <SVGServer.OptionIcon color="var(--secondary)" width="25px" height="25px" />
-                        <div className={styles.messengerChatListChatOptionBox}>
-                            <span className={styles.messengerChatListChatOption}>Mute</span>
-                            <span className={styles.messengerChatListChatOption}>Delete</span>
-                            <span className={styles.messengerChatListChatOption}>Block</span>
-                            <span className={styles.messengerChatListChatOption}>Report</span>
-                        </div>
-                    </div>
+                    { chatsLoader ? 
+                        <div className="loader" style={{
+                            width: "50px",
+                            height: "50px",
+                            borderWidth: "5px",
+                            borderColor: "var(--primary) transparent",
+                            margin: "50px calc(50% - 25px) 0px calc(50% - 25px)"
+                        }}></div>  : null
+                    }
                 </div>
             </div>
         </>

@@ -15,7 +15,7 @@ function ValidateCreateBlacklist(data) {
 function parseParams(params, data) {
     const result = {}
     for (let param of params) {
-        if (data[param]) result[param] = data[param]
+        if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
     }
     return result;
 }
@@ -25,7 +25,8 @@ export default async function CreateBlacklist(params, io) {
     params = parseParams([
         "accountID",
         "blocker",
-        "blockee"
+        "blockee",
+        "blockeeType"
     ], params);
 
     try {
@@ -40,17 +41,18 @@ export default async function CreateBlacklist(params, io) {
         const blacklistData = {
             blacklistID: IDGenerator.GenerateBlacklistID(),
             accountID: params.accountID,
+            blocker: params.blocker,
+            blockee: params.blockee,
+            blockeeType: params.blockeeType,
             datetime: Date.now()
         }
-        if (params.blocker) blacklistData.blocker = params.blocker;
-        if (params.blockee) blacklistData.blockee = params.blockee;
-        blacklistData.datetime = Date.now()
 
         const createBlacklistResponse = await db.collection("blacklists").insertOne(blacklistData)
         if (createBlacklistResponse.errors) throw new Error("An error occured when creating blacklist.");
 
+        const createdBlacklist = await db.collection("blacklists").findOne({ blacklistID: blacklistData.blacklistID })
         const responseData = ResponseClient.DBModifySuccess({
-            data: createBlacklistResponse,
+            data: createdBlacklist,
             message: "Blacklist created successfully."
         })
         

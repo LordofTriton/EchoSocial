@@ -14,7 +14,7 @@ function ValidateCreateMember(data) {
 function parseParams(params, data) {
     const result = {}
     for (let param of params) {
-        if (data[param]) result[param] = data[param]
+        if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
     }
     return result;
 }
@@ -71,7 +71,7 @@ export async function CreateMemberCallback(params, io) {
         content: `You joined a new community: ${community.displayName}. Click to view.`,
         image: community.profileImage.url,
         clickable: true,
-        redirect: `${AppConfig.HOST}/communities/${community.communityID}`
+        redirect: `/communities/${community.communityID}`
     }, io)
     await db.collection("nodes").findOneAndUpdate({ nodeID: community.node.nodeID }, { $inc: { pings: 1 }})
 }

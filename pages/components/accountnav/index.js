@@ -6,12 +6,14 @@ import { Form } from "../form";
 
 export default function AccountNav({toggle, control, page}) {
     const handleLogout = () => {
-        page.cache.deleteData("EchoUser");
+        page.cookies.deleteData("EchoUser");
+        page.clearCache()
+
         page.router.push("/login")
     }
 
     const themeChange = (dark) => {
-        page.cache.saveData("EchoUser", { ...page.activeUser, dark })
+        page.cookies.saveData("EchoUser", { ...page.activeUser, dark })
         page.setActiveUser({ ...page.activeUser, dark })
         localStorage.setItem("EchoTheme", dark)
         page.setActiveTheme(dark)
@@ -22,8 +24,11 @@ export default function AccountNav({toggle, control, page}) {
     }
 
     return (
-        <div className={styles.accountNavContainer} style={{top: toggle ? "70px" : "-100vh"}} onMouseEnter={() => control(true)} onMouseLeave={() => control(false)}>
-            <span className={styles.accountNavTitle}>My Account</span>
+        <div className={styles.accountNavContainer} style={{top: !toggle ? "-100vh" : "70px"}} onMouseEnter={() => control(true)} onMouseLeave={() => control(false)}>
+            <span className={styles.accountNavTitle}>
+                My Account
+                <span className={styles.accountNavClose}><SVGServer.CloseIcon color="var(--accent)" width="30px" height="30px" /></span>
+            </span>
             <div className={styles.accountNavButton} onClick={() => page.router.push(`/user/${page.activeUser.accountID}`)}>
                 <span className={styles.accountNavButtonIcon}><SVGServer.ProfileIcon color="var(--secondary)" width="30px" height="30px" /></span>
                 <span className={styles.accountNavButtonText}>Profile</span>

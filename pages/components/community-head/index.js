@@ -57,6 +57,42 @@ export default function CommunityHead({ data, page, title }) {
         page.router.push("/communities/discover")
     }
 
+    const handleJoinGroup = async () => {
+        if (communityData.userMember) return;
+        if (communityData.userApplied) return;
+        else {
+            if (communityData.entryApproval) {
+                const createdApplication = (data) => setCommunityData({...communityData, userApplied: true})
+                if (page.socket) page.socketMethods.socketRequest("CREATE_APPLICATION", {
+                    accountID: page.activeUser.accountID,
+                    communityID: communityData.communityID
+                }, createdApplication)
+            } else {
+                const createdMember = (data) => {
+                    setCommunityData({ ...communityData, memberCount: communityData.memberCount + 1 })
+                    page.createAlert("success", "Joined community successfully.")
+                }
+                if (page.socket) page.socketMethods.socketRequest("CREATE_MEMBER", {
+                    accountID: page.activeUser.accountID,
+                    communityID: communityData.communityID
+                }, createdMember)
+            }
+        }
+    }
+
+    const blockCommunity = async () => {
+        if (communityData && communityData.userMember && communityData.userMember.role !== "member") return;
+        if (page.socket) {
+            page.socketMethods.socketEmitter("CREATE_BLACKLIST", {
+                accountID: page.activeUser.accountID,
+                blocker: page.activeUser.accountID,
+                blockee: communityData.accountID,
+                blockeeType: "community"
+            })
+            page.createAlert("success", "Community blocked successfully.")
+        }
+    }
+
     return (
         <>
         <div className={styles.communityHead}>
@@ -78,19 +114,33 @@ export default function CommunityHead({ data, page, title }) {
                         }
                     </div>
                     <div className={styles.communityHeadNames}>
-                        <span className={styles.communityHeadName}>{communityData ? communityData.displayName : " "}</span>
+                        <span className={styles.communityHeadName}><span className="titleGradient">{communityData ? communityData.displayName : " "}</span></span>
                         <span className={styles.communityHeadNickName}>Community</span>
                     </div>
                 </div>
             </div>
             <div className={styles.communityHeadButtons}>
                 {
+                    communityData && communityData.userMember ?
                     <>
-                        <div className={styles.communityHeadButton} onClick={() => handleLeaveGroup()}>
-                            <SVGServer.ExitIcon color="var(--primary)" width="20px" height="20px" />
-                            <span>Leave</span>
-                        </div>
-                    </>
+                    <div className={styles.communityHeadButton} onClick={() => handleLeaveGroup()}>
+                        <SVGServer.ExitIcon color="var(--primary)" width="20px" height="20px" />
+                        <span>Leave</span>
+                    </div> 
+                    <div className={styles.communityHeadButton} onClick={() => blockCommunity()} style={{backgroundColor: communityData && communityData.userBlocked ? "var(--accent)" : "var(--surface)"}}>
+                        <SVGServer.BlockIcon color={communityData && communityData.userBlocked ? "var(--surface)" : "var(--primary)"} width="20px" height="20px" />
+                        <span style={{color: communityData && communityData.userBlocked ? "var(--surface)" : "var(--primary)"}}>{communityData && communityData.userBlocked ? "Unblock" : "Block"}</span>
+                    </div>
+                    </> : 
+                    communityData && !communityData.userApplied ?
+                    <div className={styles.communityHeadButton} onClick={() => handleJoinGroup()}>
+                        <SVGServer.EnterIcon color="var(--primary)" width="20px" height="20px" />
+                        <span>{ communityData && communityData.entryApproval ? "Apply to Join" : "Join"}</span>
+                    </div> : 
+                    <div className={styles.communityHeadButton} onClick={() => handleLeaveGroup()}>
+                        <SVGServer.EnterIcon color="var(--primary)" width="20px" height="20px" />
+                        <span>Applied</span>
+                    </div>
                 }
             </div>
         </div>
@@ -101,18 +151,6 @@ export default function CommunityHead({ data, page, title }) {
             <span className={styles.communityHeadNavLink} style={{color: title === "members" ? "var(--accent)" : null}} onClick={() => page.router.push(`/communities/${communityData.communityID}/members`)}>Members</span>
             <span className={styles.communityHeadNavLink} style={{color: title === "media" ? "var(--accent)" : null}} onClick={() => page.router.push(`/communities/${communityData.communityID}/media`)}>Media</span>
             { communityData && communityData.userMember && communityData.userMember.role !== "member" ? <span className={styles.communityHeadNavLink} style={{color: title === "settings" ? "var(--accent)" : null}} onClick={() => page.router.push(`/communities/${communityData.communityID}/settings`)}>Settings</span> : null }
-            {
-                communityData && communityData.userMember && communityData.userMember.role === "member" ? 
-                <div className={styles.communityHeadOptions}>
-                    <span className={styles.communityHeadNavLink}>
-                        <SVGServer.OptionIcon color="var(--primary)" width="25px" height="25px" />
-                    </span>
-                    <div className={styles.communityHeadOptionBox}>
-                        <span className={styles.communityHeadOption} onClick={() => blockUser()}>Block {communityData ? communityData.firstName : "User"}</span>
-                        <span className={styles.communityHeadOption}>Report {communityData ? communityData.firstName : "User"}</span>
-                    </div>
-                </div> : null
-            }
         </div>
         </>
     )
