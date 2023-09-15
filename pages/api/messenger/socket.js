@@ -14,7 +14,6 @@ export default async function ChatSocket(io, socket) {
         else data = JSON.parse(data)
         const response = await CreateChat(data, io)
         io.to(data.accountID).emit(`CREATE_CHAT_RES_${data.serial}`, JSON.stringify(response))
-        if (response.success) await CreateChatCallback(data, io)
     });
     
     socket.on('CREATE_MESSAGE_REQ', async (data) => {

@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "./form.module.css"
 
-export function FullWrapper({children}) {
+export default function FullWrapper({children}) {
     return (
         <div className={styles.formFullWrapper}>
             { ...children }

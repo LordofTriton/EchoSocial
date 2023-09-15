@@ -5,7 +5,8 @@ import SelectSingleInput from "./select-single-input"
 import SwitchInput from "./switch-input"
 import TextInput from "./text-input"
 import Submit from "./submit-button"
-import { FullWrapper, HalfWrapper, ThirdWrapper } from "./wrapper"
+import { HalfWrapper, ThirdWrapper } from "./wrapper"
+import FullWrapper from "./wrapper"
 
 export const Form = { AreaInput, DateInput, SelectMultipleInput, SelectSingleInput, SwitchInput, TextInput, Submit, FullWrapper, HalfWrapper, ThirdWrapper }
 
