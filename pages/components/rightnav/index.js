@@ -117,7 +117,7 @@ export default function RightNav({ page }) {
                 {
                     userFriends.length > 0 ?
                     userFriends.slice(0, 11).map((friend, index) => 
-                        <Friend data={friend} page={page} />
+                        <Friend data={friend} page={page} key={index} />
                     ) : null
                 }
                 {

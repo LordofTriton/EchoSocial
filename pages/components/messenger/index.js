@@ -117,8 +117,8 @@ export default function Messenger({ toggle, control, page }) {
                     {
                         searchQuery.length > 1 ?
                         searchChats && searchChats.length > 0 ?
-                            searchChats.map((chat) => 
-                                <div className={styles.messengerChat}>
+                            searchChats.map((chat, index) => 
+                                <div className={styles.messengerChat} key={index}>
                                     <div className={styles.messengerChatProfile}  onClick={() => page.router.push(`/user/${chat.target.accountID}`)} style={{backgroundImage: `url(${chat.target.profileImage.url})`}}></div>
                                     <div className={styles.messengerChatData} onClick={() => page.setActiveChat(chat)}>
                                         <span className={styles.messengerChatDataName}>
@@ -146,8 +146,8 @@ export default function Messenger({ toggle, control, page }) {
                             : chatsLoader ? null : <span className={styles.messengerChatNotFound}>No results found.</span>
                         :
                         userChats && userChats.length > 0 ?
-                        userChats.map((chat) =>
-                            <div className={styles.messengerChat}>
+                        userChats.map((chat, index) =>
+                            <div className={styles.messengerChat} key={index}>
                                 <div className={styles.messengerChatProfile}  onClick={() => page.router.push(`/user/${chat.target.accountID}`)} style={{backgroundImage: `url(${chat.target.profileImage.url})`}}></div>
                                 <div className={styles.messengerChatData} onClick={() => page.setActiveChat(chat)}>
                                     <span className={styles.messengerChatDataName}>
