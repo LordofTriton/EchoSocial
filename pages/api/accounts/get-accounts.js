@@ -72,6 +72,7 @@ export default async function GetAccounts(params, io) {
             let communityMembership = await db.collection("members").find({ accountID: account.accountID }).toArray()
             let communities = await db.collection("communities").find({ communityID: { $in: communityMembership.map((obj) => obj.communityID) } }).toArray()
             let chat = await db.collection("chats").findOne({ accountID: params.accountID, targetID: account.accountID })
+            let settings = await db.collection("settings").findOne({ accountID: account.accountID })
             
             accountData.push({
                 accountID: account.accountID,
@@ -103,6 +104,7 @@ export default async function GetAccounts(params, io) {
                 fSocial: account.fSocial,
                 tSocial: account.tSocial,
                 iSocial: account.iSocial,
+                settings,
                 userRole: account.userRole,
                 lastLogin: account.lastLogin,
                 lastActive: account.lastActive,

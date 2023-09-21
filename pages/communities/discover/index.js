@@ -39,11 +39,11 @@ export default function CommunitiesFeed() {
                 if (data.success) {
                     if (communitiesPage === 1) {
                         setCommunities(data.data)
-                        if (communitiesPage < 3) dataControl.setDiscoverCommunities(data.data)
+                        if (communitiesPage < 2) dataControl.setDiscoverCommunities(data.data)
                     }
                     else {
                         setCommunities((state) => state.concat(data.data))
-                        if (communitiesPage < 3) dataControl.setDiscoverCommunities(communities.concat(data.data))
+                        if (communitiesPage < 2) dataControl.setDiscoverCommunities(communities.concat(data.data))
                     }
                     setPagination(data.pagination)
                 }

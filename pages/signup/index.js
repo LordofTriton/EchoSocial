@@ -22,6 +22,7 @@ export default function Signup() {
     })
     const [signupLoader, setSignupLoader] = useState(false)
     const [alert, setAlert] = useState(null)
+    const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
 
     const handleSubmit = async (event) => {
         event.preventDefault()
@@ -50,7 +51,7 @@ export default function Signup() {
             <title>Echo - Sign Up</title>
             <meta name="description" content="A simple social media." />
             <link rel="icon" href="/favicon.ico" />
-            <link rel="stylesheet" href={`/styles/themes/classic-light.css`} />
+            <link rel="stylesheet" href={`/styles/themes/${activeTheme === "dark" ? 'classic-dark.css' : 'classic-light.css'}`} />
         </Head>
 
         <div className={styles.signupBanner}>

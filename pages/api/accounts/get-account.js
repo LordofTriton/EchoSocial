@@ -40,6 +40,7 @@ export default async function GetAccount(params, io) {
         let userLiked = await db.collection("hearts").findOne({ accountID: params.accountID, userID: fetchAccountResponse.accountID })
         let userLikee = await db.collection("hearts").findOne({ accountID: fetchAccountResponse.accountID, userID: params.accountID })
         let chat = await db.collection("chats").findOne({ accountID: params.accountID, targetID: fetchAccountResponse.accountID })
+        let settings = await db.collection("settings").findOne({ accountID: filters.accountID })
         
         const userData = {
             accountID: fetchAccountResponse.accountID,
@@ -71,6 +72,7 @@ export default async function GetAccount(params, io) {
             fSocial: fetchAccountResponse.fSocial,
             tSocial: fetchAccountResponse.tSocial,
             iSocial: fetchAccountResponse.iSocial,
+            settings,
             userRole: fetchAccountResponse.userRole,
             lastLogin: fetchAccountResponse.lastLogin,
             lastActive: fetchAccountResponse.lastActive,

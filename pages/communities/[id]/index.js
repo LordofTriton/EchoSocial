@@ -67,11 +67,11 @@ export default function Community() {
       if (data.success) {
         if (feedPage === 1) {
             setCommunityEchoes(data.data)
-            if (feedPage < 3) dataControl.setCommunityFeed(router.query.id, data.data)
+            if (feedPage < 2) dataControl.setCommunityFeed(router.query.id, data.data)
         }
         else {
           setCommunityEchoes((state) => state.concat(data.data))
-            if (feedPage < 3) dataControl.setCommunityFeed(router.query.id, communityEchoes.concat(data.data))
+            if (feedPage < 2) dataControl.setCommunityFeed(router.query.id, communityEchoes.concat(data.data))
         }
           setPagination(data.pagination)
       }

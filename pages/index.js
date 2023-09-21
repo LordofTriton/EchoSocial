@@ -38,11 +38,11 @@ export default function Home() {
         if (data.success) {
           if (echoFeedPage === 1) {
               setEchoFeed(data.data)
-              if (echoFeedPage < 3) dataControl.setFeed(data.data)
+              if (echoFeedPage < 2) dataControl.setFeed(data.data)
           }
           else {
               setEchoFeed((state) => state.concat(data.data))
-              if (echoFeedPage < 3) dataControl.setFeed(echoFeed.concat(data.data))
+              if (echoFeedPage < 2) dataControl.setFeed(echoFeed.concat(data.data))
           }
           setPagination(data.pagination)
         }

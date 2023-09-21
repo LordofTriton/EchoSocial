@@ -30,6 +30,7 @@ export default function Login() {
             const authResult = (await APIClient.post("/auth/login", loginDetails)).data;
 
             if (authResult.success) {
+                localStorage.clear()
                 CookieService.saveData("EchoActiveUser", authResult.data)
                 localStorage.setItem("EchoTheme", authResult.data.dark)
                 const activeUser = CookieService.getData("EchoActiveUser")
@@ -54,7 +55,7 @@ export default function Login() {
                 <title>Echo - Login</title>
                 <meta name="description" content="A simple social media." />
                 <link rel="icon" href="/favicon.ico" />
-                {activeUser ? <link rel="stylesheet" href={`/styles/themes/${activeTheme === "dark" ? 'classic-dark.css' : 'classic-light.css'}`} /> : null}
+                <link rel="stylesheet" href={`/styles/themes/${activeTheme === "dark" ? 'classic-dark.css' : 'classic-light.css'}`} />
             </Head>
 
             <div className={styles.loginBanner}>

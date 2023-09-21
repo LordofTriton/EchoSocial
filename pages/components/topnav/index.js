@@ -22,7 +22,10 @@ export default function TopNav({ page }) {
     useEffect(() => {
         if (page.socket) {
             const updateNotifications = (data) => {
-                if (data.success) setUserNotifications((state) => state.concat(data.data))
+                if (data.success) {
+                    setUserNotifications((state) => state.concat(data.data))
+                    if (data.data.filter((notification) => notification.status === "unread").length > 0) page.setShowNotificationDot(true)
+                }
             }
             page.socketMethods.socketRequest("GET_NOTIFICATIONS", {
                 accountID: page.activeUser.accountID,
@@ -57,7 +60,7 @@ export default function TopNav({ page }) {
                     </div>
                 </div>
                 <div className={styles.topnavButton} onClick={() => page.setShowNotifications(true)}>
-                    <SVGServer.NotificationIcon color="currentColor" dotColor={userNotifications.filter((notification) => notification.status === "unread").length > 0 ? "var(--accent)" : "var(--surface)"} width="40px" height="40px" />
+                    <SVGServer.NotificationIcon color="currentColor" dotColor={page.showNotificationDot ? "var(--accent)" : "var(--surface)"} width="40px" height="40px" />
                 </div>
                 <div className={styles.topnavButton} style={{ paddingTop: "18px" }} onClick={() => page.setShowEchoCreator(true)}>
                     <SVGServer.CreatePostIcon color="currentColor" width="35px" height="35px" />

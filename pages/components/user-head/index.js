@@ -108,14 +108,18 @@ export default function UserHead({ data, page, title }) {
                             </div>
                             </> :
                         <>
-                            <div className={styles.userHeadButton} onClick={() => handleFollowButtonClick()} style={{backgroundColor: userData && userData.userHearted ? "var(--accent)" : "var(--surface)"}}>
-                                {
-                                    userData && userData.userHearted ?
-                                        <SVGServer.HeartFilledIcon color="var(--surface)" width="20px" height="20px" /> :
-                                        <SVGServer.HeartLineIcon color="var(--primary)" width="20px" height="20px" />
-                                }
-                                <span style={{color: userData && userData.userHearted ? "var(--surface)" : "var(--primary)"}}>{userData && userData.userHearted ? "Liked" : "Like"}</span>
-                            </div>
+                            {
+                                userData.settings.followable ?
+                                <div className={styles.userHeadButton} onClick={() => handleFollowButtonClick()} style={{backgroundColor: userData && userData.userHearted ? "var(--accent)" : "var(--surface)"}}>
+                                    {
+                                        userData && userData.userHearted ?
+                                            <SVGServer.HeartFilledIcon color="var(--surface)" width="20px" height="20px" /> :
+                                            <SVGServer.HeartLineIcon color="var(--primary)" width="20px" height="20px" />
+                                    }
+                                    <span style={{color: userData && userData.userHearted ? "var(--surface)" : "var(--primary)"}}>{userData && userData.userHearted ? "Liked" : "Like"}</span>
+                                </div>
+                                : null
+                            }
                             {
                                 userData && userData.userFriend ?
                                 <div className={styles.userHeadButton} onClick={() => page.setActiveChat(userData.userChat)}>

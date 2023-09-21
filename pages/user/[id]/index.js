@@ -66,11 +66,11 @@ export default function User() {
       if (data.success) {
         if (feedPage === 1) {
             setUserEchoes(data.data)
-            if (feedPage < 3) dataControl.setUserFeed(router.query.id, data.data)
+            if (feedPage < 2) dataControl.setUserFeed(router.query.id, data.data)
         }
         else {
           setUserEchoes((state) => state.concat(data.data))
-            if (feedPage < 3) dataControl.setUserFeed(router.query.id, userEchoes.concat(data.data))
+            if (feedPage < 2) dataControl.setUserFeed(router.query.id, userEchoes.concat(data.data))
         }
         setPagination(data.pagination)
       }

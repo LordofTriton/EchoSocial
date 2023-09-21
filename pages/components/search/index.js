@@ -25,13 +25,17 @@ function Person({data, page}) {
             <div className={styles.searchResultPersonProfile} style={{backgroundImage: `url(${data.profileImage.url})`}}></div>
             <span className={styles.searchResultPersonName}>{data.firstName} {data.lastName}<br /><span>{data.nickname}</span></span>
 
-            <div className={styles.searchResultPersonHeart} onClick={() => handleLikeButtonClick()}>
-                {
-                    userLiked ?
-                    <SVGServer.HeartFilledIcon color="var(--accent)" width="30px" height="30px" /> :
-                    <SVGServer.HeartLineIcon color="var(--accent)" width="30px" height="30px" />
-                }
-            </div>
+            { 
+                data.settings.followable ? 
+                    <div className={styles.searchResultPersonHeart} onClick={() => handleLikeButtonClick()}>
+                    {
+                        userLiked ?
+                        <SVGServer.HeartFilledIcon color="var(--accent)" width="30px" height="30px" /> :
+                        <SVGServer.HeartLineIcon color="var(--accent)" width="30px" height="30px" />
+                    }
+                    </div>
+                : null
+            }
         </div>
     )
 }

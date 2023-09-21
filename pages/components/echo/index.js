@@ -81,7 +81,7 @@ export default function Echo({ data, page, fullText=false, saved=false }) {
                     <>
                     <div className={styles.echoHeadProfile} style={{ backgroundImage: `url(${echoData.userData.profileImage.url})` }} onClick={() => page.router.push(`/user/${echoData.accountID}`)}></div>
                     <span className={styles.echoHeadData} onClick={() => page.router.push(`/user/${echoData.accountID}`)}>
-                        <span className={styles.echoHeadDataUser}>{`${echoData.userData.firstName} ${echoData.userData.lastName}`}{ echoData.communityData ? <span>{ echoData.communityData.userRole || "EX MEMBER" }</span> : null }</span>
+                        <span className={styles.echoHeadDataUser}>{`${echoData.userData.firstName} ${echoData.userData.lastName}`}{ echoData.communityData && page.community ? <span>{ echoData.communityData.userRole || "EX MEMBER" }</span> : null }</span>
                         <span className={styles.echoHeadDataDateTime}>{DateGenerator.GenerateDateTime(echoData.datetime)}</span>
                     </span>
                     </>

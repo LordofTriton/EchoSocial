@@ -40,11 +40,11 @@ export default function CommunitiesFeed() {
                 if (data.success) {
                     if (feedPage === 1) {
                         setEchoFeed(data.data)
-                        if (feedPage < 3) dataControl.setCommunitiesFeed(data.data)
+                        if (feedPage < 2) dataControl.setCommunitiesFeed(data.data)
                     }
                     else {
                         setEchoFeed((state) => state.concat(data.data))
-                        if (feedPage < 3) dataControl.setCommunitiesFeed(echoFeed.concat(data.data))
+                        if (feedPage < 2) dataControl.setCommunitiesFeed(echoFeed.concat(data.data))
                     }
                     setPagination(data.pagination)
                 }

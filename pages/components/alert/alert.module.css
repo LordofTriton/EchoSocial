@@ -24,7 +24,7 @@
 }
 
 .alertMessage {
-    color: var(--surface);
+    color: white;
     font-size: 15px;
     float: left;
     padding-top: 10px;

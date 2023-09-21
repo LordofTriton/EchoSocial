@@ -26,6 +26,7 @@ export default function FeedSettings() {
     const {modalStates, modalControl} = useModalStates()
     const {dataStates, dataControl} = useDataStates()
     const {socket, socketMethods} = useSocketContext()
+    const [showAccountDrop, setShowAccountDrop] = useState(false)
 
     const createAlert = (type, message) => {
         setAlert({ type, message })

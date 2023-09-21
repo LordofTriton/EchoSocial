@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 function useModalStates() {
+    const [showNotificationDot, setShowNotificationDot] = useState(false)
     const [showEchoViewer, updateShowEchoViewer] = useState(false)
     const [showEchoCreator, updateShowEchoCreator] = useState(false)
     const [showMediaViewer, updateShowMediaViewer] = useState(false)
@@ -92,8 +93,8 @@ function useModalStates() {
         }
     }
 
-    const modalStates = {showEchoViewer, showEchoCreator, showMediaViewer, showNotifications, showNodeCreator, showCommunityCreator, activeChat, showMessenger, showChat, showSearch}
-    const modalControl = {setShowEchoViewer, setShowEchoCreator, setShowMediaViewer, setShowNotifications, setShowNodeCreator, setShowCommunityCreator, setActiveChat, setShowMessenger, setShowChat, setShowSearch}
+    const modalStates = {showNotificationDot, showEchoViewer, showEchoCreator, showMediaViewer, showNotifications, showNodeCreator, showCommunityCreator, activeChat, showMessenger, showChat, showSearch}
+    const modalControl = {setShowNotificationDot, setShowEchoViewer, setShowEchoCreator, setShowMediaViewer, setShowNotifications, setShowNodeCreator, setShowCommunityCreator, setActiveChat, setShowMessenger, setShowChat, setShowSearch}
 
     return { modalStates, modalControl };
 }

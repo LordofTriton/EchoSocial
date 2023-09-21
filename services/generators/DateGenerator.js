@@ -63,7 +63,7 @@ function GenerateDateTime(timestamp) {
     formattedDate += `, ${year}`;
   }
 
-  formattedDate += ` at ${formattedHour}:${String(minute).padStart(2, '0')}${ampm}`;
+  formattedDate;
 
   return formattedDate;
 }

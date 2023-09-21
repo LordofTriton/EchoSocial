@@ -35,7 +35,7 @@ export default function UserThumb({ data, page }) {
             <span className={styles.userThumbDesc}>{userData.nickname}</span>
 
             {
-                userData && userData.accountID !== page.activeUser.accountID ?
+                userData && userData.accountID !== page.activeUser.accountID && userData.settings.followable ?
                 <div className={styles.userThumbLikeButton} onClick={() => handleClickLikeButton()}>
                     {
                         userData && userData.userLiked ?

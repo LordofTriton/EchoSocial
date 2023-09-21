@@ -22,6 +22,11 @@ export default function Notifications({toggle, control, page}) {
         const updateNotifications = (data) => { setNotifications((state) => [data, ...state]) }
         page.socketMethods.socketListener("NEW_NOTIFICATION", updateNotifications)
     }, [page.socket]);
+    
+    useEffect(() => {
+        if (notifications.filter((notification) => notification.status === "unread").length > 0) page.setShowNotificationDot(true)
+        else page.setShowNotificationDot(false)
+    }, [notifications])
 
     useEffect(() => {
         if (page.socket) {

@@ -41,11 +41,11 @@ export default function PeopleStrangers() {
                 if (data.success) {
                     if (peoplePage === 1) {
                         setPeople(data.data)
-                        if (peoplePage < 3) dataControl.setStrangerPeople(data.data)
+                        if (peoplePage < 2) dataControl.setStrangerPeople(data.data)
                     }
                     else {
                         setPeople((state) => state.concat(data.data))
-                        if (peoplePage < 3) dataControl.setStrangerPeople(people.concat(data.data))
+                        if (peoplePage < 2) dataControl.setStrangerPeople(people.concat(data.data))
                     }
                     setPagination(data.pagination)
                 }

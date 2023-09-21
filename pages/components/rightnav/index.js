@@ -42,7 +42,7 @@ function Friend({data, page}) {
             }
             <div className={styles.rightnavChatBoxChatPreview} style={{width: showPreview && getChat(data).unread > 0 ? "200px" : "0px"}}>
                 <span className={styles.rightnavChatBoxChatPreviewName}>{getChat(data).target.firstName}</span>
-                <span className={styles.rightnavChatBoxChatPreviewContent}>{getChat(data).latestMessage.text ? Helpers.textLimiter(getChat(data).latestMessage.text, 30) : <SVGServer.CameraIcon color="var(--surface)" width="10px" height="10px" />}</span>
+                { getChat(data).latestMessage && getChat(data).latestMessage.text ? <span className={styles.rightnavChatBoxChatPreviewContent}>{Helpers.textLimiter(getChat(data).latestMessage.text, 30)}</span> : null }
             </div>
         </div>
     )
