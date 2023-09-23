@@ -3,6 +3,7 @@ import styles from './user-head.module.css';
 
 import APIClient from "../../../services/APIClient";
 import SVGServer from "../../../services/svg/svgServer";
+import AccessBlocker from "../access-blocker";
 
 export default function UserHead({ data, page, title }) {
     const [userData, setUserData] = useState(data)
@@ -144,6 +145,17 @@ export default function UserHead({ data, page, title }) {
             <span className={styles.userHeadNavLink} style={{color: title === "media" ? "var(--accent)" : null}} onClick={() => page.router.push(`/user/${userData.accountID}/media`)}>Media</span>
             { userData && userData.accountID === page.activeUser.accountID ? <span className={styles.userHeadNavLink} style={{color: title === "media" ? "var(--accent)" : null}} onClick={() => page.router.push(`/user/${userData.accountID}/saved`)}>Saved</span> : null }
         </div>
+        
+        {
+          userData && userData.blockedUser ?
+            <AccessBlocker 
+              icon="block" 
+              title="This user has blocked you."
+              message="This user has added you to their blacklist. You cannot see their data or view their echoes or interact with their profile in any way till you're off the blacklist." 
+              buttonText="Return to Feed"
+              buttonCallback={() => page.router.push("/")}
+            /> : null
+        }
         </>
     )
 }

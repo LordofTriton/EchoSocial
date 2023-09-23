@@ -38,8 +38,10 @@ export default async function UserFeed(params, io) {
         const filters = { 
             $and: [ 
                 { accountID: params.userID }, 
-                { accountID: { $nin: blacklist.filter((blck) => blck.blocker === params.accountID).map((obj) => obj.blockee) } }, 
-                { communityID: { $nin: blacklist.filter((blck) => blck.blockee === params.accountID).map((obj) => obj.blocker) } } 
+                { accountID: { $nin: blacklist.filter((blck) => blck.blocker === params.accountID).map((obj) => obj.blockee) } },
+                { accountID: { $nin: blacklist.filter((blck) => blck.blockee === params.accountID).map((obj) => obj.blocker) } } , 
+                { communityID: { $nin: blacklist.filter((blck) => blck.blocker === params.accountID).map((obj) => obj.blockee) } }, 
+                { communityID: { $nin: blacklist.filter((blck) => blck.blockee === params.accountID).map((obj) => obj.blocker) } }
             ],
             $or: [ {communityID: { $in: communities.map((obj) => obj.communityID) }}, { audience: "public" }, { audience: "friends", accountID: { $in: friendsList } }, { accountID: userAccount.accountID } ],
             

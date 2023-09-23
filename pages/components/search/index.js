@@ -22,8 +22,8 @@ function Person({data, page}) {
 
     return (
         <div className={styles.searchResultPerson} key={data.accountID}>
-            <div className={styles.searchResultPersonProfile} style={{backgroundImage: `url(${data.profileImage.url})`}}></div>
-            <span className={styles.searchResultPersonName}>{data.firstName} {data.lastName}<br /><span>{data.nickname}</span></span>
+            <div className={styles.searchResultPersonProfile} style={{backgroundImage: `url(${data.profileImage.url})`}} onClick={() => page.router.push(`/user/${data.accountID}`)}></div>
+            <span className={styles.searchResultPersonName} onClick={() => page.router.push(`/user/${data.accountID}`)}>{data.firstName} {data.lastName}<br /><span>{data.nickname}</span></span>
 
             { 
                 data.settings.followable ? 
@@ -49,8 +49,8 @@ function Community({data, page}) {
     }, [data])
 
     const handleClickButton = async () => {
-        if (member) page.router.push(`/communities/${communityData.communityID}`)
-        if (applied) return;
+        if (communityData.userMember) page.router.push(`/communities/${communityData.communityID}`)
+        if (communityData.userApplied) return;
         else {
             if (communityData.entryApproval) {
                 const createdApplication = (data) => setApplied(true)
@@ -72,9 +72,9 @@ function Community({data, page}) {
 
     return (
         <div className={styles.searchResultCommunity} key={communityData.communityID}>
-            <div className={styles.searchResultCommunityProfile} style={{backgroundImage: `url(${communityData.profileImage.url})`}}></div>
+            <div className={styles.searchResultCommunityProfile} style={{backgroundImage: `url(${communityData.profileImage.url})`}} onClick={() => page.router.push(`/communities/${data.communityID}`)}></div>
             <div className={styles.searchResultCommunityData}>
-                <span className={styles.searchResultCommunityName}>{communityData.displayName}</span>
+                <span className={styles.searchResultCommunityName} onClick={() => page.router.push(`/communities/${data.communityID}`)}>{communityData.displayName}</span>
                 <span className={styles.searchResultCommunityDataStats}> 
                     {communityData.privacy}
                     <span></span>
@@ -83,6 +83,9 @@ function Community({data, page}) {
                     {communityData.echoCount} {communityData.echoCount > 1 ? "Echoes" : "Echo"}
                 </span>
                 {
+                    communityData.blockedUser ?
+                    <span className={styles.searchResultCommunityButton} style={{backgroundColor: "var(--alt)", color: "white", opacity: "0.7"}}>Unavailable</span>
+                    :
                     communityData.userMember ?
                     <span className={styles.searchResultCommunityButton} onClick={() => handleClickButton()}>View Community</span> :
                     <span className={styles.searchResultCommunityButton} style={{backgroundColor: applied ? "var(--base)" : null, color: applied ? "var(--primary)" : null}} onClick={() => !applied ? handleClickButton(data) : null}>{applied ? "Applied" : communityData.entryApproval ? "Apply to Join" : `Join Community`}</span>

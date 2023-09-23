@@ -139,7 +139,7 @@ export default function Echo({ data, page, fullText=false, saved=false }) {
                     <span className={styles.echoFooterIcon}><SVGServer.ShareIcon color="var(--primary)" width="25px" height="25px" /></span>
                     <span  className={styles.echoFooterNumber}>{echoData.shares}</span>
                 </div>
-                <div className={styles.echoFooterData} style={{float: "right"}} onClick={() => page.setShowEchoViewer(echoData)}>
+                <div className={styles.echoFooterData} style={{float: "right"}} onClick={() => page.setShowEchoComments(echoData)}>
                     <span className={styles.echoFooterIcon}><SVGServer.CommentIcon color="var(--primary)" width="25px" height="25px" /></span>
                     <span  className={styles.echoFooterNumber}>{echoData.comments}</span>
                 </div>

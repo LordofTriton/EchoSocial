@@ -52,6 +52,7 @@ export default async (request, response) => {
                 lastActive: userAccount.lastActive,
                 userStatus: userAccount.userStatus,
                 isVerified: userAccount.isVerified,
+                settings: userSettings,
                 dark: userSettings.dark
             },
             message: "Login successful."

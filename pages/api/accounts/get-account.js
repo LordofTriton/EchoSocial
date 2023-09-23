@@ -24,23 +24,23 @@ export default async function GetAccount(params, io) {
 
     try {
         ValidateGetAccount(params);
+        if (!params.userID) params.userID = params.accountID;
+
         const userAccount = await db.collection("accounts").findOne({ accountID: params.accountID })
+        let userBlockCheck = await db.collection("blacklists").findOne({ blocker: params.accountID, blockee: params.userID })
+        let blockedUserCheck = await db.collection("blacklists").findOne({ blocker: params.userID, blockee: params.accountID })
 
-        const filters = {}
-        if (params.userID) filters.accountID = params.userID;
-        else filters.accountID = params.accountID;
+        let fetchAccountResponse = await db.collection("accounts").findOne({ accountID: params.userID });
 
-        let fetchAccountResponse = await db.collection("accounts").findOne(filters);
-
-        let communityMembership = await db.collection("members").find({ accountID: filters.accountID }).toArray()
+        let communityMembership = await db.collection("members").find({ accountID: params.userID }).toArray()
         let communities = await db.collection("communities").find({ communityID: { $in: communityMembership.map((obj) => obj.communityID) } }).toArray()
 
-        let heartCount = await db.collection("hearts").countDocuments({ userID: filters.accountID });
+        let heartCount = await db.collection("hearts").countDocuments({ userID: params.userID });
         let userHearted = params.userID && params.userID !== params.accountID ? await db.collection("hearts").findOne({ accountID: params.accountID, userID: params.userID }) : false;
         let userLiked = await db.collection("hearts").findOne({ accountID: params.accountID, userID: fetchAccountResponse.accountID })
         let userLikee = await db.collection("hearts").findOne({ accountID: fetchAccountResponse.accountID, userID: params.accountID })
         let chat = await db.collection("chats").findOne({ accountID: params.accountID, targetID: fetchAccountResponse.accountID })
-        let settings = await db.collection("settings").findOne({ accountID: filters.accountID })
+        let settings = await db.collection("settings").findOne({ accountID: params.userID })
         
         const userData = {
             accountID: fetchAccountResponse.accountID,
@@ -95,7 +95,9 @@ export default async function GetAccount(params, io) {
             } : null,
             userLiked: userLiked ? true : false,
             userLikee: userLikee ? true : false,
-            userFriend: userLiked && userLikee ? true : false
+            userFriend: userLiked && userLikee ? true : false,
+            userBlocked: userBlockCheck ? true : false,
+            blockedUser: blockedUserCheck ? true : false
         }
 
         const responseData = ResponseClient.GenericSuccess({

@@ -14,6 +14,7 @@ import Messenger from "../messenger";
 import Chat from "../chat";
 import Search from "../search";
 import BottomNav from "../bottomnav";
+import EchoConversation from "../echo-conversation";
 
 export default function Modals({page}) {
     return (
@@ -26,6 +27,11 @@ export default function Modals({page}) {
             {
                 page.setShowEchoViewer ?
                 <EchoViewer data={page.showEchoViewer} control={page.setShowEchoViewer} page={page} />
+                : null
+            }
+            {
+                page.setShowEchoComments ?
+                <EchoConversation data={page.showEchoComments} control={page.setShowEchoComments} page={page} />
                 : null
             }
             {

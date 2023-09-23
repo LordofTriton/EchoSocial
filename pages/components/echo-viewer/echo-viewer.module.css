@@ -1,5 +1,4 @@
 .echoViewerEchoContainer {
-    display: none;
     width: 100%;
     height: calc(100% - 70px);
     background-color: var(--base);
@@ -9,23 +8,15 @@
     border-right: 2px solid var(--surface);
     overflow: hidden;
     overflow-y: auto;
-    padding: 10px 20px;
     z-index: 30;
+    padding-bottom: 30px;
 }
 
-.echoViewerCommentsContainer {
-    width: 100%;
-    height: calc(100% - 70px);
-    background-color: var(--base);
-    position: fixed;
-    top: 0px;
-    right: 0px;
-    overflow: hidden;
-    overflow-y: scroll;
-    z-index: 30;
+.echoViewerEcho {
+    padding: 0px 20px;
 }
 
-.echoViewerCommentsContainerHead {
+.echoViewerContainerHead {
     width: 100%;
     height: fit-content;
     min-height: 50px;
@@ -34,7 +25,7 @@
     padding: 20px 25px 0px 25px;
 }
 
-.echoViewerCommentsContainerHeadTitle {
+.echoViewerContainerHeadTitle {
     color: var(--primary);
     font-size: 25px;
     font-weight: 700;
@@ -43,7 +34,8 @@
     float: left;
 }
 
-.echoViewerCommentsContainerClose {
+.echoViewerContainerClose {
+    display: none;
     width: fit-content;
     height: fit-content;
     float: right;
@@ -52,229 +44,14 @@
     cursor: pointer;
 }
 
-.echoViewerCommentsContainerClose:hover { transform: rotate(90deg); }
-
-.echoViewerCommentsContainerBody {
-    width: 100%;
-    height: fit-content;
-    min-height: calc(100% - 100px);
-    padding: 0px 20px 20px 20px;
-    overflow: hidden;
-}
-
-.echoViewerCommentsContainerBodyLoad {
-    display: block;
-    width: 100%;
-    text-align: center;
-    color: var(--primary);
-    font-size: 15px;
-    font-weight: 200;
-    cursor: pointer;
-    margin-bottom: 20px;
-}
-
-.echoViewerCommentsContainerBodyLoad:hover { 
-    color: var(--accent);
-    background-color: var(--surface);
-    border-radius: 5px;
-    padding: 10px 0px;
-}
-
-.echoViewerCommentsContainerBodyNull {
-    display: block;
-    width: 100%;
-    text-align: center;
-    color: var(--primary);
-    font-size: 20px;
-    font-weight: 200;
-}
-
-.echoViewerCommentEditor {
-    width: 100%;
-    height: fit-content;
-    position: sticky;
-    background-color: var(--surface);
-    box-shadow: 0 0 34px 0 rgba(63,66,87,.1);
-    bottom: 0px;
-    left: 0px;
-    overflow: hidden;
-}
-
-.echoViewerCommentEditorHead {
-    width: 100%;
-    height: 50px;
-    padding: 12px 20px;
-    cursor: pointer;
-    box-shadow: 0px 0px 8px 0 rgba(0, 0, 0, 0.2);
-}
-
-.echoViewerCommentEditorTitle {
-    color: var(--primary);
-    font-size: 15px;
-    font-weight: 500;
-}
-
-.echoViewerCommentEditorBody {
-    width: 100%;
-    height: fit-content;
-    padding: 20px;
-}
-
-.echoViewerCommentEditorReplyBox {
-    width: 100%;
-    height: fit-content;
-    background-color: var(--alt);
-    padding: 10px;
-    margin-bottom: 20px;
-    border-radius: 5px;
-    padding-right: 50px;
-    position: relative;
-}
-
-.echoViewerCommentEditorReplyClose {
-    width: 30px;
-    height: 30px;
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translate(0px, -50%);
-    cursor: pointer;
-}
-
-.echoViewerCommentEditorReply {
-    width: fit-content;
-    height: fit-content;
-    background-color: var(--base);
-    border-radius: 5px;
-    overflow: hidden;
-}
-
-.echoViewerCommentEditorReplyTitle {
-    color: var(--accent);
-    font-size: 15px;
-    margin-bottom: 10px;
-    display: block;
-}
-
-.echoViewerCommentEditorReplyTitle span {
-    float: right;
-}
-
-.echoViewerCommentEditorReplyMedia {
-    width: 50px;
-    height: 50px;
-    float: left;
-    background-size: cover;
-    background-position: center;
-}
-
-.echoViewerCommentEditorReplyBody {
-    width: fit-content;
-    float: right;
-    height: 100%;
-}
-
-.echoViewerCommentEditorReplyBody .echoViewerCommentEditorReplyBodyHead {
-    color: dimgray;
-}
-
-.echoViewerCommentEditorReplyBodyHead {
-    display: block;
-    width: 100%;
-    padding: 5px 15px;
-    color: var(--accent);
-    font-size: 12px;
-    font-weight: 500;
-}
-
-.echoViewerCommentEditorReplyBodyHead span {
-    color: var(--primary);
-    font-size: 10px;
-    float: right;
-    font-weight: 200;
-    transform: translate(0px, 2px);
-    margin-left: 20px;
-}
-
-.echoViewerCommentEditorReplyBodyContent {
-    width: 100%;
-    height: fit-content;
-    padding: 0px 15px 10px 15px;
-}
-
-.echoCommentReplyBodyContentText {
-    display: block;
-    width: 100%;
-    color: var(--primary);
-    font-size: 13px;
-    white-space: pre-wrap;
-}
-
-.echoViewerCommentEditorInput {
-    width: 100%;
-    height: 100px;
-    background-color: var(--base);
-    border-radius: 5px;
-    padding: 15px;
-    color: var(--primary);
-}
-
-.echoViewerCommentEditorFileThumb {
-    width: 100px;
-    height: fit-content;
-    border-radius: 5px;
-    position: relative;
-    margin-top: 10px;
-    border-radius: 2px solid var(--accent);
-    overflow: hidden;
-    padding-right: 30px;
-}
-
-.echoViewerCommentEditorFileThumb img {
-    width: 100%;
-    border-radius: 5px;
-    vertical-align: top;
-}
-
-.echoViewerCommentEditorFileThumbClose {
-    width: 30px;
-    height: 30px;
-    border-radius: 40px;
-    position: absolute;
-    top: 50%;
-    right: 5px;
-    transform: translate(0px, -50%);
-    padding: 5px;
-    cursor: pointer;
-}
-
-.fileInput[type="file"] {
-    display: none;
-}
-
-.echoViewerCommentEditorFileSelect {
-    width: 60px;
-    height: 50px;
-    display: block;
-    float: left;
-    background-color: var(--base);
-    border-radius: 5px;
-    margin: 10px 10px 0px 0px;
-    padding: 10px 15px;
-    cursor: pointer;
-}
-
-.echoViewerCommentEditorSubmit {
-    width: 100%;
-    height: 50px;
-    background-color: var(--primary);
-    color: var(--surface);
-    border-radius: 5px;
-    margin-top: 20px;
-    cursor: pointer;
-}
+.echoViewerContainerClose:hover { transform: rotate(90deg); }
 
 @media screen and (min-width: 1125px) {
-    .echoViewerCommentsContainer { width: 500px; top: 70px; right: 70px; }
-    .echoViewerEchoContainer { display: block; width: 500px; top: 70px; right: 570px; }
+    .echoViewer {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        pointer-events: none;
+    }
+    .echoViewerEchoContainer { display: block; width: 500px; top: 70px; right: 70px; position: fixed; }
 }

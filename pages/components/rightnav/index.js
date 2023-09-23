@@ -8,7 +8,7 @@ function Friend({data, page}) {
     const [showPreview, setShowPreview] = useState(false)
 
     useEffect(() => {
-        if (data.userChat.unread > 0) {
+        if (data && data.userChat && data.userChat.unread > 0) {
             setShowPreview(true)
             setTimeout(() => setShowPreview(false), 3000)
         }

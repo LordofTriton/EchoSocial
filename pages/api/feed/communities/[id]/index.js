@@ -40,7 +40,7 @@ export default async function CommunityFeed(params, io) {
         }
 
         let filters = { 
-            $and: [ 
+            $and: [
                 { communityID: params.communityID }, 
                 { communityID: { $in: communities.map((obj) => obj.communityID) } }, 
                 { communityID: { $nin: blacklist.filter((blck) => blck.blocker === params.accountID).map((obj) => obj.blockee) } }, 

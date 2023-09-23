@@ -27,7 +27,10 @@ export default async function DeleteBlacklist(params, io) {
     try {
         ValidateDeleteBlacklist(params)
 
-        const deleteBlacklistResponse = await db.collection("blacklists").deleteOne(params)
+        const deleteBlacklistResponse = await db.collection("blacklists").deleteOne({
+            blocker: params.blocker,
+            blockee: params.blockee
+        })
 
         const responseData = ResponseClient.DBModifySuccess({
             data: deleteBlacklistResponse,

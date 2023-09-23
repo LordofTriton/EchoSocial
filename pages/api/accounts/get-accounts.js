@@ -65,6 +65,8 @@ export default async function GetAccounts(params, io) {
 
         const accountData = []
         for (let account of fetchAccountsResponse) {
+            let settings = await db.collection("settings").findOne({ accountID: account.accountID })
+            if (params.filter && !settings.showInSearch) continue;
             let heartCount = await db.collection("hearts").countDocuments({ userID: account.accountID });
             let userHearted = params.userID && params.userID !== params.accountID ? await db.collection("hearts").findOne({ accountID: params.accountID, userID: account.accountID }) : false;
             let userLiked = await db.collection("hearts").findOne({ accountID: params.accountID, userID: account.accountID })
@@ -72,7 +74,6 @@ export default async function GetAccounts(params, io) {
             let communityMembership = await db.collection("members").find({ accountID: account.accountID }).toArray()
             let communities = await db.collection("communities").find({ communityID: { $in: communityMembership.map((obj) => obj.communityID) } }).toArray()
             let chat = await db.collection("chats").findOne({ accountID: params.accountID, targetID: account.accountID })
-            let settings = await db.collection("settings").findOne({ accountID: account.accountID })
             
             accountData.push({
                 accountID: account.accountID,

@@ -25,10 +25,26 @@ export default async function GetFriend(params, io) {
     try {
         ValidateGetFriend(params);
 
-        let fetchFriendResponse = await db.collection("friends").findOne({ friendID: params.friendID }).toArray();
+        let friend = await db.collection("friends").findOne({ friendID: params.friendID });
+        const friendSettings = await db.collection("settings").findOne({ accountID: friend.friendID })
+        let userLiked = await db.collection("hearts").findOne({ accountID: params.accountID, userID: friend.accountID })
+        let userLikee = await db.collection("hearts").findOne({ accountID: friend.accountID, userID: params.accountID })
+        let chat = await db.collection("chats").findOne({ accountID: params.accountID, targetID: friend.accountID })
 
         const responseData = ResponseClient.DBModifySuccess({
-            data: fetchFriendResponse,
+            data: {
+                accountID: friend.accountID,
+                firstName: friend.firstName,
+                lastName: friend.lastName,
+                profileImage: friend.profileImage,
+                profileCover: friend.profileCover,
+                nickname: friend.nickname,
+                settings: friendSettings,
+                userChat: chat ? chat : null,
+                userLiked: userLiked ? true : false,
+                userLikee: userLikee ? true : false,
+                userFriend: userLiked && userLikee ? true : false
+            },
             message: "Friend fetched successfully."
         })
         return responseData;

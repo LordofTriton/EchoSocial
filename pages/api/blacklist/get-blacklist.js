@@ -29,7 +29,6 @@ export default async function GetBlacklists(params, io) {
         ValidateGetBlacklists(params);
 
         const filters = {
-            accountID: params.accountID,
             blocker: params.blocker
         }
         if (params.blockeeType) filters.blockeeType = params.blockeeType;
@@ -47,7 +46,7 @@ export default async function GetBlacklists(params, io) {
 
         let blacklistData = []
         for (let blacklist of fetchBlacklistsResponse) {
-            const user = (await db.collection("accounts").findOne({ accountID: blacklist.blockee }))
+            const user = await db.collection("accounts").findOne({ accountID: blacklist.blockee })
             const finalBlacklistData = {
                 ...blacklist,
                 firstName: user.firstName,

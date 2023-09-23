@@ -27,8 +27,16 @@ export default async function GetFriends(params, io) {
 
     try {
         ValidateGetFriends(params);
+        if (!params.userID) params.userID = params.accountID;
+        let blacklist = await db.collection("blacklists").find({ $or: [{ blocker: params.accountID }, { blockee: params.accountID}] }).toArray()
 
-        const filters = { accountID: params.userID ? params.userID : params.accountID }
+        const filters = { 
+            accountID: params.userID,
+            $and: [
+                { friendID: { $nin: blacklist.filter((blck) => blck.blocker === params.accountID).map((obj) => obj.blockee) } },
+                { friendID: { $nin: blacklist.filter((blck) => blck.blockee === params.accountID).map((obj) => obj.blocker) } } 
+            ]
+        }
         if (params.friendID) filters.friendID = params.friendID;
 
         const pagination = {
@@ -45,6 +53,7 @@ export default async function GetFriends(params, io) {
         let friendData = []
         for (let friendUser of fetchFriendsResponse) {
             const friend = await db.collection("accounts").findOne({ accountID: friendUser.friendID })
+            const friendSettings = await db.collection("settings").findOne({ accountID: friendUser.friendID })
             let userLiked = await db.collection("hearts").findOne({ accountID: params.accountID, userID: friend.accountID })
             let userLikee = await db.collection("hearts").findOne({ accountID: friend.accountID, userID: params.accountID })
             let chat = await db.collection("chats").findOne({ accountID: params.accountID, targetID: friend.accountID })
@@ -56,6 +65,7 @@ export default async function GetFriends(params, io) {
                 profileImage: friend.profileImage,
                 profileCover: friend.profileCover,
                 nickname: friend.nickname,
+                settings: friendSettings,
                 userChat: chat ? chat : null,
                 userLiked: userLiked ? true : false,
                 userLikee: userLikee ? true : false,

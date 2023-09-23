@@ -35,7 +35,7 @@ export default async function BlacklistMember(params, io) {
             communityID: params.communityID,
             userID: params.accountID
         })
-        if (authUserMember && authUserMember.role === "member") throw new Error("You are unauthorised to perform this action.")
+        if (!authUserMember || authUserMember.role === "member") throw new Error("You are unauthorised to perform this action.")
 
         await DeleteMember({
             accountID: params.accountID,

@@ -222,7 +222,9 @@ export default function User() {
               userEchoes.length > 0 ?
                 <DuoMasonryLayout>
                   {userEchoes.map((echo, index) => <Echo data={echo} page={pageControl} key={index} />)}
-                </DuoMasonryLayout> : null
+                </DuoMasonryLayout> 
+              : 
+                <span className={styles.userNull}>Nothing to show - {router.query.id === activeUser.accountID ? 'You have' : 'This user has'} no echoes{router.query.id !== activeUser.accountID ? ' you can see' : ''}.</span>
             }
             { echoLoader ? 
               <div className="loader" style={{

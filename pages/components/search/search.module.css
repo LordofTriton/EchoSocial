@@ -100,6 +100,7 @@
     float: left;
     background-size: cover;
     background-position: center;
+    cursor: pointer;
 }
 
 .searchResultPersonName {
@@ -109,6 +110,7 @@
     font-weight: 500;
     color: var(--primary);
     margin: 1px 20px;
+    cursor: pointer;
 }
 
 .searchResultPersonName span {
@@ -142,6 +144,7 @@
     background-position: center;
     border-radius: 5px;
     float: left;
+    cursor: pointer;
 }
 
 .searchResultCommunityData {
@@ -157,6 +160,7 @@
     font-weight: 700;
     color: var(--primary);
     display: block;
+    cursor: pointer;
 }
 
 .searchResultCommunityDataStats {

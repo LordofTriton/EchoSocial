@@ -15,6 +15,7 @@ import DuoMasonryLayout from '../../components/masonry/duo-masonry';
 import CommunityHead from '../../components/community-head';
 import useDataStates from '../../hooks/useDataStates';
 import CacheService from '../../../services/CacheService';
+import AccessBlocker from '../../components/access-blocker';
 
 export default function Community() {
   const router = useRouter()
@@ -212,7 +213,12 @@ export default function Community() {
               communityEchoes.length > 0 ?
                 <DuoMasonryLayout>
                   {communityEchoes.map((echo, index) => <Echo data={echo} page={pageControl} key={index} />)}
-                </DuoMasonryLayout> : null
+                </DuoMasonryLayout> 
+              : 
+                communityData && !communityData.userMember ?
+                <span className={styles.communityNull}>Nothing to show - Only members can see echoes.</span>
+                : 
+                <span className={styles.communityNull}>Nothing to show - This community has no echoes.</span>
             }
             { echoLoader ? 
               <div className="loader" style={{

@@ -34,6 +34,7 @@ export default async (req, res) => {
                 const uploadedFiles = await Promise.all(
                     files.map((file) => CloudinaryService.UploadFile(file.path))
                 );
+                console.log(uploadedFiles[0].eager)
 
                 cleanupTemporaryFiles(files);
 

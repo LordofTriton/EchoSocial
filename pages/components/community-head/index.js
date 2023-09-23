@@ -152,6 +152,17 @@ export default function CommunityHead({ data, page, title }) {
             <span className={styles.communityHeadNavLink} style={{color: title === "media" ? "var(--accent)" : null}} onClick={() => page.router.push(`/communities/${communityData.communityID}/media`)}>Media</span>
             { communityData && communityData.userMember && communityData.userMember.role !== "member" ? <span className={styles.communityHeadNavLink} style={{color: title === "settings" ? "var(--accent)" : null}} onClick={() => page.router.push(`/communities/${communityData.communityID}/settings`)}>Settings</span> : null }
         </div>
+
+        {
+          communityData && communityData.blockedUser ?
+            <AccessBlocker 
+              icon="block" 
+              title="You've been banned from this community." 
+              message="The admin/moderators of this community have added you to it's blacklist. You cannot see it's data or rejoin the community till you're off the blacklist. This also means you can't view or create echoes in this community as only members can perform those actions." 
+              buttonText="Return to Feed"
+              buttonCallback={() => page.router.push("/")}
+            /> : null
+        }
         </>
     )
 }

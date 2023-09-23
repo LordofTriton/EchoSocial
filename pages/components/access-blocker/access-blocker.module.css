@@ -1,0 +1,76 @@
+.accessBlockerOverlay {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    z-index: 30;
+}
+
+.accessBlocker {
+    width: calc(100% - 20px);
+    height: fit-content;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--surface);
+    border-radius: 10px;
+    z-index: 40;
+}
+
+.accessBlockerIcon {
+    display: block;
+    text-align: center;
+    width: 50px;
+    height: 50px;
+    margin: 30px calc(50% - 25px);
+    background-color: var(--base);
+    border-radius: 50px;
+    padding: 10px;
+}
+
+.accessBlockerTitle {
+    font-size: 20px;
+    font-weight: 700;
+    text-align: center;
+    display: block;
+    width: 100%;
+    margin: 0px 0px 20px 0px;
+    color: var(--primary);
+}
+
+.accessBlockerMessage {
+    font-size: 13px;
+    font-weight: 400;
+    text-align: center;
+    display: block;
+    width: calc(100% - 40px);
+    margin: 0px 20px 20px 20px;
+    color: var(--primary);
+}
+
+.accessBlockerButton {
+    width: calc(100% - 40px);
+    height: 40px;
+    background-color: transparent;
+    border: 2px solid var(--primary);
+    border-radius: 50px;
+    color: var(--primary);
+    margin: 20px 20px 30px 20px;
+    font-size: 13px;
+    font-weight: 400;
+    cursor: pointer;
+}
+
+.accessBlockerButton:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+@media screen and (min-width: 1125px) {
+    .accessBlocker {
+        width: 500px;
+    }
+}

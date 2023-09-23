@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 function useModalStates() {
     const [showNotificationDot, setShowNotificationDot] = useState(false)
     const [showEchoViewer, updateShowEchoViewer] = useState(false)
+    const [showEchoComments, updateShowEchoComments] = useState(false)
     const [showEchoCreator, updateShowEchoCreator] = useState(false)
     const [showMediaViewer, updateShowMediaViewer] = useState(false)
     const [showNotifications, updateShowNotifications] = useState(false)
@@ -23,6 +24,14 @@ function useModalStates() {
 
     const setShowEchoViewer = (data) => {
         updateShowEchoViewer(data)
+        if (data) {
+            updateShowEchoCreator(false)
+            setShowNotifications(false)
+        }
+    }
+
+    const setShowEchoComments = (data) => {
+        updateShowEchoComments(data)
         if (data) {
             updateShowEchoCreator(false)
             setShowNotifications(false)
@@ -93,8 +102,8 @@ function useModalStates() {
         }
     }
 
-    const modalStates = {showNotificationDot, showEchoViewer, showEchoCreator, showMediaViewer, showNotifications, showNodeCreator, showCommunityCreator, activeChat, showMessenger, showChat, showSearch}
-    const modalControl = {setShowNotificationDot, setShowEchoViewer, setShowEchoCreator, setShowMediaViewer, setShowNotifications, setShowNodeCreator, setShowCommunityCreator, setActiveChat, setShowMessenger, setShowChat, setShowSearch}
+    const modalStates = {showNotificationDot, showEchoViewer, showEchoComments, showEchoCreator, showMediaViewer, showNotifications, showNodeCreator, showCommunityCreator, activeChat, showMessenger, showChat, showSearch}
+    const modalControl = {setShowNotificationDot, setShowEchoViewer, setShowEchoComments, setShowEchoCreator, setShowMediaViewer, setShowNotifications, setShowNodeCreator, setShowCommunityCreator, setActiveChat, setShowMessenger, setShowChat, setShowSearch}
 
     return { modalStates, modalControl };
 }
