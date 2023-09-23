@@ -109,7 +109,7 @@ export default function UserHead({ data, page, title }) {
                             </> :
                         <>
                             {
-                                userData.settings.followable ?
+                                userData && userData.settings.followable ?
                                 <div className={styles.userHeadButton} onClick={() => handleFollowButtonClick()} style={{backgroundColor: userData && userData.userHearted ? "var(--accent)" : "var(--surface)"}}>
                                     {
                                         userData && userData.userHearted ?
