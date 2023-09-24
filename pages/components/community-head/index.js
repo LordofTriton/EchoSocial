@@ -124,24 +124,24 @@ export default function CommunityHead({ data, page, title }) {
                 {
                     communityData && communityData.userMember ?
                     <>
-                    <div className={styles.communityHeadButton} onClick={() => handleLeaveGroup()}>
+                    <span className={styles.communityHeadButton} onClick={() => handleLeaveGroup()}>
                         <SVGServer.ExitIcon color="var(--primary)" width="20px" height="20px" />
                         <span>Leave</span>
-                    </div> 
-                    <div className={styles.communityHeadButton} onClick={() => blockCommunity()} style={{backgroundColor: communityData && communityData.userBlocked ? "var(--accent)" : "rgba(0, 0, 0, 0.7)"}}>
+                    </span> 
+                    <span className={styles.communityHeadButton} onClick={() => blockCommunity()} style={{backgroundColor: communityData && communityData.userBlocked ? "var(--accent)" : "rgba(0, 0, 0, 0.7)"}}>
                         <SVGServer.BlockIcon color={communityData && communityData.userBlocked ? "var(--surface)" : "var(--primary)"} width="20px" height="20px" />
                         <span style={{color: communityData && communityData.userBlocked ? "var(--surface)" : "var(--primary)"}}>{communityData && communityData.userBlocked ? "Unblock" : "Block"}</span>
-                    </div>
+                    </span>
                     </> : 
                     communityData && !communityData.userApplied ?
-                    <div className={styles.communityHeadButton} onClick={() => handleJoinGroup()}>
+                    <span className={styles.communityHeadButton} onClick={() => handleJoinGroup()}>
                         <SVGServer.EnterIcon color="var(--primary)" width="20px" height="20px" />
                         <span>{ communityData && communityData.entryApproval ? "Apply to Join" : "Join"}</span>
-                    </div> : 
-                    <div className={styles.communityHeadButton} onClick={() => handleLeaveGroup()}>
+                    </span> : 
+                    <span className={styles.communityHeadButton} onClick={() => handleLeaveGroup()}>
                         <SVGServer.EnterIcon color="var(--primary)" width="20px" height="20px" />
                         <span>Applied</span>
-                    </div>
+                    </span>
                 }
             </div>
         </div>

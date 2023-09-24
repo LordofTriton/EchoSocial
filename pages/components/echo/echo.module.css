@@ -100,9 +100,9 @@
     position: absolute;
     width: 200px;
     height: fit-content;
-    background-color: var(--surface);
+    background-color: var(--base);
     border-radius: 5px;
-    top: 0px;
+    top: 22px;
     right: 0px;
     z-index: 2;
     box-shadow: 0 0 34px 0 rgba(63,66,87,.1);

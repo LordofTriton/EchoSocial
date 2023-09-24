@@ -15,6 +15,7 @@ import Chat from "../chat";
 import Search from "../search";
 import BottomNav from "../bottomnav";
 import EchoConversation from "../echo-conversation";
+import SideNav from "../sidenav";
 
 export default function Modals({page}) {
     return (
@@ -78,6 +79,7 @@ export default function Modals({page}) {
             <LeftNav page={page} />
             <RightNav page={page} />
             <BottomNav page={page} />
+            <SideNav toggle={page.showSidenav} control={page.setShowSidenav} page={page} />
         </>
     )
 }

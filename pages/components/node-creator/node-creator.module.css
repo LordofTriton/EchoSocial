@@ -9,7 +9,7 @@
     padding: 20px;
     overflow: hidden;
     overflow-y: auto;
-    z-index: 30;
+    z-index: 110;
 }
 
 .nodeCreatorContainerHead {

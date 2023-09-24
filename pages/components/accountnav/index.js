@@ -24,7 +24,7 @@ export default function AccountNav({toggle, control, page}) {
     }
 
     return (
-        <div className={styles.accountNavContainer} style={{top: !toggle ? "-100vh" : "70px"}} onMouseEnter={() => control(true)} onMouseLeave={() => control(false)}>
+        <div className={styles.accountNavContainer} style={{right: !toggle ? "-500px" : "70px"}} onMouseEnter={() => control(true)} onMouseLeave={() => control(false)}>
             <span className={styles.accountNavTitle}>
                 My Account
                 <span className={styles.accountNavClose}><SVGServer.CloseIcon color="var(--accent)" width="30px" height="30px" /></span>

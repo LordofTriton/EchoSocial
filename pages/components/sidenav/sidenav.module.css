@@ -1,0 +1,83 @@
+.sidenavContainer {
+    width: 100%;
+    height: calc(100% - 70px);
+    background-color: var(--base);
+    position: fixed;
+    top: 0px;
+    right: 0px;
+    box-shadow: 0 0 34px 0 rgba(63,66,87,.1);
+    padding: 20px;
+    overflow: hidden;
+    overflow-y: auto;
+    z-index: 110;
+}
+
+.sidenavContainer hr {
+    border-bottom: 2px solid var(--base);
+    margin: 0px 0px 10px 0px;
+}
+
+.sidenavTitle {
+    color: transparent;
+    font-size: 17px;
+    display: block;
+    font-weight: 500;
+    padding: 8px 20px 10px 20px;
+    border-bottom: 2px solid var(--base);
+    margin-bottom: 10px;
+}
+
+.sidenavClose {
+    display: block;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    margin-bottom: 10px;
+}
+
+.sidenavButtons {
+    width: 100%;
+    height: fit-content;
+    overflow: hidden;
+}
+
+.sidenavButton {
+    width: 100%;
+    height: 50px;
+    padding: 10px 20px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    border-radius: 10px;
+    background-color: var(--surface);
+    overflow: hidden;
+}
+
+.sidenavButton:hover {
+    background-color: var(--surface);
+}
+
+.sidenavButtonMirage {
+    display: block;
+    float: left;
+    opacity: 0.1;
+    transform: translate(0px, -30px);
+}
+
+.sidenavButtonIcon {
+    display: block;
+    float: right;
+}
+
+.sidenavButtonText {
+    display: block;
+    float: right;
+    color: var(--primary);
+    font-size: 15px;
+    font-weight: 500;
+    margin: 4px 13px 0px 0px;
+    white-space: nowrap;
+}
+
+@media screen and (min-width: 1125px) {
+    .sidenavContainer { display: none; }
+}

@@ -8,7 +8,7 @@
     border-right: 2px solid var(--surface);
     overflow: hidden;
     overflow-y: auto;
-    z-index: 30;
+    z-index: 110;
     padding-bottom: 30px;
 }
 

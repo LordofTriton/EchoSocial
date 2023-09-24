@@ -13,6 +13,15 @@ function useModalStates() {
     const [activeChat, updateActiveChat] = useState(null)
     const [showChat, updateShowChat] = useState(false)
     const [showSearch, updateShowSearch] = useState(false)
+    const [showSidenav, updateShowSidenav] = useState(false)
+
+    const setShowSidenav = (data) => {
+        updateShowSidenav(data)
+        if (data) {
+            updateShowEchoCreator(false)
+            setShowNotifications(false)
+        }
+    }
 
     const setShowSearch = (data) => {
         updateShowSearch(data)
@@ -102,8 +111,8 @@ function useModalStates() {
         }
     }
 
-    const modalStates = {showNotificationDot, showEchoViewer, showEchoComments, showEchoCreator, showMediaViewer, showNotifications, showNodeCreator, showCommunityCreator, activeChat, showMessenger, showChat, showSearch}
-    const modalControl = {setShowNotificationDot, setShowEchoViewer, setShowEchoComments, setShowEchoCreator, setShowMediaViewer, setShowNotifications, setShowNodeCreator, setShowCommunityCreator, setActiveChat, setShowMessenger, setShowChat, setShowSearch}
+    const modalStates = {showNotificationDot, showEchoViewer, showEchoComments, showEchoCreator, showMediaViewer, showNotifications, showNodeCreator, showCommunityCreator, activeChat, showMessenger, showChat, showSearch, showSidenav}
+    const modalControl = {setShowNotificationDot, setShowEchoViewer, setShowEchoComments, setShowEchoCreator, setShowMediaViewer, setShowNotifications, setShowNodeCreator, setShowCommunityCreator, setActiveChat, setShowMessenger, setShowChat, setShowSearch, setShowSidenav}
 
     return { modalStates, modalControl };
 }

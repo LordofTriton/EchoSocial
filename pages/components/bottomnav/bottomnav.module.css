@@ -8,7 +8,7 @@
     left: 0px;
     box-shadow: 0 0 34px 0 rgba(63,66,87,.1);
     padding: 0px 10px;
-    z-index: 100;
+    z-index: 110;
 }
 
 .bottomNavButton {
@@ -22,9 +22,9 @@
 }
 
 .bottomNavButtonIcon {
-    height: 30px;
+    height: 24px;
     aspect-ratio: 1;
-    margin: 15px calc(50% - 15px) 0px calc(50% - 15px);
+    margin: 15px calc(50% - 12px) 0px calc(50% - 12px);
     display: block;
 }
 
@@ -34,7 +34,7 @@
     font-weight: 400;
     text-align: center;
     display: block;
-    margin-top: 5px;
+    margin-top: 7px;
     color: var(--primary);
 }
 

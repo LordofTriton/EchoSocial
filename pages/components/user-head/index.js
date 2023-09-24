@@ -103,35 +103,35 @@ export default function UserHead({ data, page, title }) {
                 {
                     page.router.query.id === page.activeUser.accountID ?
                         <>
-                            <div className={styles.userHeadButton} onClick={() => page.router.push("/settings")}>
+                            <span className={styles.userHeadButton} onClick={() => page.router.push("/settings")}>
                                 <SVGServer.SettingsIcon color="var(--primary)" width="20px" height="20px" />
                                 <span>Settings</span>
-                            </div>
+                            </span>
                             </> :
                         <>
                             {
                                 userData && userData.settings.followable ?
-                                <div className={styles.userHeadButton} onClick={() => handleFollowButtonClick()} style={{backgroundColor: userData && userData.userHearted ? "var(--accent)" : "rgba(0, 0, 0, 0.7)"}}>
+                                <span className={styles.userHeadButton} onClick={() => handleFollowButtonClick()} style={{backgroundColor: userData && userData.userHearted ? "var(--accent)" : "rgba(0, 0, 0, 0.7)"}}>
                                     {
                                         userData && userData.userHearted ?
                                             <SVGServer.HeartFilledIcon color="var(--surface)" width="20px" height="20px" /> :
                                             <SVGServer.HeartLineIcon color="var(--primary)" width="20px" height="20px" />
                                     }
                                     <span style={{color: userData && userData.userHearted ? "var(--surface)" : "var(--primary)"}}>{userData && userData.userHearted ? "Liked" : "Like"}</span>
-                                </div>
+                                </span>
                                 : null
                             }
                             {
                                 userData && userData.userFriend ?
-                                <div className={styles.userHeadButton} onClick={() => page.setActiveChat(userData.userChat)}>
+                                <span className={styles.userHeadButton} onClick={() => page.setActiveChat(userData.userChat)}>
                                     <SVGServer.ChatIcon color="var(--primary)" width="20px" height="20px" />
                                     <span>Message</span>
-                                </div> : null
+                                </span> : null
                             }
-                            <div className={styles.userHeadButton} onClick={() => blockUser()} style={{backgroundColor: userData && userData.userBlocked ? "var(--accent)" : "rgba(0, 0, 0, 0.7)"}}>
+                            <span className={styles.userHeadButton} onClick={() => blockUser()} style={{backgroundColor: userData && userData.userBlocked ? "var(--accent)" : "rgba(0, 0, 0, 0.7)"}}>
                                 <SVGServer.BlockIcon color={userData && userData.userBlocked ? "var(--surface)" : "var(--primary)"} width="20px" height="20px" />
                                 <span style={{color: userData && userData.userBlocked ? "var(--surface)" : "var(--primary)"}}>{userData && userData.userBlocked ? "Unblock" : "Block"}</span>
-                            </div>
+                            </span>
                         </>
                 }
             </div>

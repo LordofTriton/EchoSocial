@@ -46,7 +46,7 @@ export default function TopNav({ page }) {
                         <input id="searchButton" type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search people, echoes, and communities..." />
                     </form>
                 </div>
-                <div className={styles.topnavAccount} onMouseEnter={() => setOpenAccountNav(true)} onMouseLeave={() => setOpenAccountNav(false)}>
+                <div className={styles.topnavAccount} onMouseEnter={() => setOpenAccountNav(true)} onMouseLeave={() => setOpenAccountNav(false)} onClick={() => page.setShowSidenav(true)}>
                     <div className={styles.topnavProfileImage} style={{ backgroundImage: page.activeUser.profileImage.url ? `url(${page.activeUser.profileImage.url})` : `url(/images/profile.jpg)` }}>
                         <div className={styles.topnavProfileImageActive}></div>
                     </div>

@@ -9,7 +9,7 @@
     overflow: hidden;
     overflow-y: auto;
     padding: 20px;
-    z-index: 30;
+    z-index: 110;
 }
 
 .searchContainerHead {

@@ -9,7 +9,7 @@
     padding: 20px;
     overflow: hidden;
     overflow-y: auto;
-    z-index: 30;
+    z-index: 110;
 }
 
 .notificationsContainerHead {
@@ -107,7 +107,7 @@
 
 .notificationsBoxEntryContentText {
     display: block;
-    font-size: 15px;
+    font-size: 13px;
     padding-right: 20px;
     color: var(--surface);
 }
@@ -138,4 +138,7 @@
 
 @media screen and (min-width: 1125px) {
     .notificationsContainer { width: 500px; top: 70px; right: 70px; }
+    .notificationsBoxEntryContentText {
+        font-size: 15px;
+    }
 }

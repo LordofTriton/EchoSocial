@@ -8,7 +8,7 @@
     box-shadow: 0 0 34px 0 rgba(63,66,87,.1);
     overflow: hidden;
     overflow-y: auto;
-    z-index: 30;
+    z-index: 110;
 }
 
 .messengerHead {

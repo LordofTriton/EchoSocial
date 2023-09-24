@@ -44,6 +44,7 @@
 }
 
 .communityHeadButton {
+    display: block;
     width: fit-content;
     height: 34px;
     min-width: 100px;
@@ -67,7 +68,7 @@
     font-weight: 400;
     color: var(--primary);
     margin-right: 10px;
-    transform: translate(0px, 3px);
+    transform: translate(0px, 5px);
 }
 
 .communityHeadBar {
