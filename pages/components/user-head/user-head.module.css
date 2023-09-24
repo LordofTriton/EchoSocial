@@ -49,11 +49,12 @@
     min-width: 100px;
     border-radius: 50px;
     float: right;
-    margin-right: 10px;
+    margin-right: 0px;
     margin-bottom: 15px;
     padding: 7px 15px;
     cursor: pointer;
     background-color: var(--surface);
+    background-color: rgba(0, 0, 0, 0.7);
     opacity: 0.8;
 }
 
@@ -230,6 +231,7 @@
     }
     .userHeadButton {
         border-radius: 50px;
+        margin-right: 10px;
     }
     .userHeadButton span {
         font-size: 15px;

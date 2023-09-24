@@ -99,7 +99,7 @@ export default function User() {
           userID: router.query.id,
           hasMedia: true,
           page: 1,
-          pageSize: 7
+          pageSize: 6
         }, updateMediaEchoes)
       }
     }

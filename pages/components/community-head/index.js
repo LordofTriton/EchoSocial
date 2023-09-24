@@ -127,7 +127,7 @@ export default function CommunityHead({ data, page, title }) {
                         <SVGServer.ExitIcon color="var(--primary)" width="20px" height="20px" />
                         <span>Leave</span>
                     </div> 
-                    <div className={styles.communityHeadButton} onClick={() => blockCommunity()} style={{backgroundColor: communityData && communityData.userBlocked ? "var(--accent)" : "var(--surface)"}}>
+                    <div className={styles.communityHeadButton} onClick={() => blockCommunity()} style={{backgroundColor: communityData && communityData.userBlocked ? "var(--accent)" : "rgba(0, 0, 0, 0.7)"}}>
                         <SVGServer.BlockIcon color={communityData && communityData.userBlocked ? "var(--surface)" : "var(--primary)"} width="20px" height="20px" />
                         <span style={{color: communityData && communityData.userBlocked ? "var(--surface)" : "var(--primary)"}}>{communityData && communityData.userBlocked ? "Unblock" : "Block"}</span>
                     </div>

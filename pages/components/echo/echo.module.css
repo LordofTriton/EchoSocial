@@ -5,7 +5,7 @@
     border-radius: 5px;
     margin: 10px 0px;
     box-shadow: 0 0 8px 0 rgba(63,66,87,.1);
-    padding: 25px 25px 25px 25px;
+    padding: 25px 15px 25px 15px;
     overflow: hidden;
     display: inline-block;
     width: 100%;
@@ -241,6 +241,9 @@
 }
 
 @media screen and (min-width: 1125px) {
+    .echo {
+        padding: 25px 25px 25px 25px;
+    }
     .echoHeadData {
         padding: 5px 12px;
     }

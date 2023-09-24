@@ -49,7 +49,7 @@
     min-width: 100px;
     border-radius: 50px;
     float: right;
-    margin-right: 10px;
+    margin-right: 0px;
     margin-bottom: 15px;
     padding: 7px 15px;
     cursor: pointer;
@@ -230,6 +230,7 @@
     }
     .communityHeadButton {
         border-radius: 50px;
+        margin-right: 10px;
     }
     .communityHeadButton span {
         font-size: 15px;

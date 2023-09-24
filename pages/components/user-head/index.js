@@ -111,7 +111,7 @@ export default function UserHead({ data, page, title }) {
                         <>
                             {
                                 userData && userData.settings.followable ?
-                                <div className={styles.userHeadButton} onClick={() => handleFollowButtonClick()} style={{backgroundColor: userData && userData.userHearted ? "var(--accent)" : "var(--surface)"}}>
+                                <div className={styles.userHeadButton} onClick={() => handleFollowButtonClick()} style={{backgroundColor: userData && userData.userHearted ? "var(--accent)" : "rgba(0, 0, 0, 0.7)"}}>
                                     {
                                         userData && userData.userHearted ?
                                             <SVGServer.HeartFilledIcon color="var(--surface)" width="20px" height="20px" /> :
@@ -128,7 +128,7 @@ export default function UserHead({ data, page, title }) {
                                     <span>Message</span>
                                 </div> : null
                             }
-                            <div className={styles.userHeadButton} onClick={() => blockUser()} style={{backgroundColor: userData && userData.userBlocked ? "var(--accent)" : "var(--surface)"}}>
+                            <div className={styles.userHeadButton} onClick={() => blockUser()} style={{backgroundColor: userData && userData.userBlocked ? "var(--accent)" : "rgba(0, 0, 0, 0.7)"}}>
                                 <SVGServer.BlockIcon color={userData && userData.userBlocked ? "var(--surface)" : "var(--primary)"} width="20px" height="20px" />
                                 <span style={{color: userData && userData.userBlocked ? "var(--surface)" : "var(--primary)"}}>{userData && userData.userBlocked ? "Unblock" : "Block"}</span>
                             </div>
