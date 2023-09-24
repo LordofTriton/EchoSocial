@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import styles from "./community-head.module.css"
 import APIClient from "../../../services/APIClient";
 import SVGServer from "../../../services/svg/svgServer";
+import AccessBlocker from "../access-blocker";
 
 export default function CommunityHead({ data, page, title }) {
     const [communityData, setCommunityData] = useState(data)
