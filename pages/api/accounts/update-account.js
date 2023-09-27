@@ -51,6 +51,7 @@ export default async function UpdateAccount(params, io) {
         "dateOfBirth",
         "maritalStatus",
         "occupation",
+        "lastLogin",
         "lastActive",
         "userStatus",
         "fSocial",

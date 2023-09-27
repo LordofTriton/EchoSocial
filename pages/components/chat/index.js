@@ -96,7 +96,7 @@ function Message({ chatData, messageData, page, key, index, methods }) {
 export default function Chat({ toggle, data, page }) {
     const chatBodyRef = useRef(null);
     const [chatData, setChatData] = useState(data)
-    const [chatMessages, setChatMessages] = useState(data ? page.chatMessages(data.chatID) || [] : [])
+    const [chatMessages, setChatMessages] = useState([])
     const [scrollChat, setScrollChat] = useState(false)
     const [newMessageText, setNewMessageText] = useState("")
     const [newMessageMedia, setNewMessageMedia] = useState([])
@@ -150,7 +150,6 @@ export default function Chat({ toggle, data, page }) {
                         if (message.messageID === data.messageID) return data;
                         else return message;
                     })
-                    page.setChatMessages(chatData.chatID, update)
                     return update;
                 })
             }
@@ -163,7 +162,6 @@ export default function Chat({ toggle, data, page }) {
             const updateMessages = (data) => {
                 setChatMessages((state) => {
                     const update = state.filter((message) => message.messageID !== data.messageID).concat(data)
-                    page.setChatMessages(chatData.chatID, update)
                     return update;
                 }) 
             }
@@ -175,12 +173,7 @@ export default function Chat({ toggle, data, page }) {
         if (!data) return;
         const updateMessages = (data) => {
             if (data.success) {
-                setChatMessages((state) => {
-                    const update = [...data.data, ...state]
-                    page.setChatMessages(data.chatID, update)
-                    return update;
-                })
-                
+                Helpers.setPaginatedState(data.data, setChatMessages, data.pagination, "messageID")
                 setPagination(data.pagination)
                 if (messagePage === 1) setScrollChat(true)
             }
@@ -263,7 +256,6 @@ export default function Chat({ toggle, data, page }) {
         const createdTextMessage = (data) => {
             if (data.success) {
                 setChatMessages(chatMessages.filter((message) => message.messageID !== newTextMessage.messageID).concat(data.data))
-                page.setChatMessages(chatData.chatID, chatMessages.concat(data.data))
             }
         }
         if (page.socket) page.socketMethods.socketRequest("CREATE_MESSAGE", newTextMessage, createdTextMessage)
@@ -296,7 +288,6 @@ export default function Chat({ toggle, data, page }) {
             page.createAlert(data.success ? "success" : "error", data.message)
             if (data.success) {
                 setChatMessages(chatMessages.filter((message) => message.messageID !== newMediaMessage.messageID).concat(data.data))
-                page.setChatMessages(chatData.chatID, chatMessages.concat(data.data))
             }
         }
         if (page.socket) page.socketMethods.socketRequest("CREATE_MESSAGE", {
@@ -377,7 +368,7 @@ export default function Chat({ toggle, data, page }) {
                     <div className={styles.chatUserProfile} style={{backgroundImage: chatData ? `url(${chatData.target.profileImage.url})` : null}} onClick={() => page.router.push(`/user/${chatData.target.accountID}`)}></div>
                     <div className={styles.chatUserData} onClick={() => page.router.push(`/user/${chatData.target.accountID}`)}>
                         <span className={styles.chatUserName}>{chatData ? `${chatData.target.firstName} ${chatData.target.lastName}` : " "}</span>
-                        <span className={styles.chatUserTime}>{chatData ? DateGenerator.GenerateDateTime(chatData.lastUpdated) : null}</span>
+                        <span className={styles.chatUserTime}>active {chatData ? DateGenerator.GenerateDateTime(chatData.target.lastActive) : null}</span>
                     </div>
                     <div className={styles.chatHeadOptions}>
                         <SVGServer.OptionIcon color="var(--primary)" width="30px" height="30px" />

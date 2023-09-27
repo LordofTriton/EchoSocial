@@ -22,7 +22,7 @@ export default async (req, res) => {
     const responseData = await new Promise((resolve, reject) => {
         upload.array('media')(req, res, async (err) => {
             if (err) {
-                console.log(err);
+                console.log("Upload Error: ", err);
                 const responseData = ResponseClient.GenericFailure({ error: err.message });
                 resolve(responseData);
                 return;
@@ -34,7 +34,6 @@ export default async (req, res) => {
                 const uploadedFiles = await Promise.all(
                     files.map((file) => CloudinaryService.UploadFile(file.path))
                 );
-                console.log(uploadedFiles[0].eager)
 
                 cleanupTemporaryFiles(files);
 

@@ -301,18 +301,47 @@
     margin-left: 20px;
 }
 
+.communityMediaItem {
+    margin-top: 20px;
+    position: relative;
+    cursor: pointer;
+}
+
 .communityMediaImage {
     width: 100%;
     border-radius: 5px;
     cursor: pointer;
-    margin-top: 20px;
+    vertical-align: top;
 }
 
 .communityMediaVideo {
     width: 100%;
     border-radius: 5px;
     cursor: pointer;
-    margin-top: 20px;
+    vertical-align: top;
+}
+
+.communityMediaVideoOverlay {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 5px;
+    pointer-events: none;
+}
+
+.communityMediaVideoOverlay span {
+    width: 70px;
+    height: 70px;
+    background-color: var(--surface);
+    padding: 10px;
+    border-radius: 70px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .communityMember {

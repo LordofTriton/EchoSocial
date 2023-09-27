@@ -3,13 +3,12 @@
     height: fit-content;
     background-color: var(--surface);
     border-radius: 5px;
-    margin: 10px 0px;
+    margin: 3px 0px;
     box-shadow: 0 0 8px 0 rgba(63,66,87,.1);
     padding: 25px 15px 25px 15px;
     overflow: hidden;
     display: inline-block;
     width: 100%;
-    margin-bottom: 10px;
 }
 
 .echoHead {
@@ -61,7 +60,7 @@
 
 .echoHeadDataDateTime {
     color: var(--primary);
-    opacity: 0.7;
+    opacity: 1;
     font-size: 13px;
     font-weight: 200;
     display: block;
@@ -70,13 +69,12 @@
 .echoHeadDataDateTime span {
     font-weight: 500;
     color: var(--accent);
-    opacity: 1 !important;
 }
 
 .echoHeadDataDateTime span span {
     width: 5px;
     height: 5px;
-    background-color: var(--primary) !important;
+    background-color: var(--primary);
     border-radius: 10px;
     display: inline-block;
     margin: 0px 7px;
@@ -126,7 +124,7 @@
     font-size: 15px;
     opacity: 0.8;
     display: block;
-    margin: 20px 0px 25px 0px;
+    margin: 15px 0px 15px 0px;
     width: 100%;
     white-space: pre-wrap;
 }
@@ -143,6 +141,7 @@
     overflow: hidden;
     position: relative;
     margin-top: 20px;
+    cursor: pointer;
 }
 
 .echoMedia:hover .echoMediaControlLeft { display: block; }
@@ -152,12 +151,14 @@
     width: 100%;
     border-radius: 5px;
     cursor: pointer;
+    vertical-align: top;
 }
 
 .echoMediaVideo {
     width: 100%;
     border-radius: 5px;
     cursor: pointer;
+    vertical-align: top;
 }
 
 .echoMediaControlLeft {
@@ -207,6 +208,28 @@
     margin-top: 5px;
 }
 
+.echoMediaVideoOverlay {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 5px;
+}
+
+.echoMediaVideoOverlay span {
+    width: 70px;
+    height: 70px;
+    background-color: var(--surface);
+    padding: 10px;
+    border-radius: 70px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
 .echoFooter {
     width: 100%;
     height: 35px;
@@ -242,6 +265,7 @@
 
 @media screen and (min-width: 1125px) {
     .echo {
+        margin: 10px 0px;
         padding: 25px 25px 25px 25px;
     }
     .echoHeadData {

@@ -20,10 +20,27 @@ function clearUserData() {
     localStorage.removeItem("EchoRecentCommunities")
 }
 
+function setPaginatedState(data, setState, pagination, identifier, concat=true) {
+    setState((state) => {
+        let updatedState = state;
+        if (concat) {
+            for (let i = 0; i < data.length; i++) {
+                if (updatedState.find((item) => item[identifier] === (data[i])[identifier])) continue;
+                updatedState[((pagination.page - 1) * pagination.pageSize) + i] = data[i]
+            }
+        } else {
+            const filteredData = data.filter((item) => !updatedState.map((obj) => obj[identifier]).includes(item[identifier]))
+            updatedState = [...filteredData, ...updatedState]
+        }
+        return updatedState;
+    })
+}
+
 const Helpers = {
     getFileType,
     textLimiter,
-    clearUserData
+    clearUserData,
+    setPaginatedState
 }
 
 export default Helpers;

@@ -16,15 +16,15 @@ import Echo from '../../../components/echo';
 import TriMasonryLayout from '../../../components/masonry/tri-masonry';
 import useDataStates from '../../../hooks/useDataStates';
 import CacheService from '../../../../services/CacheService';
+import Helpers from '../../../../util/Helpers';
 
 export default function UserSaved() {
     const router = useRouter()
     const {modalStates, modalControl} = useModalStates()
-    const {dataStates, dataControl} = useDataStates()
     const {socket, socketMethods} = useSocketContext()
     const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
     const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
-    const [userData, setUserData] = useState(dataStates.userData(router.query.id) || null)
+    const [userData, setUserData] = useState(null)
     const [alert, setAlert] = useState(null)
     const [userSaved, setUserSaved] = useState([])
     const [savedPage, setSavedPage] = useState(1)
@@ -54,7 +54,7 @@ export default function UserSaved() {
     useEffect(() => {
         const updateUserSaved = (data) => {
             if (data.success) {
-                setUserSaved((state) => state.concat(data.data))
+                Helpers.setPaginatedState(data.data, setUserSaved, data.pagination, "echoID")
                 setPagination(data.pagination)
             }
             setSavedLoader(false)
@@ -88,8 +88,6 @@ export default function UserSaved() {
         createAlert,
         ...modalStates,
         ...modalControl,
-        ...dataStates,
-        ...dataControl
     }
 
     const handleScroll = (event) => {
@@ -107,7 +105,7 @@ export default function UserSaved() {
             <Head>
                 <title>Saved - {userData ? `${userData.firstName} ${userData.lastName}` : "User"}</title>
                 <meta name="description" content="A simple social media." />
-                <link rel="icon" href="/favicon.ico" />
+                <link rel="icon" href="/icon.ico" />
                 <link rel="stylesheet" href={`/styles/themes/${activeTheme === "dark" ? 'classic-dark.css' : 'classic-light.css'}`} />
             </Head>
 
@@ -120,13 +118,22 @@ export default function UserSaved() {
                     </div>
                     {
                         userSaved.length ?
-                            <TriMasonryLayout>
-                                {
-                                    userSaved.map((saved, index) =>
-                                        <Echo data={saved} page={pageControl} saved={true} key={index} />
-                                    )
-                                }
-                            </TriMasonryLayout> : null
+                        <TriMasonryLayout>
+                            {
+                                userSaved.map((saved, index) =>
+                                    <Echo data={saved} page={pageControl} saved={true} key={index} />
+                                )
+                            }
+                        </TriMasonryLayout> : null
+                    }
+                    {savedLoader ?
+                        <div className="loader" style={{
+                            width: "70px",
+                            height: "70px",
+                            borderWidth: "7px",
+                            borderColor: "var(--primary) transparent",
+                            margin: "100px calc(50% - 35px) 0px calc(50% - 35px)"
+                        }}></div> : null
                     }
                 </div>
             </div>

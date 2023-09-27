@@ -30,12 +30,29 @@ export default async function GetCommunity(params, io) {
         const userMember = await db.collection("members").findOne({ accountID: params.accountID, communityID: params.communityID })
         const userApplied = userMember ? true : await db.collection("applications").findOne({ accountID: params.accountID, communityID: params.communityID })
         const blockedUser = await db.collection("blacklists").findOne({ blocker: params.communityID, blockee: params.accountID })
+        let profileImageEcho = fetchCommunityResponse.profileImage.echoID ? await db.collection("echoes").findOne({ echoID: fetchCommunityResponse.profileImage.echoID }) : null
         
         const userCcommunity = {
             communityID: fetchCommunityResponse.communityID,
             name: fetchCommunityResponse.name,
             displayName: fetchCommunityResponse.displayName,
-            profileImage: fetchCommunityResponse.profileImage,
+            profileImage: {
+                ...fetchCommunityResponse.profileImage,
+                echo: profileImageEcho ? {
+                    ...profileImageEcho,
+                    communityData: {
+                        name: fetchCommunityResponse.displayName,
+                        node: fetchCommunityResponse.node,
+                        profileImage: fetchCommunityResponse.profileImage,
+                        userRole: userMember ? userMember.role : null
+                    },
+                    userData: {
+                        firstName: "Community",
+                        lastName: "",
+                        profileImage: fetchCommunityResponse.profileImage
+                    }
+                } : null
+            },
             profileCover: fetchCommunityResponse.profileCover,
             description: fetchCommunityResponse.description,
             nodes: fetchCommunityResponse.nodes,

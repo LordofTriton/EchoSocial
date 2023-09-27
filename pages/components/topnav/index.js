@@ -6,6 +6,7 @@ import SVGServer from "../../../services/svg/svgServer";
 import APIClient from "../../../services/APIClient";
 import AccountNav from "../accountnav";
 import Search from "../search";
+import Helpers from "../../../util/Helpers";
 
 export default function TopNav({ page }) {
     const [userNotifications, setUserNotifications] = useState([])
@@ -23,7 +24,7 @@ export default function TopNav({ page }) {
         if (page.socket) {
             const updateNotifications = (data) => {
                 if (data.success) {
-                    setUserNotifications((state) => state.concat(data.data))
+                    Helpers.setPaginatedState(data.data, setUserNotifications, data.pagination, "notificationID")
                     if (data.data.filter((notification) => notification.status === "unread").length > 0) page.setShowNotificationDot(true)
                 }
             }
@@ -47,7 +48,7 @@ export default function TopNav({ page }) {
                     </form>
                 </div>
                 <div className={styles.topnavAccount} onMouseEnter={() => setOpenAccountNav(true)} onMouseLeave={() => setOpenAccountNav(false)} onClick={() => page.setShowSidenav(true)}>
-                    <div className={styles.topnavProfileImage} style={{ backgroundImage: page.activeUser.profileImage.url ? `url(${page.activeUser.profileImage.url})` : `url(/images/profile.jpg)` }}>
+                    <div className={styles.topnavProfileImage} style={{ backgroundImage: page.activeUser.profileImage.url ? `url(${page.activeUser.profileImage.url})` : `url(/images/userProfile.png)` }}>
                         <div className={styles.topnavProfileImageActive}></div>
                     </div>
                     <div className={styles.topnavAccountData}>

@@ -3,6 +3,7 @@ import styles from "./community-head.module.css"
 import APIClient from "../../../services/APIClient";
 import SVGServer from "../../../services/svg/svgServer";
 import AccessBlocker from "../access-blocker";
+import Helpers from "../../../util/Helpers";
 
 export default function CommunityHead({ data, page, title }) {
     const [communityData, setCommunityData] = useState(data)
@@ -38,13 +39,36 @@ export default function CommunityHead({ data, page, title }) {
             return;
         }
         if (communityData.profileImage.publicID) await APIClient.del(`/cloud/delete?publicID=${communityData.profileImage.publicID}`);
-        setCommunityData({ ...communityData, profileImage: uploadedFile.data[0] })
 
-        if (page.socket) page.socketMethods.socketEmitter("UPDATE_COMMUNITY", {
+        const createdEcho = (data) => {
+            if (!data.success) return;
+            const updated = { ...uploadedFile.data[0], echo: data.data }
+
+            if (page.socket) page.socketMethods.socketEmitter("UPDATE_COMMUNITY", {
+                accountID: page.activeUser.accountID,
+                communityID: communityData.communityID,
+                profileImage: {
+                    ...uploadedFile.data[0],
+                    echoID: data.data.echoID
+                }
+            })
+            setCommunityData({ ...communityData, profileImage: updated })
+            page.createAlert({ type: "success", message: "Profile Image updated successfully." })
+        }
+        if (page.socket) page.socketMethods.socketRequest("CREATE_ECHO", {
             accountID: page.activeUser.accountID,
             communityID: communityData.communityID,
-            profileImage: uploadedFile.data[0]
-        })
+            audience: communityData.displayName,
+            nodes: [communityData.node],
+            content: {
+                text: null,
+                media: [{
+                    ...uploadedFile.data[0],
+                    type: Helpers.getFileType(uploadedFile.data[0].url)
+                }],
+                link: null
+            }
+        }, createdEcho)
     }
 
     const handleLeaveGroup = async () => {
@@ -106,7 +130,7 @@ export default function CommunityHead({ data, page, title }) {
                 }
                 <div className={styles.communityHeadBar}></div>
                 <div className={styles.communityHeadData}>
-                    <div className={styles.communityHeadProfile} style={{ backgroundImage: communityData ? `url(${communityData.profileImage.url})` : null }}>
+                <div className={styles.communityHeadProfile} style={{ backgroundImage: communityData ? `url(${communityData.profileImage.url})` : null }} onClick={() => communityData.profileImage.echo ? page.setShowMediaViewer(communityData.profileImage.echo) : null}>
                         {
                             communityData && communityData.userMember && communityData.userMember.role !== "member" ?
                             <><label htmlFor="profileSelector" className={styles.communityHeadProfileButton}><SVGServer.CameraIcon color="var(--primary)" width="20px" height="20px" /></label>
@@ -127,10 +151,6 @@ export default function CommunityHead({ data, page, title }) {
                     <span className={styles.communityHeadButton} onClick={() => handleLeaveGroup()}>
                         <SVGServer.ExitIcon color="var(--primary)" width="20px" height="20px" />
                         <span>Leave</span>
-                    </span> 
-                    <span className={styles.communityHeadButton} onClick={() => blockCommunity()} style={{backgroundColor: communityData && communityData.userBlocked ? "var(--accent)" : "rgba(0, 0, 0, 0.7)"}}>
-                        <SVGServer.BlockIcon color={communityData && communityData.userBlocked ? "var(--surface)" : "var(--primary)"} width="20px" height="20px" />
-                        <span style={{color: communityData && communityData.userBlocked ? "var(--surface)" : "var(--primary)"}}>{communityData && communityData.userBlocked ? "Unblock" : "Block"}</span>
                     </span>
                     </> : 
                     communityData && !communityData.userApplied ?

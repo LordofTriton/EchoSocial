@@ -20,7 +20,6 @@ export default function BlacklistSettings() {
     const [blacklists, setBlacklists] = useState([])
     const [alert, setAlert] = useState(null)
     const {modalStates, modalControl} = useModalStates()
-    const {dataStates, dataControl} = useDataStates()
     const [showAccountDrop, setShowAccountDrop] = useState(false)
     const {socket, socketMethods} = useSocketContext()
     const [blacklistLoader, setBlacklistLoader] = useState(true)
@@ -41,7 +40,7 @@ export default function BlacklistSettings() {
         if (socket) {
             const updateBlacklists = (data) => {
                 if (data.success) {
-                    setBlacklists((state) => state.concat(data.data))
+                    Helpers.setPaginatedState(data.data, setBlacklists, data.pagination, "accountID")
                     setPagination(data.pagination)
                 }
                 setBlacklistLoader(false)
@@ -83,8 +82,6 @@ export default function BlacklistSettings() {
         createAlert,
         ...modalStates,
         ...modalControl,
-        ...dataStates,
-        ...dataControl
     }
 
     const handleScroll = (event) => {
@@ -102,7 +99,7 @@ export default function BlacklistSettings() {
             <Head>
                 <title>Echo - Settings</title>
                 <meta name="description" content="A simple social media." />
-                <link rel="icon" href="/favicon.ico" />
+                <link rel="icon" href="/icon.ico" />
                 <link rel="stylesheet" href={`/styles/themes/${activeTheme === "dark" ? 'classic-dark.css' : 'classic-light.css'}`} />
             </Head>
 

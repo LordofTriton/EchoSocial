@@ -10,8 +10,8 @@ import Echo from './components/echo';
 import Modals from './components/modals';
 import DuoMasonryLayout from './components/masonry/duo-masonry'
 import useModalStates from './hooks/useModalStates'
-import useDataStates from './hooks/useDataStates'
 import { useSocketContext } from '../util/SocketProvider'
+import Helpers from '../util/Helpers'
 
 export default function Home() {
   const router = useRouter()
@@ -19,8 +19,7 @@ export default function Home() {
   const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
   const [alert, setAlert] = useState(null)
   const {modalStates, modalControl} = useModalStates()
-  const {dataStates, dataControl} = useDataStates()
-  const [echoFeed, setEchoFeed] = useState(dataStates.feed || [])
+  const [echoFeed, setEchoFeed] = useState([])
   const [echoFeedPage, setEchoFeedPage] = useState(1)
   const [echoFeedFilter, setEchoFeedFilter] = useState(null)
   const {socket, socketMethods} = useSocketContext()
@@ -36,25 +35,17 @@ export default function Home() {
     if (socket) {
       const updateFeed = (data) => {
         if (data.success) {
-          if (echoFeedPage === 1) {
-              setEchoFeed(data.data)
-              if (echoFeedPage < 2) dataControl.setFeed(data.data)
-          }
-          else {
-              setEchoFeed((state) => state.concat(data.data))
-              if (echoFeedPage < 2) dataControl.setFeed(echoFeed.concat(data.data))
-          }
+          console.log(data.data)
+          Helpers.setPaginatedState(data.data, setEchoFeed, data.pagination, "echoID")
           setPagination(data.pagination)
         }
         setFeedLoader(false)
       }
       socketMethods.socketRequest("FEED", {
-          accountID: activeUser.accountID,
-          page: echoFeedPage,
-          pageSize: 10
-        },
-        updateFeed
-      )
+        accountID: activeUser.accountID,
+        page: echoFeedPage,
+        pageSize: 10
+      }, updateFeed)
     }
   }, [echoFeedPage, socket])
 
@@ -63,18 +54,16 @@ export default function Home() {
     if (socket) {
       const updateFeed = (data) => {
         if (data.success) {
-          setEchoFeed(data.data)
+          Helpers.setPaginatedState(data.data, setEchoFeed, data.pagination, "echoID")
           setPagination(data.pagination)
         }
         setFeedLoader(false)
       }
       socketMethods.socketRequest("FEED", {
-          accountID: activeUser.accountID,
-          page: 1,
-          pageSize: 10
-        },
-        updateFeed
-      )
+        accountID: activeUser.accountID,
+        page: 1,
+        pageSize: 10
+      }, updateFeed)
     }
   }, [echoFeedFilter])
 
@@ -98,8 +87,6 @@ export default function Home() {
     createAlert,
     ...modalStates,
     ...modalControl,
-    ...dataStates,
-    ...dataControl,
   }
 
   const filteredFeed = () => {
@@ -117,49 +104,52 @@ export default function Home() {
   };
 
   return (
-    <div className="page" style={{backgroundColor: "var(--base)"}} onScroll={handleScroll}>
+    <div className="page" style={{ backgroundColor: "var(--base)" }} onScroll={handleScroll}>
       <Head>
         <title>Echo - Home</title>
         <meta name="description" content="A simple social media." />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/icon.ico" />
+        <meta name="description" content="Echo is a simple, basic social media platform designed to bring together people with similar interests and passions." />
+        <meta name="keywords" content="Echo, Echo Social, Social Media" />
+        <meta name="author" content="Joshua Agboola" />
         <link rel="stylesheet" href={`/styles/themes/${activeTheme === "dark" ? 'classic-dark.css' : 'classic-light.css'}`} />
       </Head>
 
       {
         activeUser ?
-        <div className="pageContent" style={{backgroundColor: "var(--base)"}}>
-          <div className={styles.feedFiltersBox}>
-            <span className={styles.feedFilters}>
-              <span className={styles.feedFilter} onClick={() => setEchoFeedFilter(null)} style={{backgroundColor: !echoFeedFilter ? "#F58A2Aff" : null, color: !echoFeedFilter ? "white" : null}}>All</span> 
-              {
-                activeUser && activeUser.nodes.length > 0 ?
-                activeUser.nodes.map((node, index) => 
-                  <span key={index} className={styles.feedFilter} onClick={() => setEchoFeedFilter(node.nodeID)} style={{backgroundColor: echoFeedFilter === node.nodeID ? "#F58A2Aff" : null, color: echoFeedFilter === node.nodeID ? "white" : null}}>{node.emoji} {node.displayName}</span> 
-                )
-                : null
-              }
-            </span>
-          </div>
-          {
-            activeUser ? 
-            <DuoMasonryLayout>
+          <div className="pageContent" style={{ backgroundColor: "var(--base)" }}>
+            <div className={styles.feedFiltersBox}>
+              <span className={styles.feedFilters}>
+                <span className={styles.feedFilter} onClick={() => setEchoFeedFilter(null)} style={{ backgroundColor: !echoFeedFilter ? "#F58A2Aff" : null, color: !echoFeedFilter ? "white" : null }}>All</span>
+                {
+                  activeUser && activeUser.nodes.length > 0 ?
+                    activeUser.nodes.map((node, index) =>
+                      <span key={index} className={styles.feedFilter} onClick={() => setEchoFeedFilter(node.nodeID)} style={{ backgroundColor: echoFeedFilter === node.nodeID ? "#F58A2Aff" : null, color: echoFeedFilter === node.nodeID ? "white" : null }}>{node.emoji} {node.displayName}</span>
+                    )
+                    : null
+                }
+              </span>
+            </div>
             {
-              filteredFeed().length ? 
-              filteredFeed().map((echo, index) => <Echo data={echo} page={pageControl} key={index} /> ) : null
+              activeUser ?
+                <DuoMasonryLayout>
+                  {
+                    filteredFeed().length ?
+                      filteredFeed().map((echo, index) => <Echo data={echo} page={pageControl} key={index} />) : null
+                  }
+                </DuoMasonryLayout> : null
             }
-            </DuoMasonryLayout> : null
-          }
 
-          { feedLoader ? 
-            <div className="loader" style={{
-              width: "70px",
-              height: "70px",
-              borderWidth: "7px",
-              borderColor: "var(--primary) transparent",
-              margin: "100px calc(50% - 35px) 0px calc(50% - 35px)"
-            }}></div>  : null
-          }
-        </div> : null
+            {feedLoader ?
+              <div className="loader" style={{
+                width: "70px",
+                height: "70px",
+                borderWidth: "7px",
+                borderColor: "var(--primary) transparent",
+                margin: "100px calc(50% - 35px) 0px calc(50% - 35px)"
+              }}></div> : null
+            }
+          </div> : null
       }
 
       <Modals page={pageControl} />

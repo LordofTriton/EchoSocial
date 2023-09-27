@@ -58,7 +58,7 @@
     overflow-y: auto;
     float: right;
     background-color: var(--surface);
-    padding: 50px 50px;
+    padding: 50px 30px;
     border-radius: 20px 20px 0px 0px;
 }
 

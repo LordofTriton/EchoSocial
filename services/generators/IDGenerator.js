@@ -52,6 +52,10 @@ function GenerateMessageID() {
     return String(new ObjectId())
 }
 
+function GenerateAccessToken() {
+    return String(new ObjectId())
+}
+
 const IDGenerator = {
     GenerateAccountID,
     GenerateCommunityID,
@@ -65,7 +69,8 @@ const IDGenerator = {
     GenerateApplicationID,
     GenerateSaveID,
     GenerateBlacklistID,
-    GenerateMessageID
+    GenerateMessageID,
+    GenerateAccessToken
 }
 
 export default IDGenerator;

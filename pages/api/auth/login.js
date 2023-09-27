@@ -1,6 +1,7 @@
 import { getDB } from "../../../util/db/mongodb";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
+import IDGenerator from "../../../services/generators/IDGenerator";
 
 function ValidateLogin(data) {
     if (!data.email || !ParamValidator.isValidEmail(data.email)) throw new Error("Missing or Invalid: email.")
@@ -24,6 +25,7 @@ export default async (request, response) => {
 
     try {
         ValidateLogin(params);
+        const newToken = IDGenerator.GenerateAccessToken()
 
         const userAccount = await db.collection("accounts").findOne({ email: params.email, password: params.password })
         if (!userAccount) throw new Error("Incorrect email or password!")
@@ -53,10 +55,21 @@ export default async (request, response) => {
                 userStatus: userAccount.userStatus,
                 isVerified: userAccount.isVerified,
                 settings: userSettings,
-                dark: userSettings.dark
+                dark: userSettings.dark,
+                accessToken: newToken
             },
             message: "Login successful."
         })
+
+        await db.collection("accounts").updateOne({ accountID: userAccount.accountID }, { $set: { 
+            lastActive: Date.now(), 
+            lastLogin: Date.now(),
+            access: {
+                token: newToken,
+                expiration: Date.now()
+            }
+        } })
+
         response.json(responseData)
     } catch (error) {
         console.log(error)

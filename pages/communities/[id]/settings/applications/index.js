@@ -20,11 +20,10 @@ import CacheService from '../../../../../services/CacheService';
 export default function CommunitySettings() {
     const router = useRouter()
     const {modalStates, modalControl} = useModalStates()
-    const {dataStates, dataControl} = useDataStates()
     const {socket, socketMethods} = useSocketContext()
     const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
     const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
-    const [communityData, setCommunityData] = useState(dataStates.communityData(router.query.id) || null)
+    const [communityData, setCommunityData] = useState(null)
     const [communityApplications, setCommunityApplications] = useState([])
     const [alert, setAlert] = useState(null)
     const [pagination, setPagination] = useState({
@@ -40,7 +39,7 @@ export default function CommunitySettings() {
         const updateCommunityData = (data) => (data.success) ? setCommunityData(data.data) : null;
         const updateCommunityApplications = (data) => {
             if (data.success) {
-                setCommunityApplications((state) => state.concat(data.data))
+                Helpers.setPaginatedState(data.data, setCommunityApplications, data.pagination, "applicationID")
                 setPagination(data.pagination)
             }
             setApplicationLoader(false)
@@ -85,8 +84,6 @@ export default function CommunitySettings() {
         createAlert,
         ...modalStates,
         ...modalControl,
-        ...dataStates,
-        ...dataControl
     }
 
     const handleApproveApplication = async (applicationID) => {
@@ -118,7 +115,7 @@ export default function CommunitySettings() {
             <Head>
                 <title>Echo - {communityData ? communityData.displayName : "Community"}</title>
                 <meta name="description" content="A simple social media." />
-                <link rel="icon" href="/favicon.ico" />
+                <link rel="icon" href="/icon.ico" />
                 <link rel="stylesheet" href={`/styles/themes/${activeTheme === "dark" ? 'classic-dark.css' : 'classic-light.css'}`} />
             </Head>
 

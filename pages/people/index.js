@@ -14,6 +14,7 @@ import QuadMasonryLayout from "../components/masonry/quad-masonry";
 import UserThumb from "../components/user-thumb";
 import useDataStates from "../hooks/useDataStates";
 import CacheService from "../../services/CacheService";
+import Helpers from "../../util/Helpers";
 
 export default function PeopleStrangers() {
     const router = useRouter()
@@ -21,8 +22,7 @@ export default function PeopleStrangers() {
     const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
     const [alert, setAlert] = useState(null)
     const {modalStates, modalControl} = useModalStates()
-    const {dataStates, dataControl} = useDataStates()
-    const [people, setPeople] = useState(dataStates.strangerPeople || [])
+    const [people, setPeople] = useState([])
     const [searchQuery, setSearchQuery] = useState("")
     const [peoplePage, setPeoplePage] = useState(1)
     const {socket, socketMethods} = useSocketContext()
@@ -39,14 +39,7 @@ export default function PeopleStrangers() {
         if (socket) {
             const updatePeople = (data) => {
                 if (data.success) {
-                    if (peoplePage === 1) {
-                        setPeople(data.data)
-                        if (peoplePage < 2) dataControl.setStrangerPeople(data.data)
-                    }
-                    else {
-                        setPeople((state) => state.concat(data.data))
-                        if (peoplePage < 2) dataControl.setStrangerPeople(people.concat(data.data))
-                    }
+                    Helpers.setPaginatedState(data.data, setPeople, data.pagination, "accountID")
                     setPagination(data.pagination)
                 }
                 setPeopleLoader(false)
@@ -66,7 +59,7 @@ export default function PeopleStrangers() {
         if (socket && searchQuery.length % 3 === 0 && !peopleLoader) {
             const updatePeople = (data) => {
                 if (data.success) {
-                    setPeople((state) => state.concat(data.data))
+                    Helpers.setPaginatedState(data.data, setPeople, data.pagination, "accountID")
                     setPagination(data.pagination)
                 }
                 setPeopleLoader(false)
@@ -101,8 +94,6 @@ export default function PeopleStrangers() {
         createAlert,
         ...modalStates,
         ...modalControl,
-        ...dataStates,
-        ...dataControl
     }
 
     const handleScroll = (event) => {
@@ -120,7 +111,7 @@ export default function PeopleStrangers() {
             <Head>
                 <title>Echo - People</title>
                 <meta name="description" content="A simple social media." />
-                <link rel="icon" href="/favicon.ico" />
+                <link rel="icon" href="/icon.ico" />
                 <link rel="stylesheet" href={`/styles/themes/${activeTheme === "dark" ? 'classic-dark.css' : 'classic-light.css'}`} />
             </Head>
 

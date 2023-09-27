@@ -18,11 +18,10 @@ import CacheService from '../../../../services/CacheService';
 export default function UserFriends() {
     const router = useRouter()
     const {modalStates, modalControl} = useModalStates()
-    const {dataStates, dataControl} = useDataStates()
     const {socket, socketMethods} = useSocketContext()
     const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
     const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
-    const [userData, setUserData] = useState(dataStates.userData(router.query.id) || null)
+    const [userData, setUserData] = useState(null)
     const [alert, setAlert] = useState(null)
     const [userFriends, setUserFriends] = useState([])
     const [friendPage, setFriendPage] = useState(1)
@@ -52,7 +51,7 @@ export default function UserFriends() {
     useEffect(() => {
         const updateUserFriends = (data) => {
             if (data.success) {
-                setUserFriends((state) => state.concat(data.data))
+                Helpers.setPaginatedState(data.data, setUserFriends, data.pagination, "accountID")
                 setPagination(data.pagination)
             }
             setFriendLoader(false)
@@ -88,8 +87,6 @@ export default function UserFriends() {
         createAlert,
         ...modalStates,
         ...modalControl,
-        ...dataStates,
-        ...dataControl
     }
 
     const handleScroll = (event) => {
@@ -107,7 +104,7 @@ export default function UserFriends() {
             <Head>
                 <title>Echo - {userData ? `${userData.firstName} ${userData.lastName}` : "User"}</title>
                 <meta name="description" content="A simple social media." />
-                <link rel="icon" href="/favicon.ico" />
+                <link rel="icon" href="/icon.ico" />
                 <link rel="stylesheet" href={`/styles/themes/${activeTheme === "dark" ? 'classic-dark.css' : 'classic-light.css'}`} />
             </Head>
 
@@ -127,6 +124,16 @@ export default function UserFriends() {
                                 )
                             }
                         </QuadMasonryLayout> : null
+                    }
+                    
+                    {friendLoader ?
+                        <div className="loader" style={{
+                            width: "70px",
+                            height: "70px",
+                            borderWidth: "7px",
+                            borderColor: "var(--primary) transparent",
+                            margin: "100px calc(50% - 35px) 0px calc(50% - 35px)"
+                        }}></div> : null
                     }
                 </div>
             </div>

@@ -21,7 +21,6 @@ export default function Messenger({ toggle, control, page }) {
     useEffect(() => {
         if (page.socket) {
             const updateChat = (data) => {
-                page.setChats([data, ...(userChats.filter((chat) => chat.chatID !== data.chatID))])
                 setUserChats((state) => [data, ...(state.filter((chat) => chat.chatID !== data.chatID))])
             }
             page.socketMethods.socketListener(`UPDATED_CHAT_LIST`, updateChat)
@@ -32,14 +31,7 @@ export default function Messenger({ toggle, control, page }) {
         if (page.socket) {
             const updateChats = (data) => {
                 if (data.success) {
-                    if (chatPage === 1) {
-                        setUserChats(data.data)
-                        page.setChats(data.data)
-                    }
-                    else {
-                        setUserChats((state) => state.concat(data.data))
-                        page.setChats(userChats.concat(data.data))
-                    }
+                    Helpers.setPaginatedState(data.data, setUserChats, data.pagination, "chatID")
                     setPagination(data.pagination)
                 }
                 setChatsLoader(false)
@@ -122,7 +114,7 @@ export default function Messenger({ toggle, control, page }) {
                                     <div className={styles.messengerChatProfile}  onClick={() => page.router.push(`/user/${chat.target.accountID}`)} style={{backgroundImage: `url(${chat.target.profileImage.url})`}}></div>
                                     <div className={styles.messengerChatData} onClick={() => page.setActiveChat(chat)}>
                                         <span className={styles.messengerChatDataName}>
-                                            {chat.target.firstName} {chat.target.lastName}
+                                            {Helpers.textLimiter(chat.target.firstName, 12)}
                                             <span className={styles.messengerChatDataTime}><span></span>{DateGenerator.GenerateDateTime(chat.lastUpdated)}</span>
                                         </span>
                                         { chat.latestMessage ? 

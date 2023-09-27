@@ -14,20 +14,20 @@ import { useSocketContext } from '../../../util/SocketProvider';
 import UserHead from '../../components/user-head';
 import useDataStates from '../../hooks/useDataStates';
 import CacheService from '../../../services/CacheService';
+import Helpers from '../../../util/Helpers';
 
 export default function User() {
   const router = useRouter()
   const {modalStates, modalControl} = useModalStates()
-  const {dataStates, dataControl} = useDataStates()
   const {socket, socketMethods} = useSocketContext()
   const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
   const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
-  const [userData, setUserData] = useState(dataStates.userData(router.query.id) || null)
+  const [userData, setUserData] = useState(null)
   const [alert, setAlert] = useState(null)
-  const [userEchoes, setUserEchoes] = useState(dataStates.userFeed(router.query.id) || [])
+  const [userEchoes, setUserEchoes] = useState([])
   const [userFriends, setUserFriends] = useState([])
+  const [userCommunities, setUserCommunities] = useState([])
   const [userMediaEchoes, setUserMediaEchoes] = useState([])
-  const [showAllCommunities, setShowAllCommunities] = useState(false)
   const [feedPage, setFeedPage] = useState(1)
   const [pagination, setPagination] = useState({
     page: 1,
@@ -40,12 +40,9 @@ export default function User() {
   useEffect(() => {
     setUserEchoes([])
     setUserMediaEchoes([])
-    const updateUserData = (data) => {
-      if (data.success) {
-        setUserData(data.data)
-        dataControl.setUserData(data.data)
-      }
-    }
+    setUserFriends([])
+    setUserCommunities([])
+    const updateUserData = (data) => data.success ? setUserData(data.data) : null;
     const showEcho = (data) => data.success ? modalControl.setShowEchoViewer(data.data) : null
     if (router.query.id) {
       if (socket) socketMethods.socketRequest("GET_ACCOUNT", {
@@ -64,20 +61,14 @@ export default function User() {
   useEffect(() => {
     const updateEchoes = (data) => {
       if (data.success) {
-        if (feedPage === 1) {
-            setUserEchoes(data.data)
-            if (feedPage < 2) dataControl.setUserFeed(router.query.id, data.data)
-        }
-        else {
-          setUserEchoes((state) => state.concat(data.data))
-            if (feedPage < 2) dataControl.setUserFeed(router.query.id, userEchoes.concat(data.data))
-        }
+        Helpers.setPaginatedState(data.data, setUserEchoes, data.pagination, "echoID")
         setPagination(data.pagination)
       }
       setEchoLoader(false)
     }
     const updateMediaEchoes = (data) => data.success ? setUserMediaEchoes(data.data) : null;
     const updateUserFriends = (data) => data.success ? setUserFriends(data.data) : null;
+    const updateUserCommunities = (data) => data.success ? setUserCommunities(data.data) : null;
     if (userData) {
       if (socket) socketMethods.socketRequest("USER_FEED", {
         accountID: activeUser.accountID,
@@ -92,6 +83,15 @@ export default function User() {
           page: 1,
           pageSize: 10
         }, updateUserFriends)
+      }
+      if (userCommunities.length < 1) {
+        if (socket) socketMethods.socketRequest("GET_COMMUNITIES", {
+          accountID: activeUser.accountID,
+          userID: router.query.id,
+          member: true,
+          page: 1,
+          pageSize: 10
+        }, updateUserCommunities)
       }
       if (userMediaEchoes.length < 1) {
         if (socket) socketMethods.socketRequest("USER_FEED", {
@@ -126,8 +126,6 @@ export default function User() {
     createAlert,
     ...modalStates,
     ...modalControl,
-    ...dataStates,
-    ...dataControl
   }
 
   const handleScroll = (event) => {
@@ -145,7 +143,7 @@ export default function User() {
       <Head>
         <title>Echo - {userData ? `${userData.firstName} ${userData.lastName}` : "User"}</title>
         <meta name="description" content="A simple social media." />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/icon.ico" />
         <link rel="stylesheet" href={`/styles/themes/${activeTheme === "dark" ? 'classic-dark.css' : 'classic-light.css'}`} />
       </Head>
 
@@ -170,18 +168,18 @@ export default function User() {
             </div>
 
             {
-              userData && userData.communities.length ?
+              userCommunities.length ?
               <div className={styles.userTimelineDataBlock}>
                 <span className={styles.userTimelineDataTitle}>Communities</span>
                 {
-                  userData.communities.slice(0, showAllCommunities ? 1000 : 3).map((community, index) =>
+                  userCommunities.map((community, index) =>
                     <span key={index} className={styles.userTimelineDataCommunity} onClick={() => router.push(`/communities/${community.communityID}`)}>
                       <div style={{ backgroundImage: `url(${community.profileImage.url})` }}></div>
                       <span>{community.displayName}</span>
                     </span>
                   )
                 }
-                {userData && userData.communities.length > 3 ? <span onClick={() => setShowAllCommunities(!showAllCommunities)} className={styles.userTimelineDataSeeMore}>{showAllCommunities ? "Hide Communities" : "See More"}</span> : null}
+                <span onClick={() => router.push(`/user/${userData.accountID}/communities`)} className={styles.userTimelineDataSeeMore}>See More</span>
               </div> : null
             }
 
@@ -196,20 +194,22 @@ export default function User() {
                     )
                   }
                 </div>
+                <span onClick={() => router.push(`/user/${userData.accountID}/friends`)} className={styles.userTimelineDataSeeMore}>See More</span>
               </div> : null
             }
 
             {
               userMediaEchoes.length > 0 ?
               <div className={styles.userTimelineDataBlock}>
-                <span className={styles.userTimelineDataTitle}>Photos & Videos</span>
+                <span className={styles.userTimelineDataTitle}>Photos</span>
                 <div className={styles.userTimelineDataMedia}>
                   {
                     userMediaEchoes.map((echo, index) =>
-                      echo.content.media.map((media, index) => <div key={index} style={{ backgroundImage: `url(${media.url})` }} onClick={() => modalControl.setShowEchoViewer(echo)} />
+                      echo.content.media.filter((item) => item.type === "image").map((media, index) => <div key={index} style={{ backgroundImage: `url(${media.url})` }} onClick={() => modalControl.setShowEchoViewer(echo)} />
                     ))
                   }
                 </div>
+                <span onClick={() => router.push(`/user/${userData.accountID}/media`)} className={styles.userTimelineDataSeeMore}>See More</span>
               </div> : null
             }
 
@@ -224,7 +224,7 @@ export default function User() {
                   {userEchoes.map((echo, index) => <Echo data={echo} page={pageControl} key={index} />)}
                 </DuoMasonryLayout> 
               : 
-                <span className={styles.userNull}>Nothing to show - {router.query.id === activeUser.accountID ? 'You have' : 'This user has'} no echoes{router.query.id !== activeUser.accountID ? ' you can see' : ''}.</span>
+                !echoLoader ? <span className={styles.userNull}>Nothing to show - {router.query.id === activeUser.accountID ? 'You have' : 'This user has'} no echoes{router.query.id !== activeUser.accountID ? ' you can see' : ''}.</span> : null
             }
             { echoLoader ? 
               <div className="loader" style={{

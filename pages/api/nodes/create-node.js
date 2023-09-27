@@ -27,7 +27,13 @@ export default async function CreateNode(params, io) {
         ValidateCreateNode(params)
 
         let userNode = await db.collection("nodes").findOne({ name: String(params.name).toLowerCase().replace(/\s/g, "").trim() })
-        if (userNode) throw new Error("A node with this name already exists.")
+        if (userNode) {
+            const responseData = ResponseClient.DBModifySuccess({
+                data: userNode,
+                message: "Node fetched successfully."
+            })
+            return responseData;
+        }
 
         const nodeData = {
             nodeID: IDGenerator.GenerateNodeID(),

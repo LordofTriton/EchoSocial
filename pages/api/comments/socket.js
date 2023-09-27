@@ -1,3 +1,5 @@
+import UpdateAccount from "../accounts/update-account";
+import SocketAuth from "../socket/auth";
 import CreateComment, { CreateCommentCallback } from "./create-comment";
 import DeleteComment from "./delete-comment";
 import GetComment from "./get-comment";
@@ -9,6 +11,8 @@ export default async function CommentSocket(io, socket) {
     socket.on('CREATE_COMMENT_REQ', async (data) => {
         if (!data) return;
         else data = JSON.parse(data)
+        const authorized = await SocketAuth(data)
+        if (!authorized) return;
         const response = await CreateComment(data, io)
         io.to(data.accountID).emit(`CREATE_COMMENT_RES_${data.serial}`, JSON.stringify(response))
         if (response.success) await CreateCommentCallback(data, io)
@@ -17,12 +21,16 @@ export default async function CommentSocket(io, socket) {
     socket.on('DELETE_COMMENT', async (data) => {
         if (!data) return;
         else data = JSON.parse(data)
+        const authorized = await SocketAuth(data)
+        if (!authorized) return;
         await DeleteComment(data, io)
     });
 
     socket.on('GET_COMMENT_REQ', async (data) => {
         if (!data) return;
         else data = JSON.parse(data)
+        const authorized = await SocketAuth(data)
+        if (!authorized) return;
         const response = await GetComment(data, io)
         io.to(data.accountID).emit(`GET_COMMENT_RES_${data.serial}`, JSON.stringify(response))
     });
@@ -30,6 +38,8 @@ export default async function CommentSocket(io, socket) {
     socket.on('GET_COMMENTS_REQ', async (data) => {
         if (!data) return;
         else data = JSON.parse(data)
+        const authorized = await SocketAuth(data)
+        if (!authorized) return;
         const response = await GetComments(data, io)
         io.to(data.accountID).emit(`GET_COMMENTS_RES_${data.serial}`, JSON.stringify(response))
     });
@@ -37,6 +47,8 @@ export default async function CommentSocket(io, socket) {
     socket.on('PING_COMMENT', async (data) => {
         if (!data) return;
         else data = JSON.parse(data)
+        const authorized = await SocketAuth(data)
+        if (!authorized) return;
         const response = await PingComment(data, io)
         if (response.success) await PingCommentCallback(data, io)
     });
@@ -44,6 +56,8 @@ export default async function CommentSocket(io, socket) {
     socket.on('UPDATE_COMMENT', async (data) => {
         if (!data) return;
         else data = JSON.parse(data)
+        const authorized = await SocketAuth(data)
+        if (!authorized) return;
         await UpdateComment(data, io)
     });
 }

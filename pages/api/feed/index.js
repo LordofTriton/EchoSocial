@@ -66,12 +66,14 @@ export default async function Feed(params, io) {
             const communityMember = community ? await db.collection("members").findOne({ communityID: echo.communityID, accountID: params.accountID }) : null
             let heartCount = await db.collection("hearts").countDocuments({ echoID: echo.echoID });
             let userHearted = await db.collection("hearts").findOne({ accountID: params.accountID, echoID: echo.echoID });
+            let userSaved = await db.collection("saves").findOne({ accountID: params.accountID, echoID: echo.echoID });
 
-            const finalEchoData = {
+            const echoData = {
                 ...echo,
                 comments,
                 hearts: heartCount,
                 userHearted: userHearted ? true : false,
+                userSaved: userSaved ? true : false,
                 userData: {
                     firstName: user.firstName,
                     lastName: user.lastName,
@@ -84,7 +86,7 @@ export default async function Feed(params, io) {
                     userRole: communityMember ? communityMember.role : null
                 }
             }
-            feedData.push(finalEchoData);
+            feedData.push(echoData);
         }
 
         const responseData = ResponseClient.DBFetchSuccess({

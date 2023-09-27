@@ -52,7 +52,7 @@ export default async (request, response) => {
             email: params.email,
             profileImage: {
                 publicID: null,
-                url: `/images/profile.jpg`
+                url: `/images/userProfile.png`
             },
             profileCover: {
                 publicID: null,

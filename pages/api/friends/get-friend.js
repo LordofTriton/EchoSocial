@@ -30,6 +30,7 @@ export default async function GetFriend(params, io) {
         let userLiked = await db.collection("hearts").findOne({ accountID: params.accountID, userID: friend.accountID })
         let userLikee = await db.collection("hearts").findOne({ accountID: friend.accountID, userID: params.accountID })
         let chat = await db.collection("chats").findOne({ accountID: params.accountID, targetID: friend.accountID })
+        const now = Date.now()
 
         const responseData = ResponseClient.DBModifySuccess({
             data: {
@@ -40,6 +41,8 @@ export default async function GetFriend(params, io) {
                 profileCover: friend.profileCover,
                 nickname: friend.nickname,
                 settings: friendSettings,
+                lastActive: friend.lastActive,
+                active: now - friend.lastActive < 300000 ? true : false,
                 userChat: chat ? chat : null,
                 userLiked: userLiked ? true : false,
                 userLikee: userLikee ? true : false,

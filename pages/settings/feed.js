@@ -24,7 +24,6 @@ export default function FeedSettings() {
     })
     const [alert, setAlert] = useState(null)
     const {modalStates, modalControl} = useModalStates()
-    const {dataStates, dataControl} = useDataStates()
     const {socket, socketMethods} = useSocketContext()
     const [showAccountDrop, setShowAccountDrop] = useState(false)
 
@@ -71,8 +70,6 @@ export default function FeedSettings() {
         createAlert,
         ...modalStates,
         ...modalControl,
-        ...dataStates,
-        ...dataControl
     }
 
     return (
@@ -80,7 +77,7 @@ export default function FeedSettings() {
             <Head>
                 <title>Echo - Settings</title>
                 <meta name="description" content="A simple social media." />
-                <link rel="icon" href="/favicon.ico" />
+                <link rel="icon" href="/icon.ico" />
                 <link rel="stylesheet" href={`/styles/themes/${activeTheme === "dark" ? 'classic-dark.css' : 'classic-light.css'}`} />
             </Head>
 

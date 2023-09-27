@@ -4,6 +4,7 @@ import styles from './user-head.module.css';
 import APIClient from "../../../services/APIClient";
 import SVGServer from "../../../services/svg/svgServer";
 import AccessBlocker from "../access-blocker";
+import Helpers from "../../../util/Helpers";
 
 export default function UserHead({ data, page, title }) {
     const [userData, setUserData] = useState(data)
@@ -40,14 +41,37 @@ export default function UserHead({ data, page, title }) {
             return;
         }
         if (userData.profileImage.publicID) await APIClient.del(`/cloud/delete?publicID=${userData.profileImage.publicID}`);
-        setUserData({ ...userData, profileImage: uploadedFile.data[0] })
+        
+        const createdEcho = (data) => {
+            if (!data.success) return;
+            const updated = { ...uploadedFile.data[0], echo: data.data }
 
-        if (page.socket) page.socketMethods.socketEmitter("UPDATE_ACCOUNT", {
+            if (page.socket) page.socketMethods.socketEmitter("UPDATE_ACCOUNT", {
+                accountID: page.activeUser.accountID,
+                profileImage: {
+                    ...uploadedFile.data[0],
+                    echoID: data.data.echoID
+                }
+            })
+            page.cookies.saveData("EchoActiveUser", { ...userData, profileImage: updated })
+            page.setActiveUser({ ...page.activeUser, profileImage: updated })
+            setUserData({ ...userData, profileImage: updated })
+            page.createAlert({ type: "success", message: "Profile Image updated successfully." })
+        }
+        if (page.socket) page.socketMethods.socketRequest("CREATE_ECHO", {
             accountID: page.activeUser.accountID,
-            profileImage: uploadedFile.data[0]
-        })
-        page.cookies.saveData("EchoActiveUser", { ...userData, profileImage: uploadedFile.data[0] })
-        page.setActiveUser({ ...page.activeUser, profileImage: uploadedFile.data[0] })
+            communityID: null,
+            audience: "public",
+            nodes: [],
+            content: {
+                text: null,
+                media: [{
+                    ...uploadedFile.data[0],
+                    type: Helpers.getFileType(uploadedFile.data[0].url)
+                }],
+                link: null
+            }
+        }, createdEcho)
     }
 
     const handleFollowButtonClick = async () => {
@@ -85,7 +109,7 @@ export default function UserHead({ data, page, title }) {
                 }
                 <div className={styles.userHeadBar}></div>
                 <div className={styles.userHeadData}>
-                    <div className={styles.userHeadProfile} style={{ backgroundImage: userData ? `url(${userData.profileImage.url})` : null }}>
+                    <div className={styles.userHeadProfile} style={{ backgroundImage: userData ? `url(${userData.profileImage.url})` : null }} onClick={() => userData.profileImage.echo ? page.setShowMediaViewer(userData.profileImage.echo) : null}>
                         {
                             page.router.query.id === page.activeUser.accountID ?
                             <><label htmlFor="profileSelector" className={styles.userHeadProfileButton}><SVGServer.CameraIcon color="var(--primary)" width="20px" height="20px" /></label>
@@ -128,7 +152,7 @@ export default function UserHead({ data, page, title }) {
                                     <span>Message</span>
                                 </span> : null
                             }
-                            <span className={styles.userHeadButton} onClick={() => blockUser()} style={{backgroundColor: userData && userData.userBlocked ? "var(--accent)" : "rgba(0, 0, 0, 0.7)"}}>
+                            <span className={styles.userHeadButton} onClick={() => blockUser()} style={{backgroundColor: userData && userData.userBlocked ? "var(--accent)" : "var(--surface)"}}>
                                 <SVGServer.BlockIcon color={userData && userData.userBlocked ? "var(--surface)" : "var(--primary)"} width="20px" height="20px" />
                                 <span style={{color: userData && userData.userBlocked ? "var(--surface)" : "var(--primary)"}}>{userData && userData.userBlocked ? "Unblock" : "Block"}</span>
                             </span>

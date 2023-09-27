@@ -9,15 +9,16 @@ const authLess = ["/login", "/signup", "/password-reset"]
 
 export default function MyApp({ Component, pageProps }) {
   const router = useRouter()
-  const [showChild, setShowChild] = useState(false);
+  const [showChild, setShowChild] = useState(0);
   const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
 
   useEffect(() => {
-    setShowChild(true);
+    setShowChild(1);
   }, [router.route]);
 
   useEffect(() => {
     if (typeof window !== undefined) {
+      setShowChild(true);
       if (window.location.hostname === "echosocial.netlify.app") {
         document.location = "http://13.53.39.114"
         return;
@@ -27,7 +28,7 @@ export default function MyApp({ Component, pageProps }) {
       if (user.nodes && user.nodes.length < 1) router.push("/nodes")
       setActiveUser(user)
     }
-  }, [typeof window])
+  }, [typeof window, showChild])
 
   if (!showChild) {
     return null;
@@ -37,7 +38,7 @@ export default function MyApp({ Component, pageProps }) {
     return ( <></> );
   } else {
     return ( 
-      <div className="app-container">
+      <div className="app-container" onLoad={() => setShowChild(showChild + 1)}>
         { 
           activeUser.accountID || authLess.includes(router.route) ? 
             <SocketProvider>

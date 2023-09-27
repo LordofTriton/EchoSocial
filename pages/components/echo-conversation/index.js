@@ -47,7 +47,7 @@ export default function EchoConversation({ data, control, page }) {
         else {
             const updateComments = (data) => {
                 if (data.success) {
-                    setEchoComments((state) => [...data.data, ...state])
+                    Helpers.setPaginatedState(data.data, setEchoComments, data.pagination, "commentID", false)
                     setPagination(data.pagination)
                 }
                 setCommentLoader(false)

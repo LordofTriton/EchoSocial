@@ -7,7 +7,7 @@ import { Form } from "../form";
 export default function AccountNav({toggle, control, page}) {
     const handleLogout = () => {
         page.cookies.deleteData("EchoUser");
-        page.clearCache()
+        localStorage.clear()
 
         page.router.push("/login")
     }

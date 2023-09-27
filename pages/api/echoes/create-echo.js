@@ -29,7 +29,8 @@ export default async function CreateEcho(params, io) {
         "communityID",
         "audience",
         "nodes",
-        "content"
+        "content",
+        "shared"
     ], params);
 
     try {
@@ -47,6 +48,7 @@ export default async function CreateEcho(params, io) {
                 media: params.content.media,
                 link: params.content.link
             },
+            shared: params.shared,
             datetime: Date.now(),
             url: `/${params.communityID ? "communities" : "user"}/${params.communityID ? params.communityID : params.accountID}?echo=${echoID}`
         }

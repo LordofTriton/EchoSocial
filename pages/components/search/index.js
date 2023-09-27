@@ -111,9 +111,7 @@ export default function Search({toggle, control, page}) {
     useEffect(() => {
         const updateResults = (data) => {
             if (data.success) {
-                console.log(data)
-                if (searchPage === 1) setResults(data.data)
-                else setResults((state) => state.concat(data.data))
+                Helpers.setPaginatedState(data.data, setResults, data.pagination, searchClass === "people" ? "accountID" : "communityID")
                 setPagination(data.pagination)
             }
             setSearchLoader(false)

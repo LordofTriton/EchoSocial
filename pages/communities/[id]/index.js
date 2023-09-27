@@ -16,17 +16,17 @@ import CommunityHead from '../../components/community-head';
 import useDataStates from '../../hooks/useDataStates';
 import CacheService from '../../../services/CacheService';
 import AccessBlocker from '../../components/access-blocker';
+import Helpers from '../../../util/Helpers';
 
 export default function Community() {
   const router = useRouter()
   const {modalStates, modalControl} = useModalStates()
-  const {dataStates, dataControl} = useDataStates()
   const {socket, socketMethods} = useSocketContext()
   const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
   const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
-  const [communityData, setCommunityData] = useState(dataStates.communityData(router.query.id) || null)
+  const [communityData, setCommunityData] = useState(null)
   const [alert, setAlert] = useState(null)
-  const [communityEchoes, setCommunityEchoes] = useState(dataStates.communityFeed(router.query.id) || [])
+  const [communityEchoes, setCommunityEchoes] = useState([])
   const [communityMediaEchoes, setCommunityMediaEchoes] = useState([])
   const [communityMembers, setCommunityMembers] = useState([])
   const [feedPage, setFeedPage] = useState(1)
@@ -41,12 +41,11 @@ export default function Community() {
   useEffect(() => {
     setCommunityEchoes([])
     setCommunityMediaEchoes([])
+    setCommunityMembers([])
     const updateCommunityData = (data) => {
-      if (data.success) {
-        setCommunityData(data.data)
-        dataControl.setCommunityData(data.data)
-      }
-    }
+      console.log(data.data)
+      if (data.success) setCommunityData(data.data)
+    };
     const showEcho = (data) => data.success ? modalControl.setShowEchoViewer(data.data) : null
     if (router.query.id) {
       if (socket) socketMethods.socketRequest("GET_COMMUNITY", {
@@ -66,15 +65,8 @@ export default function Community() {
   useEffect(() => {
     const updateCommunityEchoes = (data) => {
       if (data.success) {
-        if (feedPage === 1) {
-            setCommunityEchoes(data.data)
-            if (feedPage < 2) dataControl.setCommunityFeed(router.query.id, data.data)
-        }
-        else {
-          setCommunityEchoes((state) => state.concat(data.data))
-            if (feedPage < 2) dataControl.setCommunityFeed(router.query.id, communityEchoes.concat(data.data))
-        }
-          setPagination(data.pagination)
+        Helpers.setPaginatedState(data.data, setCommunityEchoes, data.pagination, "echoID")
+        setPagination(data.pagination)
       }
       setEchoLoader(false)
     }
@@ -92,7 +84,9 @@ export default function Community() {
       if (communityMembers.length < 1) {
         if (socket) socketMethods.socketRequest("GET_MEMBERS", {
           accountID: activeUser.accountID,
-          communityID: router.query.id
+          communityID: router.query.id,
+          page: 1,
+          pageSize: 10
         }, updateCommunityMembers)
       }
       if (communityMediaEchoes.length < 1) {
@@ -101,7 +95,7 @@ export default function Community() {
           communityID: router.query.id,
           hasMedia: true,
           page: 1,
-          pageSize: 7
+          pageSize: 6
         }, updateMediaEchoes)
       }
     }
@@ -133,8 +127,6 @@ export default function Community() {
     createAlert,
     ...modalStates,
     ...modalControl,
-    ...dataStates,
-    ...dataControl
   }
 
   const handleScroll = (event) => {
@@ -152,7 +144,7 @@ export default function Community() {
       <Head>
         <title>Echo - {communityData ? communityData.displayName : "Community"}</title>
         <meta name="description" content="A simple social media." />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/icon.ico" />
         <link rel="stylesheet" href={`/styles/themes/${activeTheme === "dark" ? 'classic-dark.css' : 'classic-light.css'}`} />
       </Head>
 
@@ -187,20 +179,22 @@ export default function Community() {
                     )
                   }
                 </div>
+                <span onClick={() => router.push(`/communities/${communityData.communityID}/members`)} className={styles.communityTimelineDataSeeMore}>See More</span>
               </div> : null
             }
 
             {
               communityMediaEchoes.length > 0 ?
               <div className={styles.communityTimelineDataBlock}>
-                <span className={styles.communityTimelineDataTitle}>Photos & Videos</span>
+                <span className={styles.communityTimelineDataTitle}>Images</span>
                 <div className={styles.communityTimelineDataMedia}>
                   {
                     communityMediaEchoes.map((echo, index) =>
-                      echo.content.media.map((media, index) => <div key={index} style={{ backgroundImage: `url(${media.url})` }} onClick={() => modalControl.setShowEchoViewer(echo)} />
+                      echo.content.media.filter((item) => item.type === "image").map((media, index) => <div key={index} style={{ backgroundImage: `url(${media.url})` }} onClick={() => modalControl.setShowEchoViewer(echo)} />
                     ))
                   }
                 </div>
+                <span onClick={() => router.push(`/communities/${communityData.communityID}/media`)} className={styles.communityTimelineDataSeeMore}>See More</span>
               </div> : null
             }
 
@@ -215,10 +209,12 @@ export default function Community() {
                   {communityEchoes.map((echo, index) => <Echo data={echo} page={pageControl} key={index} />)}
                 </DuoMasonryLayout> 
               : 
+                !echoLoader ?
                 communityData && !communityData.userMember ?
                 <span className={styles.communityNull}>Nothing to show - Only members can see echoes.</span>
                 : 
                 <span className={styles.communityNull}>Nothing to show - This community has no echoes.</span>
+                : null
             }
             { echoLoader ? 
               <div className="loader" style={{

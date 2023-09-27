@@ -55,7 +55,6 @@
     padding: 7px 15px;
     cursor: pointer;
     background-color: var(--surface);
-    background-color: rgba(0, 0, 0, 0.7);
     opacity: 0.8;
 }
 
@@ -102,6 +101,7 @@
     border-radius: 100%;
     border: 5px solid var(--surface);
     float: left;
+    cursor: pointer;
 }
 
 .userHeadProfileButton {

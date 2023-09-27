@@ -8,10 +8,7 @@ cloudinary.config({
 
 async function UploadFile(fileData) {
     return cloudinary.v2.uploader.upload(fileData, { 
-        resource_type: 'auto',
-        eager: [
-            { width: 1000, height: 1000, crop: 'fit' }
-        ]
+        resource_type: 'auto'
      })
 }
 

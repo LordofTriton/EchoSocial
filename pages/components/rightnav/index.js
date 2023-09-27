@@ -27,7 +27,8 @@ function Friend({data, page}) {
                 accountID: friend.accountID,
                 firstName: friend.firstName,
                 lastName: friend.lastName,
-                profileImage: friend.profileImage
+                profileImage: friend.profileImage,
+                lastActive: friend.lastActive
             },
             userFriend: true
         }
@@ -38,7 +39,7 @@ function Friend({data, page}) {
             {
                 getChat(data).unread > 0 ?
                 <span className={styles.rightnavChatBoxChatUnread}>{getChat(data).unread}</span> :
-                <span className={styles.rightnavChatBoxChatOnline}></span>
+                <span className={styles.rightnavChatBoxChatOnline} style={{backgroundColor: data.active ? "lime" : "dimgray"}}></span>
             }
             <div className={styles.rightnavChatBoxChatPreview} style={{width: showPreview && getChat(data).unread > 0 ? "200px" : "0px"}}>
                 <span className={styles.rightnavChatBoxChatPreviewName}>{getChat(data).target.firstName}</span>
@@ -49,19 +50,20 @@ function Friend({data, page}) {
 }
 
 export default function RightNav({ page }) {
-    const [userFriends, setUserFriends] = useState(page.messengerFriends || [])
+    const [userFriends, setUserFriends] = useState([])
 
     useEffect(() => {
         if (page.socket) {
             const updateUserFriends = (data) => {
                 if (data.success) {
                     setUserFriends(data.data);
-                    page.setMessengerFriends(data.data);
                 }
             }
             if (page.socket) page.socketMethods.socketRequest("GET_FRIENDS", { 
                 accountID: page.activeUser.accountID, 
-                userID: page.activeUser.accountID 
+                userID: page.activeUser.accountID,
+                page: 1,
+                pageSize: 10
             }, updateUserFriends)
         }
     }, [page.socket])
@@ -69,7 +71,6 @@ export default function RightNav({ page }) {
     useEffect(() => {
         if (page.socket) {
             const updateFriends = (data) => {
-                page.setMessengerFriends(userFriends.concat(data))
                 setUserFriends((state) => state.concat(data))
             }
             page.socketMethods.socketListener(`NEW_FRIEND`, updateFriends)
@@ -84,7 +85,6 @@ export default function RightNav({ page }) {
                         if (friend.accountID === data.target.accountID) return {...friend, userChat: data}
                         else return friend;
                     })
-                    page.setMessengerFriends(update)
                     return update;
                 })
             }

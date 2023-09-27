@@ -2,16 +2,16 @@ import React, { useEffect, useState } from "react";
 import AppConfig from "../../../util/config";
 import styles from "./leftnav.module.css"
 import SVGServer from "../../../services/svg/svgServer";
+import Helpers from "../../../util/Helpers";
 
 export default function LeftNav({ page }) {
-    const [userCommunities, setUserCommunities] = useState(page.recentCommunities || [])
+    const [userCommunities, setUserCommunities] = useState([])
     const [communityLoader, setCommunityLoader] = useState(true)
 
     useEffect(() => {
         const updateUserCommunities = (data) => {
             if (data.success) {
                 setUserCommunities(data.data)
-                page.setRecentCommunities(data.data);
             }
             setCommunityLoader(false)
         }
@@ -56,7 +56,7 @@ export default function LeftNav({ page }) {
                         <div key={index} className={styles.leftnavCommunityButton}>
                             <div className={styles.leftnavCommunityButtonProfile} style={{backgroundImage: `url(${community.profileImage.url})`}} onClick={() => page.router.push(`/communities/${community.communityID}`)}>
                                 <div className={styles.leftnavMenuButtonLabel}>
-                                    <span>{community.displayName}</span>
+                                    <span>{Helpers.textLimiter(community.displayName, 20)}</span>
                                 </div>
                             </div>
                         </div>

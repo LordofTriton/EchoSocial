@@ -41,6 +41,7 @@ export default async function UpdateChat(params, io) {
         const origin = (await db.collection("accounts").findOne({ accountID: params.accountID }))
         const target = (await db.collection("accounts").findOne({ accountID: updatedChat.targetID }))
         let userFriend = (await db.collection("friends").findOne({ accountID: params.accountID, friendID: target.accountID }))
+        const now = Date.now()
 
         const finalChatData = {
             ...updatedChat,
@@ -48,13 +49,17 @@ export default async function UpdateChat(params, io) {
                 accountID: origin.accountID,
                 firstName: origin.firstName,
                 lastName: origin.lastName,
-                profileImage: origin.profileImage
+                profileImage: origin.profileImage,
+                lastActive: origin.lastActive,
+                active: now - origin.lastActive < 300000 ? true : false
             },
             target: {
                 accountID: target.accountID,
                 firstName: target.firstName,
                 lastName: target.lastName,
-                profileImage: target.profileImage
+                profileImage: target.profileImage,
+                lastActive: target.lastActive,
+                active: now - target.lastActive < 300000 ? true : false
             },
             userFriend: userFriend ? true : false
         }

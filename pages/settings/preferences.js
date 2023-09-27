@@ -25,7 +25,6 @@ export default function PreferencesSettings() {
     })
     const [alert, setAlert] = useState(null)
     const {modalStates, modalControl} = useModalStates()
-    const {dataStates, dataControl} = useDataStates()
     const [showAccountDrop, setShowAccountDrop] = useState(true)
     const {socket, socketMethods} = useSocketContext()
 
@@ -84,8 +83,6 @@ export default function PreferencesSettings() {
         createAlert,
         ...modalStates,
         ...modalControl,
-        ...dataStates,
-        ...dataControl
     }
 
     return (
@@ -93,7 +90,7 @@ export default function PreferencesSettings() {
             <Head>
                 <title>Echo - Settings</title>
                 <meta name="description" content="A simple social media." />
-                <link rel="icon" href="/favicon.ico" />
+                <link rel="icon" href="/icon.ico" />
                 <link rel="stylesheet" href={`/styles/themes/${activeTheme === "dark" ? 'classic-dark.css' : 'classic-light.css'}`} />
             </Head>
 

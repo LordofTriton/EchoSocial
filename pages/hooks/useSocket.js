@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import io from 'socket.io-client';
 import CookieService from '../../services/CookieService';
+import CacheService from '../../services/CacheService';
 
 let socketInstance = null;
-let socketRequestCount = 0;
 let socketURL = "/api/socket";
 
-function getAccountID() {
+function currentUser() {
     const account = CookieService.getData("EchoActiveUser");
-    return account.accountID;
+    return account;
 }
 
 const useSocket = () => {
@@ -26,13 +26,13 @@ const useSocket = () => {
             socketInstance.on('connect', () => {
                 console.log('Socket connected.');
 
-                socketInstance.emit("USER_CONNECT", getAccountID());
+                socketInstance.emit("USER_CONNECT", currentUser().accountID);
 
                 setSocket(socketInstance);
             });
 
             socketInstance.on('disconnect', () => {
-                console.log('Socket disconnected');
+                console.log('Socket disconnected.');
             });
         }
     };
@@ -44,19 +44,26 @@ const useSocket = () => {
         socketInstance = null;
     };
 
-    const socketRequest = (event, data, callback) => {
+    const socketRequest = (event, params, callback) => {
         if (!socketInstance) return;
-        const serial = String(Math.random() * 100000000);
-        socketInstance.emit(`${event}_REQ`, JSON.stringify({...data, serial: serial}))
+        const payload = { ...params, accountID: currentUser().accountID, accessToken: currentUser().accessToken }
+
+        const cachedResponse = CacheService.getData(`${event}_${JSON.stringify(params)}`)
+        if (cachedResponse) callback(JSON.parse(cachedResponse))
+
+        const serial = String(Math.random() * 100000000000000);
+        socketInstance.emit(`${event}_REQ`, JSON.stringify({...payload, serial: serial}))
         socketInstance.on(`${event}_RES_${serial}`, (data) => {
             callback(JSON.parse(data))
+            CacheService.saveData(`${event}_${JSON.stringify(params)}`, data)
             socketInstance.off(`${event}_RES_${serial}`)
         })
     }
     
     const socketEmitter = (event, data) => {
         if (!socketInstance) return;
-        socketInstance.emit(event, JSON.stringify(data))
+        const payload = { ...data, accountID: currentUser().accountID, accessToken: currentUser().accessToken }
+        socketInstance.emit(event, JSON.stringify(payload))
     }
     
     const socketListener = (event, callback) => {
@@ -98,157 +105,3 @@ const useSocket = () => {
 };
 
 export default useSocket;
-
-/*
-
-import { useEffect, useState } from 'react';
-import io from 'socket.io-client';
-import CookieService from '../../services/CookieService';
-
-let socket;
-
-function getActiveUser() {
-    return CookieService.getData("EchoActiveUser");
-}
-
-async function connectSocket() {
-    if (!socket) {
-        console.log("Connecting Socket.")
-        await fetch(`/api/socket`)
-
-        const newSocket = io(undefined, {
-            path: `/api/socket`
-        });
-
-        newSocket.emit("USER_CONNECT", getActiveUser().accountID);
-
-        socket = newSocket;
-    }
-};
-
-async function getSocket() {
-    if (!socket) await connectSocket()
-    return socket
-}
-
-async function socketRequest(event, data, callback) {
-    const socket = await getSocket()
-    socket.emit(`${event}_REQ`, JSON.stringify(data))
-    socket.on(`${event}_RES`, (data) => {
-        callback(JSON.parse(data))
-        socket.off(`${event}_RES`)
-    })
-}
-
-async function socketEmitter(event, data) {
-    const socket = await getSocket()
-    socket.emit(event, JSON.stringify(data))
-}
-
-async function socketListener(event, callback) {
-    const socket = await getSocket()
-    socket.on(event, (data) => {
-        callback(JSON.parse(data))
-    })
-}
-
-function disconnectSocket() {
-    if (socket) {
-        console.log(`Disconnecting Socket.`);
-        socket.disconnect();
-        socket = null;
-    }
-};
-
-export default function useSocket() {
-    const [userSocket, setUserSocket] = useState(null)
-
-    useEffect(() => {
-        const updateSocket = async () => {
-            const us = await getSocket()
-            setUserSocket(us)
-        }
-        if (!userSocket) updateSocket()
-    }, [socket])
-
-    useEffect(() => {
-        return () => {
-            disconnectSocket();
-        };
-    }, [])
-
-    return {
-        socket: userSocket,
-        socketMethods: { socketRequest, socketEmitter, socketListener }
-    }
-}
-
-
-
-function useSocket() {
-    const [socket, setSocket] = useState(null);
-
-    const connectSocket = async (accountID) => {
-        if (!Object.keys(sockets).includes(accountID)) {
-            if (!socket) {
-                console.log("Connecting to Socket.")
-                await fetch("/api/socket")
-            }
-
-            const newSocket = io(undefined, {
-                path: "/api/socket"
-            });
-
-            newSocket.emit("USER_CONNECT", accountID);
-
-            sockets[accountID] = newSocket;
-            setSocket(newSocket);
-        } else {
-            setSocket(sockets[accountID]);
-        }
-    };
-
-    const getSocket =  async (accountID) => {
-        if (!Object.keys(sockets).includes(accountID)) await connectSocket(accountID)
-        return sockets[accountID]
-    }
-
-    const socketRequest = (socket, event, data, callback) => {
-        socket.emit(`${event}_REQ`, JSON.stringify(data))
-        socket.on(`${event}_RES`, (data) => {
-            callback(JSON.parse(data))
-            socket.off(`${event}_RES`)
-        })
-    }
-
-    const socketEmitter = (socket, event, data) => (
-        socket.emit(event, JSON.stringify(data))
-    )
-
-    const socketListener = (socket, event, callback) => {
-        socket.on(event, (data) => {
-            callback(JSON.parse(data))
-        })
-    }
-
-    // useEffect(() => {
-    //     return () => {
-    //         if (socket) {
-    //             socket[]
-    //             socket.disconnect();
-    //         }
-    //     };
-    // }, [socket]);
-
-    return { socket, socketMethods: {
-        connectSocket,
-        getSocket,
-        socketRequest,
-        socketEmitter,
-        socketListener
-    } };
-}
-
-export default useSocket;
-
-*/

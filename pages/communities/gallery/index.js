@@ -12,6 +12,7 @@ import useModalStates from "../../hooks/useModalStates";
 import { useSocketContext } from "../../../util/SocketProvider";
 import useDataStates from "../../hooks/useDataStates";
 import CacheService from "../../../services/CacheService";
+import Helpers from "../../../util/Helpers";
 
 export default function CommunitiesFeed() {
     const router = useRouter()
@@ -19,8 +20,7 @@ export default function CommunitiesFeed() {
     const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
     const [alert, setAlert] = useState(null)
     const {modalStates, modalControl} = useModalStates()
-    const {dataStates, dataControl} = useDataStates()
-    const [communities, setCommunities] = useState(dataStates.galleryCommunities || [])
+    const [communities, setCommunities] = useState([])
     const [searchQuery, setSearchQuery] = useState("")
     const {socket, socketMethods} = useSocketContext()
     const [communitiesPage, setCommunitiesPage] = useState(1)
@@ -37,14 +37,7 @@ export default function CommunitiesFeed() {
         if (socket) {
             const updateCommunities = (data) => {
                 if (data.success) {
-                    if (communitiesPage === 1) {
-                        setCommunities(data.data)
-                        if (communitiesPage < 2) dataControl.setGalleryCommunities(data.data)
-                    }
-                    else {
-                        setCommunities((state) => state.concat(data.data))
-                        if (communitiesPage < 2) dataControl.setGalleryCommunities(communities.concat(data.data))
-                    }
+                    Helpers.setPaginatedState(data.data, setCommunities, data.pagination, "communityID")
                     setPagination(data.pagination)
                 }
                 setCommunityLoader(false)
@@ -65,7 +58,7 @@ export default function CommunitiesFeed() {
         if (socket && searchQuery.length % 3 === 0 && !communityLoader) {
             const updateCommunities = (data) => {
                 if (data.success) {
-                    setCommunities(data.data)
+                    Helpers.setPaginatedState(data.data, setCommunities, data.pagination, "communityID")
                     setPagination(data.pagination)
                 }
                 setCommunityLoader(false)
@@ -103,8 +96,6 @@ export default function CommunitiesFeed() {
         createAlert,
         ...modalStates,
         ...modalControl,
-        ...dataStates,
-        ...dataControl
     }
 
     const handleScroll = (event) => {
@@ -122,7 +113,7 @@ export default function CommunitiesFeed() {
             <Head>
                 <title>Echo - Communities</title>
                 <meta name="description" content="A simple social media." />
-                <link rel="icon" href="/favicon.ico" />
+                <link rel="icon" href="/icon.ico" />
                 <link rel="stylesheet" href={`/styles/themes/${activeTheme === "dark" ? 'classic-dark.css' : 'classic-light.css'}`} />
             </Head>
 

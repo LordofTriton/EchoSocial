@@ -114,7 +114,7 @@ function useModalStates() {
     const modalStates = {showNotificationDot, showEchoViewer, showEchoComments, showEchoCreator, showMediaViewer, showNotifications, showNodeCreator, showCommunityCreator, activeChat, showMessenger, showChat, showSearch, showSidenav}
     const modalControl = {setShowNotificationDot, setShowEchoViewer, setShowEchoComments, setShowEchoCreator, setShowMediaViewer, setShowNotifications, setShowNodeCreator, setShowCommunityCreator, setActiveChat, setShowMessenger, setShowChat, setShowSearch, setShowSidenav}
 
-    return { modalStates, modalControl };
+    return {modalStates, modalControl};
 }
 
 export default useModalStates;

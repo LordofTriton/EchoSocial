@@ -20,10 +20,9 @@ import CacheService from '../../../../services/CacheService';
 export default function CommunitySettings() {
   const router = useRouter()
   const {modalStates, modalControl} = useModalStates()
-  const {dataStates, dataControl} = useDataStates()
   const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
   const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
-  const [communityData, setCommunityData] = useState(dataStates.communityData(router.query.id) || null)
+  const [communityData, setCommunityData] = useState(null)
   const [updatedCommunityData, setUpdatedCommunityData] = useState({
     communityID: "",
     name: "",
@@ -42,7 +41,7 @@ export default function CommunitySettings() {
   })
   const [communityApplications, setCommunityApplications] = useState([])
   const [alert, setAlert] = useState(null)
-  const { socket, socketMethods } = useSocketContext()
+  const {socket, socketMethods} = useSocketContext()
   const [settingsPage, setSettingsPage] = useState("general")
 
   useEffect(() => {
@@ -86,8 +85,6 @@ export default function CommunitySettings() {
     createAlert,
     ...modalStates,
     ...modalControl,
-    ...dataStates,
-    ...dataControl
   }
 
   const handleSubmitGeneral = async () => {
@@ -104,7 +101,7 @@ export default function CommunitySettings() {
       <Head>
         <title>Echo - {communityData ? communityData.displayName : "Community"}</title>
         <meta name="description" content="A simple social media." />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/icon.ico" />
         <link rel="stylesheet" href={`/styles/themes/${activeTheme === "dark" ? 'classic-dark.css' : 'classic-light.css'}`} />
       </Head>
 

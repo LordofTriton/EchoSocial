@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./echo.module.css"
 
 import SVGServer from "../../../services/svg/svgServer";
@@ -6,11 +6,22 @@ import DateGenerator from "../../../services/generators/DateGenerator";
 import APIClient from "../../../services/APIClient";
 import Helpers from "../../../util/Helpers";
 
+function VideoMedia({ source }) {
+    const handleClick = () => {
+      const el = document.getElementById(`VideoMedia_${source}`)
+      if (el) el.pause()
+    }
+    useEffect(() => { setTimeout(() => handleClick(), 15000) }, [])
+    
+    return ( <video className={styles.echoMediaVideo} src={source} id={`VideoMedia_${source}`} onClick={() => handleClick()} autoPlay muted /> )
+}
+
 export default function Echo({ data, page, fullText=false, saved=false }) {
     const [echoData, setEchoData] = useState(data)
     const [echoMediaIndex, setEchoMediaIndex] = useState(0)
     const [deleted, setDeleted] = useState(false)
-    const [echoSaved, setEchoSaved] = useState(saved)
+    const [echoSaved, setEchoSaved] = useState(data.userSaved)
+    const [videoClicked, setVideoClicked] = useState(false)
 
     const getCurrentMedia = () => {
         return echoData.content.media[echoMediaIndex].url;
@@ -43,7 +54,8 @@ export default function Echo({ data, page, fullText=false, saved=false }) {
     }
 
     const handleSaveEcho = async () => {
-        const createdSave = (data) => page.createAlert(data.success ? "success" : "error", data.message);
+        if (echoData.accountID === page.activeUser.accountID) return;
+        const createdSave = (data) => page.createAlert(data.success ? "success" : "error", data.success ? "Echo saved successfully." : data.message);
         if (page.socket) page.socketMethods.socketRequest("CREATE_SAVE", { 
             accountID: page.activeUser.accountID,
             echoID: echoData.echoID
@@ -52,12 +64,18 @@ export default function Echo({ data, page, fullText=false, saved=false }) {
     }
 
     const handleUnsaveEcho = async () => {
+        if (echoData.accountID === page.activeUser.accountID) return;
         if (page.socket) page.socketMethods.socketEmitter("DELETE_SAVE", { 
             accountID: page.activeUser.accountID,
             echoID: echoData.echoID
         })
         page.createAlert("success", "Echo unsaved successfully.")
         setEchoSaved(false)
+    }
+
+    const handleClickMedia = () => {
+        page.setShowMediaViewer(echoData)
+        if (Helpers.getFileType(getCurrentMedia()) === "video") setVideoClicked(true)
     }
 
     return (
@@ -86,23 +104,33 @@ export default function Echo({ data, page, fullText=false, saved=false }) {
                     </span>
                     </>
                 }
-                <div className={styles.echoHeadOptionIcon}>
-                    <SVGServer.OptionIcon color="var(--secondary)" width="25px" height="25px" />
-                    <div className={styles.echoHeadOptionBox}>
-                        { echoData.accountID === page.activeUser.accountID ? <span className={styles.echoHeadOption} onClick={() => page.setShowEchoCreator(echoData)}>Edit Post</span> : null}
-                        { echoData.accountID === page.activeUser.accountID ? <span className={styles.echoHeadOption} onClick={() => handleDeleteEcho()}>Delete Post</span> : null }
-                        { echoData.accountID !== page.activeUser.accountID ? <span className={styles.echoHeadOption} onClick={() => echoSaved ? handleUnsaveEcho() : handleSaveEcho()}>{echoSaved ? "Unsave" : "Save"}</span> : null }
-                        { echoData.accountID !== page.activeUser.accountID ? <span className={styles.echoHeadOption}>Report</span> : null }
-                    </div>
-                </div>
+                {
+                    echoData.accountID === page.activeUser.accountID ?
+                    <div className={styles.echoHeadOptionIcon}>
+                        <SVGServer.OptionIcon color="var(--secondary)" width="25px" height="25px" />
+                        <div className={styles.echoHeadOptionBox}>
+                            <span className={styles.echoHeadOption} onClick={() => page.setShowEchoCreator(echoData)}>Edit Post</span>
+                            <span className={styles.echoHeadOption} onClick={() => handleDeleteEcho()}>Delete Post</span>
+                        </div>
+                    </div> : null
+                }
             </div>
             <div className={styles.echoContent}>
-                { echoData.content.text ? <pre className={styles.echoText}>{Helpers.textLimiter(echoData.content.text, 180, fullText)} { echoData.content.text.length > 180 && !fullText ? <span className="titleGradient" onClick={() => page.setShowEchoViewer(echoData)}>See more</span> : null }</pre> : null}
+                { echoData.content.text ? <pre className={styles.echoText} style={{marginBottom: echoData.content.media ? null : "0px"}}>{Helpers.textLimiter(echoData.content.text, 180, fullText)} { echoData.content.text.length > 180 && !fullText ? <span className="titleGradient" onClick={() => page.setShowEchoViewer(echoData)}>See more</span> : null }</pre> : null}
                 { 
                     echoData.content.media && echoData.content.media.length > 0 ?
-                    <div className={styles.echoMedia} onClick={() => page.setShowMediaViewer(echoData)}>
+                    <div className={styles.echoMedia} onClick={() => handleClickMedia()}>
                         { Helpers.getFileType(getCurrentMedia()) === "image" ? <img className={styles.echoMediaImage} src={getCurrentMedia()} alt="media" /> : null }
-                        { Helpers.getFileType(getCurrentMedia()) === "video" ? <video className={styles.echoMediaVideo} src={getCurrentMedia()} /> : null }
+                        { Helpers.getFileType(getCurrentMedia()) === "video" ? 
+                            <>
+                            <VideoMedia source={getCurrentMedia()} />
+                            <div className={styles.echoMediaVideoOverlay}>
+                                <span>
+                                    <SVGServer.PlayIcon color="var(--primary)" width="50px" height="50px" />
+                                </span>
+                            </div>
+                            </> : null 
+                        }
                         { Helpers.getFileType(getCurrentMedia()) === "unknown" ? <div className={styles.echoMediaUnknown}><span>Unknown File Type</span></div> : null }
                         
                         {
@@ -135,11 +163,19 @@ export default function Echo({ data, page, fullText=false, saved=false }) {
                     </span>
                     <span  className={styles.echoFooterNumber}>{echoData.hearts}</span>
                 </div>
-                <div className={styles.echoFooterData} style={{float: "right", marginRight: "0px"}}>
-                    <span className={styles.echoFooterIcon}><SVGServer.ShareIcon color="var(--primary)" width="25px" height="25px" /></span>
-                    <span  className={styles.echoFooterNumber}>{echoData.shares}</span>
-                </div>
-                <div className={styles.echoFooterData} style={{float: "right"}} onClick={() => page.setShowEchoComments(echoData)}>
+                {
+                    echoData.accountID !== page.activeUser.accountID ?
+                    <div className={styles.echoFooterData} style={{float: "right", marginRight: "0px"}} onClick={() => echoSaved ? handleUnsaveEcho() : handleSaveEcho()}>
+                        <span className={styles.echoFooterIcon}>
+                        {
+                            echoSaved || echoData.accountID === page.activeUser.accountID ?
+                            <SVGServer.BookmarkIconFilled color="var(--primary)" width="25px" height="25px" />
+                            : <SVGServer.BookmarkIconLine color="var(--primary)" width="25px" height="25px" />
+                        }
+                        </span>
+                    </div> : null
+                }
+                <div className={styles.echoFooterData} style={{float: "right", marginRight: echoData.accountID === page.activeUser.accountID ? "0px" : null}} onClick={() => page.setShowEchoComments(echoData)}>
                     <span className={styles.echoFooterIcon}><SVGServer.CommentIcon color="var(--primary)" width="25px" height="25px" /></span>
                     <span  className={styles.echoFooterNumber}>{echoData.comments}</span>
                 </div>

@@ -20,7 +20,6 @@ export default function EchoCreator({toggle, control, page}) {
     const [createEchoLoader, setCreateEchoLoader] = useState(false)
     
     useEffect(() => {
-        console.log(toggle)
         if (toggle.echoID) {
             setEchoAudience(toggle.audience)
             setOldEchoMedia(toggle.content.media ? toggle.content.media : [])

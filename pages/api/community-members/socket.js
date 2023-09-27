@@ -1,3 +1,5 @@
+import UpdateAccount from "../accounts/update-account";
+import SocketAuth from "../socket/auth";
 import BlacklistMember from "./ban-community-member";
 import CreateMember, { CreateMemberCallback } from "./create-community-member";
 import DeleteMember from "./delete-community-member";
@@ -9,6 +11,8 @@ export default async function MemberSocket(io, socket) {
     socket.on('CREATE_MEMBER_REQ', async (data) => {
         if (!data) return;
         else data = JSON.parse(data)
+        const authorized = await SocketAuth(data)
+        if (!authorized) return;
         const response = await CreateMember(data, io)
         io.to(data.accountID).emit(`CREATE_MEMBER_RES_${data.serial}`, JSON.stringify(response))
         if (response.success) await CreateMemberCallback(data, io)
@@ -17,12 +21,16 @@ export default async function MemberSocket(io, socket) {
     socket.on('DELETE_MEMBER', async (data) => {
         if (!data) return;
         else data = JSON.parse(data)
+        const authorized = await SocketAuth(data)
+        if (!authorized) return;
         await DeleteMember(data, io)
     });
 
     socket.on('GET_MEMBER_REQ', async (data) => {
         if (!data) return;
         else data = JSON.parse(data)
+        const authorized = await SocketAuth(data)
+        if (!authorized) return;
         const response = await GetMember(data, io)
         io.to(data.accountID).emit(`GET_MEMBER_RES_${data.serial}`, JSON.stringify(response))
     });
@@ -30,6 +38,8 @@ export default async function MemberSocket(io, socket) {
     socket.on('GET_MEMBERS_REQ', async (data) => {
         if (!data) return;
         else data = JSON.parse(data)
+        const authorized = await SocketAuth(data)
+        if (!authorized) return;
         const response = await GetMembers(data, io)
         io.to(data.accountID).emit(`GET_MEMBERS_RES_${data.serial}`, JSON.stringify(response))
     });
@@ -37,12 +47,16 @@ export default async function MemberSocket(io, socket) {
     socket.on('BAN_MEMBER', async (data) => {
         if (!data) return;
         else data = JSON.parse(data)
+        const authorized = await SocketAuth(data)
+        if (!authorized) return;
         await BlacklistMember(data, io)
     });
 
     socket.on('UPDATE_MEMBER', async (data) => {
         if (!data) return;
         else data = JSON.parse(data)
+        const authorized = await SocketAuth(data)
+        if (!authorized) return;
         await UpdateMember(data, io)
     });
 }

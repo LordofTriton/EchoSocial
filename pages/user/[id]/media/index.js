@@ -16,14 +16,22 @@ import UserHead from '../../../components/user-head';
 import useDataStates from '../../../hooks/useDataStates';
 import CacheService from '../../../../services/CacheService';
 
+function VideoMedia({ source, callback }) {
+    const handleClick = () => {
+      const el = document.getElementById(`VideoMedia_${source}`)
+      if (el) el.pause()
+    }
+    useEffect(() => { setTimeout(() => handleClick(), 15000) }, [])
+    return ( <video className={styles.userMediaVideo} src={source} id={`VideoMedia_${source}`} onClick={() => callback()} autoPlay muted /> )
+}
+
 export default function UserMedia() {
     const router = useRouter()
     const {modalStates, modalControl} = useModalStates()
-    const {dataStates, dataControl} = useDataStates()
     const {socket, socketMethods} = useSocketContext()
     const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
     const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
-    const [userData, setUserData] = useState(dataStates.userData(router.query.id) || null)
+    const [userData, setUserData] = useState(null)
     const [alert, setAlert] = useState(null)
     const [userMediaEchoes, setUserMediaEchoes] = useState([])
     const [echoPage, setEchoPage] = useState(1)
@@ -60,7 +68,7 @@ export default function UserMedia() {
     useEffect(() => {
         const updateMediaEchoes = (data) => {
             if (data.success) {
-                setUserMediaEchoes((state) => state.concat(data.data))
+                Helpers.setPaginatedState(data.data, setUserMediaEchoes, data.pagination, "echoID")
                 setPagination(data.pagination)
             }
             setEchoLoader(false)
@@ -97,8 +105,6 @@ export default function UserMedia() {
         createAlert,
         ...modalStates,
         ...modalControl,
-        ...dataStates,
-        ...dataControl
     }
 
     const handleScroll = (event) => {
@@ -116,7 +122,7 @@ export default function UserMedia() {
             <Head>
                 <title>Echo - {userData ? `${userData.firstName} ${userData.lastName}` : "User"}</title>
                 <meta name="description" content="A simple social media." />
-                <link rel="icon" href="/favicon.ico" />
+                <link rel="icon" href="/icon.ico" />
                 <link rel="stylesheet" href={`/styles/themes/${activeTheme === "dark" ? 'classic-dark.css' : 'classic-light.css'}`} />
             </Head>
 
@@ -133,13 +139,32 @@ export default function UserMedia() {
                         userMediaEchoes.map((echo) => 
                             echo.content.media.map((media, index) => 
                                 <>
-                                { Helpers.getFileType(media.url) === "image" ? <img className={styles.userMediaImage} src={media.url} onClick={() => modalControl.setShowEchoViewer(echo)} alt="media" /> : null }
-                                { Helpers.getFileType(media.url) === "video" ? <video className={styles.userMediaImage} src={media.url} onClick={() => modalControl.setShowEchoViewer(echo)} /> : null }
+                                { Helpers.getFileType(media.url) === "image" ? <div className={styles.userMediaItem}><img className={styles.userMediaImage} src={media.url} onClick={() => modalControl.setShowEchoViewer(echo)} alt="media" /></div> : null }
+                                { Helpers.getFileType(media.url) === "video" ? 
+                                    <div className={styles.userMediaItem}>
+                                    <VideoMedia source={media.url} callback={() => modalControl.setShowEchoViewer(echo)} />
+                                    <div className={styles.userMediaVideoOverlay}>
+                                        <span>
+                                            <SVGServer.PlayIcon color="var(--primary)" width="50px" height="50px" />
+                                        </span>
+                                    </div>
+                                    </div> : null 
+                                }
                                 </>
                             )
                         ) : null
                     }
                     </TriMasonryLayout>
+                    
+                    {echoLoader ?
+                        <div className="loader" style={{
+                            width: "70px",
+                            height: "70px",
+                            borderWidth: "7px",
+                            borderColor: "var(--primary) transparent",
+                            margin: "100px calc(50% - 35px) 0px calc(50% - 35px)"
+                        }}></div> : null
+                    }
                 </div>
             </div>
 

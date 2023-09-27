@@ -6,7 +6,7 @@ import styles from "./sidenav.module.css"
 export default function SideNav({toggle, control, page}) {
     const handleLogout = () => {
         page.cookies.deleteData("EchoUser");
-        page.clearCache()
+        localStorage.clear()
 
         page.router.push("/login")
     }

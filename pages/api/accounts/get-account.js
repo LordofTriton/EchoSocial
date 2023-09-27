@@ -41,6 +41,7 @@ export default async function GetAccount(params, io) {
         let userLikee = await db.collection("hearts").findOne({ accountID: fetchAccountResponse.accountID, userID: params.accountID })
         let chat = await db.collection("chats").findOne({ accountID: params.accountID, targetID: fetchAccountResponse.accountID })
         let settings = await db.collection("settings").findOne({ accountID: params.userID })
+        let profileImageEcho = fetchAccountResponse.profileImage.echoID ? await db.collection("echoes").findOne({ echoID: fetchAccountResponse.profileImage.echoID }) : null
         
         const userData = {
             accountID: fetchAccountResponse.accountID,
@@ -48,7 +49,17 @@ export default async function GetAccount(params, io) {
             lastName: fetchAccountResponse.lastName,
             nickname: fetchAccountResponse.nickname,
             email: fetchAccountResponse.email,
-            profileImage: fetchAccountResponse.profileImage,
+            profileImage: {
+                ...fetchAccountResponse.profileImage,
+                echo: profileImageEcho ? {
+                    ...profileImageEcho,
+                    userData: {
+                        firstName: fetchAccountResponse.firstName,
+                        lastName: fetchAccountResponse.lastName,
+                        profileImage: fetchAccountResponse.profileImage
+                    }
+                } : null
+            },
             profileCover: fetchAccountResponse.profileCover,
             gender: fetchAccountResponse.gender,
             phone: fetchAccountResponse.phone,

@@ -101,6 +101,7 @@
     border-radius: 100%;
     border: 5px solid var(--surface);
     float: left;
+    cursor: pointer;
 }
 
 .communityHeadProfileButton {

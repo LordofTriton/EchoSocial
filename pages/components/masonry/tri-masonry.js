@@ -18,7 +18,6 @@ const TriMasonryLayout = ({ children }) => {
             } else {
                 three.push(child);
             }
-
         });
         setColumnOne(one);
         setColumnTwo(two);

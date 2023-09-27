@@ -32,7 +32,7 @@ export default function Notifications({toggle, control, page}) {
         if (page.socket) {
             const updateNotifications = (data) => {
                 if (data.success) {
-                    setNotifications((state) => state.concat(data.data))
+                    Helpers.setPaginatedState(data.data, setNotifications, data.pagination, "notificationID")
                     setPagination(data.pagination)
                 }
                 setNotificationsLoader(false)
@@ -49,7 +49,7 @@ export default function Notifications({toggle, control, page}) {
         setNotificationPage(1)
         const updateNotifications = (data) => {
             if (data.success) {
-                setNotifications(data.data)
+                Helpers.setPaginatedState(data.data, setNotifications, data.pagination, "notificationID")
                 setPagination(data.pagination)
             }
             setNotificationsLoader(false)

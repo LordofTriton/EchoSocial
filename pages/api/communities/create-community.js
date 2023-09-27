@@ -51,14 +51,14 @@ export default async function CreateCommunity(params, io) {
             displayName: params.name,
             profileImage: {
                 publicID: null,
-                url: `/images/profile.jpg`
+                url: `/images/communityProfile.png`
             },
             profileCover: {
                 publicID: null,
                 url: `/images/bckg1.jpg`
             },
             description: params.description,
-            nodes: [...params.nodes, nodeData],
+            nodes: [...params.nodes, nodeData.data],
             node: nodeData.data,
             privacy: params.privacy,
             entryApproval: params.privacy === "private" ? true : false,
@@ -102,7 +102,7 @@ export async function CreateCommunityCallback(params, io, communityData) {
     await CreateNotification({
         accountID: params.accountID,
         content: `You created a new community! Send an echo to spread the word.`,
-        image: `/images/profile.jpg`,
+        image: `/images/communityProfile.png`,
         clickable: true,
         redirect: `/communities/${communityData.communityID}`
     }, io)

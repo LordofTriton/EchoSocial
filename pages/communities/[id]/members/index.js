@@ -21,11 +21,10 @@ import CacheService from '../../../../services/CacheService';
 export default function CommunityMembers() {
   const router = useRouter()
   const {modalStates, modalControl} = useModalStates()
-  const {dataStates, dataControl} = useDataStates()
   const {socket, socketMethods} = useSocketContext()
   const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
   const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
-  const [communityData, setCommunityData] = useState(dataStates.communityData(router.query.id) || null)
+  const [communityData, setCommunityData] = useState(null)
   const [alert, setAlert] = useState(null)
   const [communityMembers, setCommunityMembers] = useState([])
   const [pagination, setPagination] = useState({
@@ -39,9 +38,7 @@ export default function CommunityMembers() {
 
   useEffect(() => {
     const updateCommunityData = (data) => {
-      if (data.success) {
-        setCommunityData(data.data)
-      }
+      if (data.success) setCommunityData(data.data)
     }
     if (router.query.id) {
       if (socket) socketMethods.socketRequest("GET_COMMUNITY", {
@@ -54,8 +51,8 @@ export default function CommunityMembers() {
   useEffect(() => {
     const updateCommunityMembers = (data) => {
         if (data.success) {
-            setCommunityMembers(data.data);
-            setPagination(data.pagination)
+          Helpers.setPaginatedState(data.data, setCommunityMembers, data.pagination, "accountID")
+          setPagination(data.pagination)
         }
         setMemberLoader(false)
     }
@@ -63,7 +60,9 @@ export default function CommunityMembers() {
       if (communityMembers.length < 1) {
         if (socket) socketMethods.socketRequest("GET_MEMBERS", {
           accountID: activeUser.accountID,
-          communityID: router.query.id
+          communityID: router.query.id,
+          page: memberPage,
+          pageSize: 10
         }, updateCommunityMembers)
       }
     }
@@ -95,8 +94,6 @@ export default function CommunityMembers() {
     createAlert,
     ...modalStates,
     ...modalControl,
-    ...dataStates,
-    ...dataControl
   }
 
   const handleScroll = (event) => {
@@ -160,7 +157,7 @@ export default function CommunityMembers() {
       <Head>
         <title>Echo - {communityData ? communityData.displayName : "Community"}</title>
         <meta name="description" content="A simple social media." />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/icon.ico" />
         <link rel="stylesheet" href={`/styles/themes/${activeTheme === "dark" ? 'classic-dark.css' : 'classic-light.css'}`} />
       </Head>
 

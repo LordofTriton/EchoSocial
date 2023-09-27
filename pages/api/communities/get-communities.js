@@ -36,11 +36,11 @@ export default async function GetCommunities(params, io) {
         const filters = { 
             $and: []
         }
+        if (!params.userID || params.userID !== params.accountID) filters.$and.push({ nodes: { $elemMatch: { nodeID: { $in: userAccount.nodes.map((node) => node.nodeID) } } } })
+
         if (params.member === true) filters.$and.push({ communityID: { $in: communities.map((obj) => obj.communityID) } })
-        if (params.member === false) {
-            filters.$and.push({ nodes: { $elemMatch: { nodeID: { $in: userAccount.nodes.map((node) => node.nodeID) } } } })
-            filters.$and.push({ communityID: { $nin: communities.map((obj) => obj.communityID) } })
-        }
+        if (params.member === false) filters.$and.push({ communityID: { $nin: communities.map((obj) => obj.communityID) } })
+        
         if (params.filter) filters.$and.push({ name: { $regex: String(params.filter).toLowerCase().replace(/\s/g, "").trim(), $options: 'i' } })
 
         const pagination = {

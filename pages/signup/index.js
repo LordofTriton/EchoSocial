@@ -50,7 +50,7 @@ export default function Signup() {
         <Head>
             <title>Echo - Sign Up</title>
             <meta name="description" content="A simple social media." />
-            <link rel="icon" href="/favicon.ico" />
+            <link rel="icon" href="/icon.ico" />
             <link rel="stylesheet" href={`/styles/themes/${activeTheme === "dark" ? 'classic-dark.css' : 'classic-light.css'}`} />
         </Head>
 
