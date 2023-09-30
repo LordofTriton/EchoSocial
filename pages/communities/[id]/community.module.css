@@ -642,6 +642,7 @@
     }
     .communitySettingsNav {
         width: 20%;
+        border: 0px;
     }
     .communitySettingsBody {
         width: 80%;

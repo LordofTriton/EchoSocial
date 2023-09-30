@@ -103,6 +103,10 @@ export default function ChangePasswordSettings() {
                             <span className={styles.settingsBodyNavButtonIcon}><SVGServer.ChatIcon color="var(--secondary)" width="30px" height="30px" /></span>
                             <span className={styles.settingsBodyNavButtonText}>Chat & Messaging</span>
                         </div>
+                        <div className={styles.settingsBodyNavButton} onClick={() => router.push("/settings/blacklist")}>
+                            <span className={styles.settingsBodyNavButtonIcon}><SVGServer.BlockIcon color="var(--secondary)" width="30px" height="30px" /></span>
+                            <span className={styles.settingsBodyNavButtonText}>Blacklist</span>
+                        </div>
                     </div>
                     <div className={styles.settingsBodyContent}>
                         <div className={styles.formContainer}>

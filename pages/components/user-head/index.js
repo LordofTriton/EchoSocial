@@ -94,6 +94,19 @@ export default function UserHead({ data, page, title }) {
                 blockeeType: "user"
             })
             page.createAlert("success", "User blocked successfully.")
+            setUserData({ ...userData, userBlocked: true })
+        }
+    }
+
+    const unblockUser = async () => {
+        if (page.socket && page.activeUser.accountID !== userData.accountID) {
+            page.socketMethods.socketEmitter("DELETE_BLACKLIST", {
+                accountID: page.activeUser.accountID,
+                blocker: page.activeUser.accountID,
+                blockee: userData.accountID
+            })
+            page.createAlert("success", "User unblocked successfully.")
+            setUserData({ ...userData, userBlocked: false })
         }
     }
 
@@ -152,7 +165,7 @@ export default function UserHead({ data, page, title }) {
                                     <span>Message</span>
                                 </span> : null
                             }
-                            <span className={styles.userHeadButton} onClick={() => blockUser()} style={{backgroundColor: userData && userData.userBlocked ? "var(--accent)" : "var(--surface)"}}>
+                            <span className={styles.userHeadButton} onClick={() => userData && userData.userBlocked ? unblockUser() : blockUser()} style={{backgroundColor: userData && userData.userBlocked ? "var(--accent)" : "var(--surface)"}}>
                                 <SVGServer.BlockIcon color={userData && userData.userBlocked ? "var(--surface)" : "var(--primary)"} width="20px" height="20px" />
                                 <span style={{color: userData && userData.userBlocked ? "var(--surface)" : "var(--primary)"}}>{userData && userData.userBlocked ? "Unblock" : "Block"}</span>
                             </span>
@@ -167,7 +180,7 @@ export default function UserHead({ data, page, title }) {
             <span className={styles.userHeadNavLink} style={{color: title === "friends" ? "var(--accent)" : null}} onClick={() => page.router.push(`/user/${userData.accountID}/friends`)}>Friends</span>
             <span className={styles.userHeadNavLink} style={{color: title === "communities" ? "var(--accent)" : null}} onClick={() => page.router.push(`/user/${userData.accountID}/communities`)}>Communities</span>
             <span className={styles.userHeadNavLink} style={{color: title === "media" ? "var(--accent)" : null}} onClick={() => page.router.push(`/user/${userData.accountID}/media`)}>Media</span>
-            { userData && userData.accountID === page.activeUser.accountID ? <span className={styles.userHeadNavLink} style={{color: title === "media" ? "var(--accent)" : null}} onClick={() => page.router.push(`/user/${userData.accountID}/saved`)}>Saved</span> : null }
+            { userData && userData.accountID === page.activeUser.accountID ? <span className={styles.userHeadNavLink} style={{color: title === "saved" ? "var(--accent)" : null}} onClick={() => page.router.push(`/user/${userData.accountID}/saved`)}>Saved</span> : null }
         </div>
         
         {

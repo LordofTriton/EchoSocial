@@ -14,6 +14,7 @@ import QuadMasonryLayout from '../../../components/masonry/quad-masonry';
 import UserThumb from '../../../components/user-thumb';
 import UserHead from '../../../components/user-head';
 import CacheService from '../../../../services/CacheService';
+import Helpers from '../../../../util/Helpers';
 
 export default function UserFriends() {
     const router = useRouter()

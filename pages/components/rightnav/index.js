@@ -82,6 +82,8 @@ export default function RightNav({ page }) {
             const updateChat = (data) => {
                 setUserFriends((state) => {
                     const update = state.map((friend) => {
+                        if (!friend.userChat) return;
+                        if (page.activeChat && friend.userChat.chatID === page.activeChat.chatID) return {...friend, userChat: { ...friend.userChat, unread: 0 }};
                         if (friend.accountID === data.target.accountID) return {...friend, userChat: data}
                         else return friend;
                     })

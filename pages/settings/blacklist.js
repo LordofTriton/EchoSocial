@@ -12,6 +12,7 @@ import useModalStates from '../hooks/useModalStates'
 import { useSocketContext } from '../../util/SocketProvider'
 import useDataStates from '../hooks/useDataStates'
 import CacheService from '../../services/CacheService'
+import Helpers from '../../util/Helpers'
 
 export default function BlacklistSettings() {
     const router = useRouter()
@@ -131,7 +132,7 @@ export default function BlacklistSettings() {
                             <span className={styles.settingsBodyNavButtonIcon}><SVGServer.FeedIcon color="var(--secondary)" width="30px" height="30px" /></span>
                             <span className={styles.settingsBodyNavButtonText}>Feed</span>
                         </div>
-                        <div className={styles.settingsBodyNavButton} style={{ backgroundColor: "var(--base)"}} onClick={() => router.push("/settings/notifications")}>
+                        <div className={styles.settingsBodyNavButton} onClick={() => router.push("/settings/notifications")}>
                             <span className={styles.settingsBodyNavButtonIcon}><SVGServer.NotificationIcon color="var(--secondary)" width="30px" height="30px" /></span>
                             <span className={styles.settingsBodyNavButtonText}>Notifications</span>
                         </div>
@@ -139,8 +140,8 @@ export default function BlacklistSettings() {
                             <span className={styles.settingsBodyNavButtonIcon}><SVGServer.ChatIcon color="var(--secondary)" width="30px" height="30px" /></span>
                             <span className={styles.settingsBodyNavButtonText}>Chat & Messaging</span>
                         </div>
-                        <div className={styles.settingsBodyNavButton} onClick={() => router.push("/settings/blacklist")}>
-                            <span className={styles.settingsBodyNavButtonIcon}><SVGServer.CancelIcon color="var(--secondary)" width="30px" height="30px" /></span>
+                        <div className={styles.settingsBodyNavButton} style={{ backgroundColor: "var(--base)"}} onClick={() => router.push("/settings/blacklist")}>
+                            <span className={styles.settingsBodyNavButtonIcon}><SVGServer.BlockIcon color="var(--secondary)" width="30px" height="30px" /></span>
                             <span className={styles.settingsBodyNavButtonText}>Blacklist</span>
                         </div>
                     </div>
