@@ -12,6 +12,7 @@ import DuoMasonryLayout from './components/masonry/duo-masonry'
 import useModalStates from './hooks/useModalStates'
 import { useSocketContext } from '../util/SocketProvider'
 import Helpers from '../util/Helpers'
+import SVGServer from '../services/svg/svgServer'
 
 export default function Home() {
   const router = useRouter()
@@ -118,7 +119,8 @@ export default function Home() {
       {
         activeUser ?
           <div className="pageContent" style={{ backgroundColor: "var(--base)" }}>
-            <div className={styles.feedFiltersBox}>
+          
+            {/* <div className={styles.feedFiltersBox}>
               <span className={styles.feedFilters}>
                 <span className={styles.feedFilter} onClick={() => setEchoFeedFilter(null)} style={{ backgroundColor: !echoFeedFilter ? "#F58A2Aff" : null, color: !echoFeedFilter ? "white" : null }}>All</span>
                 {
@@ -129,16 +131,20 @@ export default function Home() {
                     : null
                 }
               </span>
+            </div> */}
+
+            <div className={styles.feedHead} onClick={() => modalControl.setShowEchoCreator(true)}>
+              <span className={styles.feedHeadText}>echo</span>
+              <div className={styles.feedHeadCreator}>
+                <div className={styles.feedHeadCreatorProfile} style={{backgroundImage: `url(${activeUser.profileImage.url})`}}></div>
+                <span className={styles.feedHeadCreatorInput}>What's on your mind?</span>
+                <span className={styles.feedHeadCreatorImage}>
+                  <SVGServer.SendIcon color="var(--alt)" width="40px" height="40px" />
+                </span>
+              </div>
             </div>
-            {
-              activeUser ?
-                <DuoMasonryLayout>
-                  {
-                    filteredFeed().length ?
-                      filteredFeed().map((echo, index) => <Echo data={echo} page={pageControl} key={index} />) : null
-                  }
-                </DuoMasonryLayout> : null
-            }
+
+            { filteredFeed().length ? <DuoMasonryLayout blocks={filteredFeed().map((echo, index) => <Echo data={echo} page={pageControl} key={index} />) } /> : null }
 
             {feedLoader ?
               <div className="loader" style={{

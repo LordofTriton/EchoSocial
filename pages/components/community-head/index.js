@@ -13,6 +13,7 @@ export default function CommunityHead({ data, page, title }) {
     }, [data])
 
     const handleUpdateProfileCover = async (e) => {
+        e.stopPropagation()
         const formData = new FormData();
         formData.append(`media`, e.target.files[0])
         const uploadedFile = (await APIClient.post("/cloud/upload", formData, { 'Content-Type': "multipart/form-data" })).data;
@@ -31,6 +32,7 @@ export default function CommunityHead({ data, page, title }) {
     }
 
     const handleUpdateProfileImage = async (e) => {
+        e.stopPropagation()
         const formData = new FormData();
         formData.append(`media`, e.target.files[0])
         const uploadedFile = (await APIClient.post("/cloud/upload", formData, { 'Content-Type': "multipart/form-data" })).data;
@@ -38,8 +40,7 @@ export default function CommunityHead({ data, page, title }) {
             page.createAlert({ type: "error", message: uploadedFile.message })
             return;
         }
-        if (communityData.profileImage.publicID) await APIClient.del(`/cloud/delete?publicID=${communityData.profileImage.publicID}`);
-
+        
         const createdEcho = (data) => {
             if (!data.success) return;
             const updated = { ...uploadedFile.data[0], echo: data.data }

@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import React, { createContext, useContext, useEffect } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import useSocket from '../pages/hooks/useSocket';
 
 const SocketContext = createContext();

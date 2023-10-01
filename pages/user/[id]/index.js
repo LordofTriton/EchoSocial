@@ -63,6 +63,7 @@ export default function User() {
       if (data.success) {
         Helpers.setPaginatedState(data.data, setUserEchoes, data.pagination, "echoID")
         setPagination(data.pagination)
+        console.log(data.data[0])
       }
       setEchoLoader(false)
     }
@@ -220,9 +221,7 @@ export default function User() {
             </div>
             {
               userEchoes.length > 0 ?
-                <DuoMasonryLayout>
-                  {userEchoes.map((echo, index) => <Echo data={echo} page={pageControl} key={index} />)}
-                </DuoMasonryLayout> 
+                <DuoMasonryLayout blocks={userEchoes.map((echo, index) => <Echo data={echo} page={pageControl} key={index} />)} />
               : 
                 !echoLoader ? <span className={styles.userNull}>Nothing to show - {router.query.id === activeUser.accountID ? 'You have' : 'This user has'} no echoes{router.query.id !== activeUser.accountID ? ' you can see' : ''}.</span> : null
             }

@@ -23,6 +23,10 @@ export default function Echo({ data, page, fullText=false, saved=false }) {
     const [echoSaved, setEchoSaved] = useState(data.userSaved)
     const [videoClicked, setVideoClicked] = useState(false)
 
+    useEffect(() => {
+        setEchoData(data)
+    }, [data])
+
     const getCurrentMedia = () => {
         return echoData.content.media[echoMediaIndex].url;
     }
@@ -79,7 +83,7 @@ export default function Echo({ data, page, fullText=false, saved=false }) {
     }
 
     return (
-        <div className={styles.echo} key={echoData.echoID} style={{display: deleted || (saved && !echoSaved) ? "none" : null}}>
+        <div className={styles.echo} style={{display: deleted || (saved && !echoSaved) ? "none" : null}}>
             <div className={styles.echoHead}>
                 {
                     echoData.communityID && !page.community ?

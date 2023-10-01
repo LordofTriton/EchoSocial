@@ -133,8 +133,7 @@ export default function UserMedia() {
                     <div className={styles.userTimelineFeedHead}>
                         <span className={styles.userTimelineFeedHeadTitle}>{router.query.id === activeUser.accountID ? "Your " : userData ? `${userData.firstName}'s ` : ""}Photos & Videos</span>
                     </div>
-                    <TriMasonryLayout>
-                    {
+                    <TriMasonryLayout blocks={
                         userMediaEchoes.length > 0 ?
                         userMediaEchoes.map((echo) => 
                             echo.content.media.map((media, index) => 
@@ -153,8 +152,7 @@ export default function UserMedia() {
                                 </>
                             )
                         ) : null
-                    }
-                    </TriMasonryLayout>
+                    } />
                     
                     {echoLoader ?
                         <div className="loader" style={{

@@ -25,7 +25,7 @@ function setPaginatedState(data, setState, pagination, identifier, concat=true) 
         let updatedState = state;
         if (concat) {
             for (let i = 0; i < data.length; i++) {
-                if (updatedState.find((item) => item[identifier] === (data[i])[identifier])) continue;
+                if (updatedState.find((item) => JSON.stringify(item) === JSON.stringify(data[i]))) continue;
                 updatedState[((pagination.page - 1) * pagination.pageSize) + i] = data[i]
             }
         } else {

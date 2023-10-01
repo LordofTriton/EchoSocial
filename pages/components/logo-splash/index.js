@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import styles from "./logo-splash.module.css"
 
 export default function LogoSplash() {
-    const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
+    const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "light")
 
     return(
         <div className={styles.logoSplashContainer}>

@@ -16,46 +16,30 @@ import { useSocketContext } from '../../util/SocketProvider';
 export default function Nodes() {
     const router = useRouter()
     const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
-    const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
+    const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "light")
     const [selectedNodes, setSelectedNodes] = useState([])
-    const [nodeLoader, setNodeLoader] = useState(false)
     const [submitLoader, setSubmitLoader] = useState(false)
     const [nodeList, setNodeList] = useState([])
     const [nodeFilter, setNodeFilter] = useState(null)
     const [alert, setAlert] = useState(null)
-    const [searchQuery, setSearchQuery] = useState("")
     const {socket, socketMethods} = useSocketContext()
 
     useEffect(() => {
-        updateNodeList()
-    }, [searchQuery, socket])
-
-    const updateNodeList = async () => {
-        if (searchQuery.length % 2 === 0) {
-            const query = String(searchQuery).toLowerCase().replace(/\s/g, "").trim()
-
-            const getNodes = (data) => data.success ? setNodeList(data.data) : null;
-            if (socket) socketMethods.socketRequest("GET_NODES", { 
-                accountID: activeUser.accountID,
-                filter: query,
-                page: 1,
-                pageSize: 20
-            }, getNodes)
-        }
-    }
+        const getNodes = (data) => data.success ? setNodeList(data.data) : null;
+        if (socket) socketMethods.socketRequest("GET_NODES", { 
+            accountID: activeUser.accountID,
+            page: 1,
+            pageSize: 20
+        }, getNodes)
+    }, [socket])
 
     const handleSubmit = async () => {
-        setNodeLoader(true)
-
         if (socket) socketMethods.socketEmitter("UPDATE_ACCOUNT", { 
             accountID: activeUser.accountID,
             nodes: selectedNodes
         })
         CookieService.saveData("EchoActiveUser", {...activeUser, nodes: selectedNodes})
-
         router.push("/")
-        
-        setNodeLoader(false)
     }
 
     return(
@@ -76,10 +60,11 @@ export default function Nodes() {
             </div>
             <div className={styles.nodeFormBox}>
                 <div className={styles.nodeForm}>
-                    <h3 className={styles.nodeFormTitle}>What are you into?</h3>
+                    <h3 className={styles.nodeFormTitle}>What are you <span className="titleGradient">into?</span></h3>
                     <h3 className={styles.nodeFormTip} style={{marginBottom: "10px"}}>Help us show you what you want to see. Fear not, you can always update your choices in your settings.</h3>
 
                     <h3 className={styles.nodeFormTip}>Select at least three.</h3>
+                    <div className={styles.nodeList}>
                     {
                         nodeList && nodeList.length > 0 ?
                         nodeList.map((node, index) => 
@@ -99,8 +84,10 @@ export default function Nodes() {
                                 margin: "100px calc(50% - 35px) 0px calc(50% - 35px)"
                             }}></div>
                     }
+                    </div>
 
-                    <button className={styles.nodeSubmitButton} style={{opacity: selectedNodes.length < 3 ? 0.5 : 1}} onClick={() => selectedNodes.length > 3 ? handleSubmit() : null}>Continue</button>
+                    <div style={{opacity: selectedNodes.length < 3 ? 0.5 : 1, marginTop: "40px"}}><Form.Submit text="Continue" loader={submitLoader} onClick={() => selectedNodes.length > 3 ? handleSubmit() : null} /></div>
+                    {/* <button className={styles.nodeSubmitButton} style={{opacity: selectedNodes.length < 3 ? 0.5 : 1}} onClick={() => selectedNodes.length > 3 ? handleSubmit() : null}>Continue</button> */}
                 </div>
             </div>
             

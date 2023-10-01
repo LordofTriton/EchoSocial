@@ -205,9 +205,7 @@ export default function Community() {
             </div>
             {
               communityEchoes.length > 0 ?
-                <DuoMasonryLayout>
-                  {communityEchoes.map((echo, index) => <Echo data={echo} page={pageControl} key={index} />)}
-                </DuoMasonryLayout> 
+                <DuoMasonryLayout blocks={communityEchoes.map((echo, index) => <Echo data={echo} page={pageControl} key={index} />)} />
               : 
                 !echoLoader ?
                 communityData && !communityData.userMember ?

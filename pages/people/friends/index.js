@@ -130,13 +130,11 @@ export default function PeopleFriends() {
                 <div className={styles.peopleBody}>
                 {
                     activeUser && people.length ? 
-                    <QuadMasonryLayout>
-                    {
+                    <QuadMasonryLayout blocks={
                         people.map((person, index) => 
                             <UserThumb data={person} page={pageControl} key={index} />
                         )
-                    }
-                    </QuadMasonryLayout> : null
+                    } /> : null
                 }
                 { peopleLoader ? 
                     <div className="loader" style={{

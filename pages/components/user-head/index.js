@@ -14,6 +14,7 @@ export default function UserHead({ data, page, title }) {
     }, [data])
 
     const handleUpdateProfileCover = async (e) => {
+        e.stopPropagation()
         const formData = new FormData();
         formData.append(`media`, e.target.files[0])
         const uploadedFile = (await APIClient.post("/cloud/upload", formData, { 'Content-Type': "multipart/form-data" })).data;
@@ -33,6 +34,7 @@ export default function UserHead({ data, page, title }) {
     }
 
     const handleUpdateProfileImage = async (e) => {
+        e.stopPropagation()
         const formData = new FormData();
         formData.append(`media`, e.target.files[0])
         const uploadedFile = (await APIClient.post("/cloud/upload", formData, { 'Content-Type': "multipart/form-data" })).data;
@@ -40,7 +42,6 @@ export default function UserHead({ data, page, title }) {
             page.createAlert({ type: "error", message: uploadedFile.message })
             return;
         }
-        if (userData.profileImage.publicID) await APIClient.del(`/cloud/delete?publicID=${userData.profileImage.publicID}`);
         
         const createdEcho = (data) => {
             if (!data.success) return;
@@ -148,7 +149,7 @@ export default function UserHead({ data, page, title }) {
                         <>
                             {
                                 userData && userData.settings.followable ?
-                                <span className={styles.userHeadButton} onClick={() => handleFollowButtonClick()} style={{backgroundColor: userData && userData.userHearted ? "var(--accent)" : "rgba(0, 0, 0, 0.7)"}}>
+                                <span className={styles.userHeadButton} onClick={() => handleFollowButtonClick()} style={{backgroundColor: userData && userData.userHearted ? "var(--accent)" : "var(--surface)"}}>
                                     {
                                         userData && userData.userHearted ?
                                             <SVGServer.HeartFilledIcon color="var(--surface)" width="20px" height="20px" /> :

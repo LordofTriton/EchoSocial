@@ -116,12 +116,11 @@ export default function CommunitiesFeed() {
                 <div className={styles.communitiesBody}>
                 {
                     activeUser ? 
-                    <DuoMasonryLayout>
-                    {
+                    <DuoMasonryLayout blocks={
                         echoFeed.length ? 
                         echoFeed.map((echo, index) => <Echo data={echo} page={pageControl} key={index} /> ) : null
-                    }
-                    </DuoMasonryLayout> : null
+                    } />
+                    : null
                 }
                 { feedLoader ? 
                     <div className="loader" style={{

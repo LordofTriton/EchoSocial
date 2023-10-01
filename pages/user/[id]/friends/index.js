@@ -118,13 +118,11 @@ export default function UserFriends() {
                     </div>
                     {
                         userFriends.length ?
-                        <QuadMasonryLayout>
-                            {
-                                userFriends.map((friend, index) => 
-                                    <UserThumb data={friend} page={pageControl} key={index} />
-                                )
-                            }
-                        </QuadMasonryLayout> : null
+                        <QuadMasonryLayout blocks={
+                            userFriends.map((friend, index) => 
+                                <UserThumb data={friend} page={pageControl} key={index} />
+                            )
+                        } /> : null
                     }
                     
                     {friendLoader ?

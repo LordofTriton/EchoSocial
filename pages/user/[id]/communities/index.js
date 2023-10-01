@@ -120,13 +120,11 @@ export default function UserCommunities() {
                     </div>
                     {
                         userCommunities.length ?
-                            <QuadMasonryLayout>
-                                {
-                                    userCommunities.map((community, index) =>
-                                        <CommunityThumb data={community} page={pageControl} member={community.userMember} key={index} />
-                                    )
-                                }
-                            </QuadMasonryLayout> : null
+                            <QuadMasonryLayout blocks={
+                                userCommunities.map((community, index) =>
+                                    <CommunityThumb data={community} page={pageControl} member={community.userMember} key={index} />
+                                )
+                            } /> : null
                     }
                     
                     {communityLoader ?

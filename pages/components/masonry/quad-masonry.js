@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import styles from './masonry.module.css';
 
-const QuadMasonryLayout = ({ children }) => {
+const QuadMasonryLayout = ({ blocks }) => {
   const [columns, setColumns] = useState([[], [], [], []]);
 
   useEffect(() => {
-    const sortedChildren = React.Children.toArray(children);
+    if (!blocks || blocks.length < 1) return;
     const newColumns = [[], [], [], []];
 
-    sortedChildren.forEach((child, index) => {
+    blocks.forEach((block, index) => {
       const columnIndex = index % 4;
-      newColumns[columnIndex].push(child);
+      newColumns[columnIndex].push(block);
     });
 
     setColumns(newColumns);
-  }, [children]);
+  }, [blocks]);
 
   return (
     <div className={styles.masonryContainer}>

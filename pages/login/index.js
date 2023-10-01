@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AppConfig from "../../util/config";
 import { useRouter } from 'next/router';
 import styles from './login.module.css';
@@ -7,6 +7,7 @@ import styles from './login.module.css';
 import Link from 'next/link';
 
 import Alert from "../components/alert";
+import LogoSplash from '../components/logo-splash';
 import CookieService from "../../services/CookieService";
 import APIClient from "../../services/APIClient";
 import { Form } from '../components/form';
@@ -19,8 +20,12 @@ export default function Login() {
     })
     const [loginLoader, setLoginLoader] = useState(false)
     const [alert, setAlert] = useState(null)
-    const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
-    const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
+    const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "light")
+    const [showSplash, setShowSplash] = useState(true)
+
+    useEffect(() => {
+        if (showSplash) setTimeout(() => setShowSplash(false), 5000)
+    }, []);
 
     const handleSubmit = async (event) => {
         event.preventDefault()
@@ -30,12 +35,11 @@ export default function Login() {
             const authResult = (await APIClient.post("/auth/login", loginDetails)).data;
 
             if (authResult.success) {
-                console.log(authResult)
                 localStorage.clear()
                 localStorage.setItem("EchoTheme", authResult.data.dark)
                 CookieService.saveData("EchoActiveUser", authResult.data)
 
-                router.push("/")
+                document.location = "/"
             }
             else {
                 setAlert({ type: "error", message: authResult.message })
@@ -49,6 +53,7 @@ export default function Login() {
     }
 
     return (
+        showSplash ? <LogoSplash /> :
         <div className={styles.loginPage}>
             <Head>
                 <title>Echo - Login</title>
@@ -66,7 +71,7 @@ export default function Login() {
             </div>
             <div className={styles.loginFormBox}>
                 <div className={styles.loginForm}>
-                    <h3 className={styles.loginFormTitle}>Sign In</h3>
+                    <h3 className={styles.loginFormTitle}><span className="titleGradient">Sign In</span></h3>
                     <h3 className={styles.loginFormTip}>Please enter you email and password to access your Echo account.</h3>
                     <div>
                         <form onSubmit={handleSubmit}>

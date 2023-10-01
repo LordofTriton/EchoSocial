@@ -118,13 +118,11 @@ export default function UserSaved() {
                     </div>
                     {
                         userSaved.length ?
-                        <TriMasonryLayout>
-                            {
-                                userSaved.map((saved, index) =>
-                                    <Echo data={saved} page={pageControl} saved={true} key={index} />
-                                )
-                            }
-                        </TriMasonryLayout> : null
+                        <TriMasonryLayout blocks={
+                            userSaved.map((saved, index) =>
+                                <Echo data={saved} page={pageControl} saved={true} key={index} />
+                            )
+                        } /> : null
                     }
                     {savedLoader ?
                         <div className="loader" style={{

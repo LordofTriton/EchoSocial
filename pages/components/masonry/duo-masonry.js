@@ -1,20 +1,21 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styles from "./masonry.module.css"
 
-const DuoMasonryLayout = ({ children }) => {
+const DuoMasonryLayout = ({ blocks }) => {
     const [columnOne, setColumnOne] = useState([])
     const [columnTwo, setColumnTwo] = useState([])
 
     useEffect(() => {
+        if (!blocks || blocks.length < 1) return;
         let one = []
         let two = []
-        React.Children.forEach(children, (child, index) => {
-            if (index % 2 === 0) one.push(child);
-            else two.push(child);
+        blocks.forEach((block, index) => {
+            if (index % 2 === 0) one.push(block);
+            else two.push(block);
         });
         setColumnOne(one);
         setColumnTwo(two);
-    }, [children]);
+    }, [blocks]);
 
     return (
         <div className={styles.masonryContainer}>

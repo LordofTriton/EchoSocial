@@ -132,14 +132,12 @@ export default function CommunitiesFeed() {
                     </div>
                 </div>
                 <div className={styles.communitiesBody}>
-                    <TriMasonryLayout>
-                        {
-                            communities && communities.length > 0 ?
-                            communities.map((community, index) => 
-                            <CommunityThumb data={community} page={pageControl} member={true} key={index} />
-                            ) : null
-                        }
-                    </TriMasonryLayout>
+                    <TriMasonryLayout blocks={
+                        communities && communities.length > 0 ?
+                        communities.map((community, index) => 
+                        <CommunityThumb data={community} page={pageControl} member={true} key={index} />
+                        ) : null
+                    } />
                     { communityLoader ? 
                         <div className="loader" style={{
                             width: "70px",

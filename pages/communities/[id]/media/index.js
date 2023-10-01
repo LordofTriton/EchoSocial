@@ -130,8 +130,7 @@ export default function CommunityMedia() {
           <div className={styles.communityTimelineFeedHead}>
           <span className={styles.communityTimelineFeedHeadTitle}>{`${communityData ? communityData.displayName : "Community"}'s `} Photos & Videos</span>
           </div>
-          <TriMasonryLayout>
-          {
+          <TriMasonryLayout blocks={
               communityMediaEchoes.length > 0 ?
               communityMediaEchoes.map((echo) => 
                   echo.content.media.map((media, index) => 
@@ -150,8 +149,7 @@ export default function CommunityMedia() {
                   </>
                   )
               ) : null
-          }
-          </TriMasonryLayout>
+          } />
         </div>
       </div>
 

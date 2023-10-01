@@ -22,7 +22,7 @@ export default function Signup() {
     })
     const [signupLoader, setSignupLoader] = useState(false)
     const [alert, setAlert] = useState(null)
-    const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
+    const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "light")
 
     const handleSubmit = async (event) => {
         event.preventDefault()
