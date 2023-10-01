@@ -137,7 +137,7 @@ export default function Home() {
               <span className={styles.feedHeadText}>echo</span>
               <div className={styles.feedHeadCreator}>
                 <div className={styles.feedHeadCreatorProfile} style={{backgroundImage: `url(${activeUser.profileImage.url})`}}></div>
-                <span className={styles.feedHeadCreatorInput}>What's on your mind?</span>
+                <span className={styles.feedHeadCreatorInput}>{`What's on your mind?`}</span>
                 <span className={styles.feedHeadCreatorImage}>
                   <SVGServer.SendIcon color="var(--alt)" width="40px" height="40px" />
                 </span>
