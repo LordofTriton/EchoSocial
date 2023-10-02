@@ -17,6 +17,7 @@ import UserThumb from '../../../components/user-thumb';
 import CommunityHead from '../../../components/community-head';
 import useDataStates from '../../../hooks/useDataStates';
 import CacheService from '../../../../services/CacheService';
+import Helpers from '../../../../util/Helpers';
 
 export default function CommunityMembers() {
   const router = useRouter()
@@ -172,8 +173,8 @@ export default function CommunityMembers() {
             communityMembers.length ?
               communityData.userMember.role === "member" ?
                 <QuadMasonryLayout blocks={
-                  communityMembers.map((friend, index) =>
-                    <UserThumb data={friend} page={pageControl} key={index} />
+                  communityMembers.map((member, index) =>
+                    <UserThumb data={member} page={pageControl} key={index} />
                   )
                 } /> :
                 communityMembers.map((member, index) =>

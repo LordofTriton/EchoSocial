@@ -49,6 +49,9 @@ export default async function GetMembers(params, io) {
             let heartCount = await db.collection("hearts").countDocuments({ userID: member.userID });
             let userLiked = await db.collection("hearts").findOne({ accountID: params.accountID, userID: member.accountID })
             let userLikee = await db.collection("hearts").findOne({ accountID: member.accountID, userID: params.accountID })
+            let chat = await db.collection("chats").findOne({ accountID: params.accountID, targetID: member.accountID })
+            let settings = await db.collection("settings").findOne({ accountID: member.accountID })
+            const now = Date.now()
 
             const finalMemberData = {
                 ...member,
@@ -58,6 +61,10 @@ export default async function GetMembers(params, io) {
                 profileImage: user.profileImage,
                 profileCover: user.profileCover,
                 nickname: user.nickname,
+                settings,
+                lastActive: user.lastActive,
+                active: now - user.lastActive < 300000 ? true : false,
+                userChat: chat ? chat : null,
                 userLiked: userLiked ? true : false,
                 userLikee: userLikee ? true : false,
                 userFriend: userLiked && userLikee ? true : false

@@ -8,6 +8,7 @@
     box-shadow: 0 0 34px 0 rgba(63,66,87,.1);
     overflow: hidden;
     overflow-y: auto;
+    padding-bottom: 50px;
     z-index: 110;
 }
 
@@ -33,7 +34,7 @@
     height: fit-content;
     float: right;
     display: block;
-    margin: 8px 0px 0px 10px;
+    margin: 0px 0px 0px 10px;
     cursor: pointer;
 }
 
@@ -142,7 +143,7 @@
     width: calc(100% - 80px);
     height: 100%;
     float: left;
-    padding: 4px 20px;
+    padding: 10px 20px;
     cursor: pointer;
 }
 
@@ -267,5 +268,11 @@
     }
     .messengerChatDataText {
         font-size: 13px;
+    }
+    .messengerTitleIcon {
+        margin: 0px 0px 0px 10px;
+    }
+    .messengerChatData {
+        padding: 4px 20px;
     }
 }

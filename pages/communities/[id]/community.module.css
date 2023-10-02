@@ -115,7 +115,7 @@
     float: right;
     text-align: left;
     white-space: pre-wrap;
-    padding-right: 15px;
+    padding: 3px 15px 0px 0px;
 }
 
 .communityTimelineFeed {
@@ -142,7 +142,7 @@
     font-weight: 700;
     display: block;
     float: left;
-    margin: 13px 20px;
+    margin: 18px 20px;
     opacity: 0.7;
 }
 
@@ -647,5 +647,11 @@
     .communitySettingsBody {
         width: 80%;
         border-left: 4px solid var(--base);
+    }
+    .communityTimelineDataBoxDataText {
+        padding: 0px 15px 0px 0px;
+    }
+    .communityTimelineFeedHeadTitle {
+        margin: 13px 20px;
     }
 }

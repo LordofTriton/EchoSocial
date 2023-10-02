@@ -34,7 +34,7 @@
     height: fit-content;
     float: right;
     display: block;
-    margin: 8px 0px 0px 10px;
+    margin: 0px 0px 0px 10px;
     cursor: pointer;
 }
 
@@ -244,4 +244,7 @@
 
 @media screen and (min-width: 1125px) {
     .nodeCreatorContainer { top: 70px; right: 70px; }
+    .nodeCreatorContainerClose {
+        margin: 8px 0px 0px 10px;
+    }
 }

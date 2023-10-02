@@ -260,7 +260,7 @@
     font-size: 13px;
     color: var(--primary);
     opacity: 0.5;
-    margin: 5px 5px;
+    margin: 8px 5px 5px 5px;
 }
 
 @media screen and (min-width: 1125px) {
@@ -270,5 +270,8 @@
     }
     .echoHeadData {
         padding: 5px 12px;
+    }
+    .echoFooterNumber {
+        margin: 5px 5px;
     }
 }

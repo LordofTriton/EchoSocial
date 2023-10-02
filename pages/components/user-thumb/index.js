@@ -8,6 +8,26 @@ import APIClient from "../../../services/APIClient";
 export default function UserThumb({ data, page }) {
     const [userData, setUserData] = useState(data)
 
+    const getChat = () => {
+        return {
+            ...userData.userChat,
+            origin: {
+                accountID: page.activeUser.accountID,
+                firstName: page.activeUser.firstName,
+                lastName: page.activeUser.lastName,
+                profileImage: page.activeUser.profileImage
+            },
+            target: {
+                accountID: userData.accountID,
+                firstName: userData.firstName,
+                lastName: userData.lastName,
+                profileImage: userData.profileImage,
+                lastActive: userData.lastActive
+            },
+            userFriend: true
+        }
+    }
+
     const handleClickLikeButton = async () => {
         if (userData.userLiked) setUserData({ ...userData, userLiked: false, userFriend: false })
         else setUserData({ ...userData, userLiked: true, userFriend: userData.userLikee ? true : false })
@@ -20,10 +40,7 @@ export default function UserThumb({ data, page }) {
 
     const handleClickChatButton = () => {
         if (userData.userFriend) {
-            page.setActiveChat({
-                ...friend.userChat,
-                userFriend: data.userFriend
-            })
+            page.setActiveChat(getChat())
         }
     }
 

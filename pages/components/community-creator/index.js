@@ -89,7 +89,7 @@ export default function CommunityCreator({toggle, control, page}) {
                 ]}
             />
 
-            <Form.Submit text="POST" onClick={() => createCommunity()} loader={createCommunityLoader} />
+            <Form.Submit text="CREATE" onClick={() => createCommunity()} loader={createCommunityLoader} />
         </div>
         </>
     )

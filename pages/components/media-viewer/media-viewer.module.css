@@ -30,7 +30,7 @@
     width: calc(100% - 80px);
     height: 100%;
     float: left;
-    padding: 5px 12px;
+    padding: 10px 12px;
     cursor: pointer;
 }
 
@@ -165,5 +165,13 @@
         right: 100px; 
         height: calc(100% - 130px);
         border-radius: 5px;
+    }
+    .mediaViewerHeadData {
+        display: block;
+        width: calc(100% - 80px);
+        height: 100%;
+        float: left;
+        padding: 5px 12px;
+        cursor: pointer;
     }
 }

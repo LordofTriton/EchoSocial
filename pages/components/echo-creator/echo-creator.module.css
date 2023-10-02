@@ -34,7 +34,7 @@
     height: fit-content;
     float: right;
     display: block;
-    margin: 8px 0px 0px 10px;
+    margin: 0px 0px 0px 10px;
     cursor: pointer;
 }
 
@@ -246,4 +246,7 @@
 
 @media screen and (min-width: 1125px) {
     .echoCreatorContainer { width: 500px; top: 70px; right: 70px; }
+    .echoCreatorContainerClose {
+        margin: 8px 0px 0px 10px;
+    }
 }

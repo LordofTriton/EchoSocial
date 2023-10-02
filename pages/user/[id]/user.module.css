@@ -115,7 +115,7 @@
     float: right;
     text-align: left;
     white-space: pre-wrap;
-    padding-right: 15px;
+    padding: 3px 15px 0px 0px;
 }
 
 .userTimelineFeed {
@@ -141,7 +141,7 @@
     font-weight: 700;
     display: block;
     float: left;
-    margin: 13px 20px;
+    margin: 18px 20px;
     opacity: 0.7;
 }
 
@@ -351,6 +351,9 @@
         width: calc(75% - 15px);
         margin: 0px 0px 0px 15px;
     }
+    .userTimelineFeedHeadTitle {
+        margin: 13px 20px;
+    }
     .userAboutPersonal {
         width: 400px;
     }
@@ -363,5 +366,8 @@
     .userTimelineDataFriend {
         width: calc(25% - 20px);
         margin: 10px 10px 0px 10px;
+    }
+    .userTimelineDataBoxDataText {
+        padding: 0px 15px 0px 0px;
     }
 }

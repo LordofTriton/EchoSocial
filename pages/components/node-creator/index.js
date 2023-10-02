@@ -56,7 +56,7 @@ export default function NodeCreator({toggle, control, page}) {
                 value={newNode.name} 
                 onChange={(e) => setNewNode({...newNode, name: e.target.value })} 
             />
-            <Form.Submit text="POST" onClick={() => createNode()} loader={createNodeLoader} />
+            <Form.Submit text="CREATE" onClick={() => createNode()} loader={createNodeLoader} />
         </div>
         </>
     )

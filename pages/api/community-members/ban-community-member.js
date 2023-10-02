@@ -32,8 +32,7 @@ export default async function BlacklistMember(params, io) {
         ValidateBlacklistMember(params);
         const authUserMember = await db.collection("members").findOne({
             accountID: params.accountID,
-            communityID: params.communityID,
-            userID: params.accountID
+            communityID: params.communityID
         })
         if (!authUserMember || authUserMember.role === "member") throw new Error("You are unauthorised to perform this action.")
 
@@ -52,7 +51,7 @@ export default async function BlacklistMember(params, io) {
         const community = await db.collection("communities").findOne({ communityID: params.communityID })
         await CreateNotification({
             accountID: params.userID,
-            content: `You have been banned from the ${community.displayName} community.`,
+            content: `You have been kicked and banned from the ${community.displayName} community.`,
             image: community.profileImage.url,
             clickable: false,
             redirect: ""

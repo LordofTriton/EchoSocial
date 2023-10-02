@@ -40,7 +40,7 @@
     height: fit-content;
     float: right;
     display: block;
-    margin: 8px 0px 0px 10px;
+    margin: 0px 0px 0px 10px;
     cursor: pointer;
 }
 
@@ -54,4 +54,7 @@
         pointer-events: none;
     }
     .echoViewerEchoContainer { display: block; width: 500px; top: 70px; right: 70px; position: fixed; }
+    .echoViewerContainerClose {
+        margin: 8px 0px 0px 10px;
+    }
 }

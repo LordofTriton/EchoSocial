@@ -11,7 +11,7 @@
 
 .loginBanner {
     width: 100%;
-    height: 90px;
+    height: 70px;
     float: left;
     background-color: var(--base);
     position: relative;
@@ -25,16 +25,16 @@
 }
 
 .loginLogo {
-    width: 60px;
-    height: 60px;
-    margin: 5px 10px 5px 0px;
+    width: 40px;
+    height: 40px;
+    margin: 5px 5px 5px 0px;
     float: left;
 }
 
 .loginTitle {
     color: var(--primary);
     font-family: Title;
-    font-size: 40px;
+    font-size: 30px;
     font-weight: 700;
     float: left;
     margin: 10px 0px 0px 0px;
@@ -53,12 +53,12 @@
 .loginFormBox {
     width: 100%;
     height: fit-content;
-    min-height: calc(100% - 90px);
+    min-height: calc(100% - 70px);
     overflow: hidden;
     overflow-y: auto;
     float: right;
     background-color: var(--surface);
-    padding: 50px 30px;
+    padding: 30px 30px;
     border-radius: 20px 20px 0px 0px;
 }
 
@@ -141,7 +141,23 @@
 
 @media screen and (min-width: 1125px) {
     .loginBanner { width: calc(100% - 450px); height: 100%; }
+    .loginLogo {
+        width: 60px;
+        height: 60px;
+        margin: 5px 10px 5px 0px;
+        float: left;
+    }
+    .loginTitle {
+        color: var(--primary);
+        font-family: Title;
+        font-size: 40px;
+        font-weight: 700;
+        float: left;
+        margin: 10px 0px 0px 0px;
+    }
     .loginFormBox { width: 450px; height: 100%; border-radius: 0px; padding: 100px 30px; }
     .loginLogoBox { padding: 30px; }
-    .loginVector { display: block; }
+    .loginVector {
+        display: block;
+    }
 }
