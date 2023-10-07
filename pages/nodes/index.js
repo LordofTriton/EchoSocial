@@ -47,14 +47,14 @@ export default function Nodes() {
             <Head>
                 <title>Echo - Nodes</title>
                 <meta name="description" content="A simple social media." />
-                <link rel="icon" href="/icon.ico" />
+                <link rel="icon" href="/newLogoIcon.ico" />
                 <link rel="stylesheet" href={`/styles/themes/${activeTheme === "dark" ? 'classic-dark.css' : 'classic-light.css'}`} />
             </Head>
 
             <div className={styles.nodeBanner}>
                 <img src={`/images/vectors/three.png`} className={styles.nodeVector} alt="vector" />
                 <div className={styles.nodeLogoBox}>
-                    <img src={`/images/logo.png`} alt="logo" className={styles.nodeLogo} />
+                    <img src={`/images/newLogoTransparent.png`} alt="logo" className={styles.nodeLogo} />
                     <span className={styles.nodeTitle}>echo</span>
                 </div>
             </div>
@@ -92,7 +92,7 @@ export default function Nodes() {
             </div>
             
             {/* <div className={styles.nodeHeader}>
-                <img src={`/images/logo.png`} alt="logo" className={styles.nodeHeaderLogo} />
+                <img src={`/images/newLogoTransparent.png`} alt="logo" className={styles.nodeHeaderLogo} />
                 <span className={styles.nodeHeaderTitle}>echo</span>
             </div>
             <div className={styles.nodeContainer}>

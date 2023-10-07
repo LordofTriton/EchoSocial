@@ -40,7 +40,7 @@ export default function TopNav({ page }) {
         <>
             <AccountNav toggle={openAccountNav} control={setOpenAccountNav} page={page} />
             <div className={styles.topnavContainer}>
-                <img className={styles.topnavLogo} src={`/images/logo.png`} alt="logo" />
+                <img className={styles.topnavLogo} src={`/images/newLogoTransparent.png`} alt="logo" onClick={() => page.router.push("/")} />
                 <span className={styles.topnavTitle}>{page.title.toUpperCase()}</span>
                 <div className={styles.topnavSearchBar} onClick={() => page.setShowSearch(true)}>
                     <form>

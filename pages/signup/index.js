@@ -50,14 +50,14 @@ export default function Signup() {
         <Head>
             <title>Echo - Sign Up</title>
             <meta name="description" content="A simple social media." />
-            <link rel="icon" href="/icon.ico" />
+            <link rel="icon" href="/newLogoIcon.ico" />
             <link rel="stylesheet" href={`/styles/themes/${activeTheme === "dark" ? 'classic-dark.css' : 'classic-light.css'}`} />
         </Head>
 
         <div className={styles.signupBanner}>
                 <img src={`/images/vectors/one.png`} className={styles.signupVector} alt="vector" />
                 <div className={styles.signupLogoBox}>
-                    <img src={`/images/logo.png`} alt="logo" className={styles.signupLogo} />
+                    <img src={`/images/newLogoTransparent.png`} alt="logo" className={styles.signupLogo} />
                     <span className={styles.signupTitle}>echo</span>
                 </div>
             </div>

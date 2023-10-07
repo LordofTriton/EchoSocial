@@ -173,7 +173,7 @@ export default function Chat({ toggle, data, page }) {
         if (!data) return;
         const updateMessages = (data) => {
             if (data.success) {
-                Helpers.setPaginatedState(data.data, setChatMessages, data.pagination, "messageID")
+                Helpers.setPaginatedState(data.data, setChatMessages, data.pagination, "messageID", false)
                 setPagination(data.pagination)
                 if (messagePage === 1) setScrollChat(true)
             }

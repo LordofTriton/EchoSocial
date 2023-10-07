@@ -83,7 +83,7 @@ export default function Echo({ data, page, fullText=false, saved=false }) {
     }
 
     return (
-        <div className={styles.echo} style={{display: deleted || (saved && !echoSaved) ? "none" : null}}>
+        <div id={echoData.echoID} className={styles.echo} style={{display: deleted || (saved && !echoSaved) ? "none" : null}}>
             <div className={styles.echoHead}>
                 {
                     echoData.communityID && !page.community ?

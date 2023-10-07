@@ -19,11 +19,12 @@
 }
 
 .leftnavContainerHead img {
-    width: 70%;
+    width: 100%;
     position: absolute;
-    top: 50%;
+    top: 5px;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, 0px);
+    cursor: pointer;
 }
 
 .leftnavMenuButton {

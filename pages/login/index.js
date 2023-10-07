@@ -58,21 +58,21 @@ export default function Login() {
             <Head>
                 <title>Echo - Login</title>
                 <meta name="description" content="A simple social media." />
-                <link rel="icon" href="/icon.ico" />
+                <link rel="icon" href="/newLogoIcon.ico" />
                 <link rel="stylesheet" href={`/styles/themes/${activeTheme === "dark" ? 'classic-dark.css' : 'classic-light.css'}`} />
             </Head>
 
             <div className={styles.loginBanner}>
                 <img src={`/images/vectors/two.png`} className={styles.loginVector} alt="vector" />
                 <div className={styles.loginLogoBox}>
-                    <img src={`/images/logo.png`} alt="logo" className={styles.loginLogo} />
+                    <img src={`/images/newLogoTransparent.png`} alt="logo" className={styles.loginLogo} />
                     <span className={styles.loginTitle}>echo</span>
                 </div>
             </div>
             <div className={styles.loginFormBox}>
                 <div className={styles.loginForm}>
                     <h3 className={styles.loginFormTitle}><span className="titleGradient">Sign In</span></h3>
-                    <h3 className={styles.loginFormTip}>Please enter you email and password to access your Echo account.</h3>
+                    <h3 className={styles.loginFormTip}>Please enter your email and password to access your Echo account.</h3>
                     <div>
                         <form onSubmit={handleSubmit}>
                             <input type="text" className={styles.loginFormField} placeholder="Email Address" value={loginDetails.email} onChange={(e) => setLoginDetails({ ...loginDetails, email: e.target.value })} style={{ backgroundImage: `url(/images/icons/email.png)` }} required />
@@ -87,7 +87,7 @@ export default function Login() {
             </div>
 
             {/* <div className={styles.loginHeader}>
-                <img src={`/images/logo.png`} alt="logo" className={styles.loginHeaderLogo} />
+                <img src={`/images/newLogoTransparent.png`} alt="logo" className={styles.loginHeaderLogo} />
                 <span className={styles.loginHeaderTitle}>echo</span>
             </div>
             <div className={styles.loginContainer}>

@@ -144,7 +144,7 @@ export default function User() {
       <Head>
         <title>Echo - {userData ? `${userData.firstName} ${userData.lastName}` : "User"}</title>
         <meta name="description" content="A simple social media." />
-        <link rel="icon" href="/icon.ico" />
+        <link rel="icon" href="/newLogoIcon.ico" />
         <link rel="stylesheet" href={`/styles/themes/${activeTheme === "dark" ? 'classic-dark.css' : 'classic-light.css'}`} />
       </Head>
 

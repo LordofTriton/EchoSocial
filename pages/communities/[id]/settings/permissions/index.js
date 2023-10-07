@@ -88,7 +88,7 @@ export default function CommunitySettings() {
             <Head>
                 <title>Echo - {communityData ? communityData.displayName : "Community"}</title>
                 <meta name="description" content="A simple social media." />
-                <link rel="icon" href="/icon.ico" />
+                <link rel="icon" href="/newLogoIcon.ico" />
                 <link rel="stylesheet" href={`/styles/themes/${activeTheme === "dark" ? 'classic-dark.css' : 'classic-light.css'}`} />
             </Head>
 

@@ -31,6 +31,7 @@ export default function Home() {
     totalPages: 1
   })
   const [feedLoader, setFeedLoader] = useState(true)
+  const [pagePremier, setPagePremier] = useState(null)
 
   useEffect(() => {
     if (socket) {
@@ -55,6 +56,7 @@ export default function Home() {
     if (socket) {
       const updateFeed = (data) => {
         if (data.success) {
+          if (data.data.length > 0) setPagePremier(data.data[0].echoID)
           Helpers.setPaginatedState(data.data, setEchoFeed, data.pagination, "echoID")
           setPagination(data.pagination)
         }
@@ -98,18 +100,34 @@ export default function Home() {
     const { scrollTop, scrollHeight, clientHeight } = event.target;
     const isAtBottom = scrollTop + clientHeight >= scrollHeight - 10;
 
-    if (isAtBottom && echoFeedPage < pagination.totalPages && !feedLoader) {
+    if (isAtBottom) switchPage()
+    else {
+      let premierIsAboveTop = false;
+      const premier = document.getElementById(pagePremier);
+      if (premier) {
+        premier.style.backgroundColor = "red"
+        const rect = premier.getBoundingClientRect();
+        premierIsAboveTop = rect.bottom < 0;
+      }
+
+      if (premierIsAboveTop) switchPage();
+    }
+  };
+
+  const switchPage = () => {
+    if (feedLoader) return;
+    if (echoFeedPage < pagination.totalPages) {
       setEchoFeedPage(echoFeedPage + 1);
       setFeedLoader(true)
     }
-  };
+  }
 
   return (
     <div className="page" style={{ backgroundColor: "var(--base)" }} onScroll={handleScroll}>
       <Head>
         <title>Echo - Home</title>
         <meta name="description" content="A simple social media." />
-        <link rel="icon" href="/icon.ico" />
+        <link rel="icon" href="/newLogoIcon.ico" />
         <meta name="description" content="Echo is a simple, basic social media platform designed to bring together people with similar interests and passions." />
         <meta name="keywords" content="Echo, Echo Social, Social Media" />
         <meta name="author" content="Joshua Agboola" />
@@ -144,7 +162,7 @@ export default function Home() {
               </div>
             </div>
 
-            { filteredFeed().length ? <DuoMasonryLayout blocks={filteredFeed().map((echo, index) => <Echo data={echo} page={pageControl} key={index} />) } /> : null }
+            { filteredFeed().length ? <DuoMasonryLayout blocks={filteredFeed().map((echo, index) => <Echo data={echo} page={pageControl} key={index} /> )} /> : null }
 
             {feedLoader ?
               <div className="loader" style={{

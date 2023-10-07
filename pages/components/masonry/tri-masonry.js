@@ -27,6 +27,8 @@ const TriMasonryLayout = ({ blocks }) => {
 
     return (
         <div className={styles.masonryContainer}>
+            <div className={styles.uniMasonryColumn}>{blocks}</div>
+            
             <div className={styles.triMasonryColumn}>{columnOne}</div>
             <div className={styles.triMasonryColumn}>{columnTwo}</div>
             <div className={styles.triMasonryColumn}>{columnThree}</div>

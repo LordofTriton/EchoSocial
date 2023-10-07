@@ -21,20 +21,21 @@
     width: 100%;
     height: fit-content;
     overflow: hidden;
-    padding: 10px;
+    padding: 0px;
 }
 
 .nodeLogo {
-    width: 40px;
-    height: 40px;
-    margin: 5px 5px 5px 0px;
+    width: 70px;
+    height: 70px;
+    margin: 0px 5px 0px 15px;
     float: left;
 }
 
 .nodeTitle {
-    color: var(--primary);
+    display: none;
+    color: var(--surface);
     font-family: Title;
-    font-size: 30px;
+    font-size: 35px;
     font-weight: 700;
     float: left;
     margin: 10px 0px 0px 0px;
@@ -122,18 +123,23 @@
     .nodeFormBox { width: 450px; height: 100%; border-radius: 0px; padding: 30px 30px; }
     .nodeLogoBox { padding: 30px; }
     .nodeLogo {
-        width: 60px;
-        height: 60px;
-        margin: 5px 10px 5px 0px;
+        width: 90px;
+        height: 90px;
+        margin: 5px 0px 5px 0px;
         float: left;
+        pointer-events: none;
     }
     .nodeTitle {
-        color: var(--primary);
+        display: block;
         font-family: Title;
         font-size: 40px;
         font-weight: 700;
         float: left;
-        margin: 10px 0px 0px 0px;
+        margin: 20px 0px 0px 0px;
+        background-image: linear-gradient(to bottom right, blueviolet, #F58A2Aff);
+        -webkit-background-clip: text; /* WebKit/Blink browsers */
+        background-clip: text; /* Standard syntax */
+        color: transparent;
     }
     .nodeVector { display: block; }
 }

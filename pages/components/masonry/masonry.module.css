@@ -4,25 +4,37 @@
     overflow: hidden;
 }
 
-.duoMasonryColumn {
+.uniMasonryColumn {
     width: 100%;
     height: fit-content;
+}
+
+.duoMasonryColumn {
+    display: none;
+    width: calc(50% - 20px);
+    height: fit-content;
+    margin: 0px 10px;
 }
 
 .triMasonryColumn {
-    width: 100%;
+    display: none;
+    width: calc(33.33% - 20px);
     height: fit-content;
     float: left;
+    margin: 0px 10px;
 }
 
 .quadMasonryColumn {
-    width: 100%;
+    display: none;
+    width: calc(25% - 20px);
     height: fit-content;
     float: left;
+    margin: 0px 10px;
 }
 
 @media screen and (min-width: 1125px) {
-    .duoMasonryColumn { width: calc(50% - 20px); margin: 0px 10px; }
-    .triMasonryColumn { width: calc(33.33% - 20px); margin: 0px 10px; }
-    .quadMasonryColumn { width: calc(25% - 20px); margin: 0px 10px; }
+    .uniMasonryColumn { display: none; }
+    .duoMasonryColumn { display: block; }
+    .triMasonryColumn { display: block; }
+    .quadMasonryColumn { display: block; }
 }

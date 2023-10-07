@@ -66,6 +66,19 @@ export default function Messenger({ toggle, control, page }) {
         }
     }, [searchQuery])
 
+    const blockUser = async (accountID) => {
+        if (page.socket && accountID !== userData.accountID) {
+            page.socketMethods.socketEmitter("CREATE_BLACKLIST", {
+                accountID: page.activeUser.accountID,
+                blocker: page.activeUser.accountID,
+                blockee: accountID,
+                blockeeType: "user"
+            })
+            page.createAlert("success", "User blocked successfully.")
+            setUserData({ ...userData, userBlocked: true })
+        }
+    }
+
     const handleScroll = (event) => {
         const { scrollTop, scrollHeight, clientHeight } = event.target;
         const isAtBottom = scrollTop + clientHeight >= scrollHeight - 10;
@@ -128,9 +141,7 @@ export default function Messenger({ toggle, control, page }) {
                                         <SVGServer.OptionIcon color="var(--secondary)" width="25px" height="25px" />
                                         <div className={styles.messengerChatOptionBox}>
                                             <span className={styles.messengerChatOption}>Mute</span>
-                                            <span className={styles.messengerChatOption}>Delete</span>
                                             <span className={styles.messengerChatOption}>Block</span>
-                                            <span className={styles.messengerChatOption}>Report</span>
                                         </div>
                                     </div>
                                 </div>
@@ -157,9 +168,7 @@ export default function Messenger({ toggle, control, page }) {
                                     <SVGServer.OptionIcon color="var(--secondary)" width="25px" height="25px" />
                                     <div className={styles.messengerChatOptionBox}>
                                         <span className={styles.messengerChatOption}>Mute</span>
-                                        <span className={styles.messengerChatOption}>Delete</span>
                                         <span className={styles.messengerChatOption}>Block</span>
-                                        <span className={styles.messengerChatOption}>Report</span>
                                     </div>
                                 </div>
                             </div>

@@ -19,6 +19,8 @@ const DuoMasonryLayout = ({ blocks }) => {
 
     return (
         <div className={styles.masonryContainer}>
+            <div className={styles.uniMasonryColumn}>{blocks}</div>
+            
             <div className={styles.duoMasonryColumn} style={{float: "left"}}>{columnOne}</div>
             <div className={styles.duoMasonryColumn} style={{float: "right"}}>{columnTwo}</div>
         </div>

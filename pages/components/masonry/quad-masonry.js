@@ -18,6 +18,8 @@ const QuadMasonryLayout = ({ blocks }) => {
 
   return (
     <div className={styles.masonryContainer}>
+      <div className={styles.uniMasonryColumn}>{blocks}</div>
+      
       <div className={styles.quadMasonryColumn}>{columns[0]}</div>
       <div className={styles.quadMasonryColumn}>{columns[1]}</div>
       <div className={styles.quadMasonryColumn}>{columns[2]}</div>

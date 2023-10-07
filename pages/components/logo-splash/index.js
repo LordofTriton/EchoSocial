@@ -10,7 +10,7 @@ export default function LogoSplash() {
             <Head>
                 <title>Echo</title>
                 <meta name="description" content="A simple social media." />
-                <link rel="icon" href="/icon.ico" />
+                <link rel="icon" href="/newLogoIcon.ico" />
                 <meta name="description" content="Echo is a simple, basic social media platform designed to bring together people with similar interests and passions." />
                 <meta name="keywords" content="Echo, Echo Social, Social Media" />
                 <meta name="author" content="Joshua Agboola" />
@@ -18,7 +18,7 @@ export default function LogoSplash() {
             </Head>
 
             <div className={styles.logoSplashCircle}>
-                <img src="/images/logo.png" alt="splash-logo" />
+                <img src="/images/newLogoTransparent.png" alt="splash-logo" />
             </div>
 
             <div className={styles.logoSplashLoader}></div>

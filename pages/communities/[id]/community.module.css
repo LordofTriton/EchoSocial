@@ -80,7 +80,7 @@
     color: var(--primary);
     font-size: 13px;
     font-weight: 200;
-    margin: 5px 20px 10px 20px;
+    margin: 25px 20px 0px 20px;
     font-style: italic;
     text-align: center;
     display: block;
@@ -177,13 +177,13 @@
 .communityTimelineDataCommunity span:hover { color: var(--accent); }
 
 .communityTimelineDataFriend {
-    width: calc(25% - 20px);
+    width: calc(20% - 20px);
     aspect-ratio: 1;
     border-radius: 100px;
     background-size: cover;
     background-position: center;
     float: left;
-    margin: 0px 10px;
+    margin: 5px 10px;
     background-color: var(--base);
     margin-top: 10px;
     cursor: pointer;
@@ -647,6 +647,10 @@
     .communitySettingsBody {
         width: 80%;
         border-left: 4px solid var(--base);
+    }
+    .communityTimelineDataFriend {
+        width: calc(25% - 20px);
+        margin: 10px 10px 0px 10px;
     }
     .communityTimelineDataBoxDataText {
         padding: 0px 15px 0px 0px;
