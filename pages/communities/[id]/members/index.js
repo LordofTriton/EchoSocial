@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from 'next/router'
 import styles from '../community.module.css';
 
-import CookieService from '../../../../services/CookieService'
+import CacheService from '../../../../services/CacheService'
 import Echo from "../../../components/echo";
 import APIClient from "../../../../services/APIClient";
 import SVGServer from "../../../../services/svg/svgServer";
@@ -16,14 +16,14 @@ import QuadMasonryLayout from '../../../components/masonry/quad-masonry';
 import UserThumb from '../../../components/user-thumb';
 import CommunityHead from '../../../components/community-head';
 import useDataStates from '../../../hooks/useDataStates';
-import CacheService from '../../../../services/CacheService';
 import Helpers from '../../../../util/Helpers';
+import Loader from '../../../components/loader';
 
 export default function CommunityMembers() {
   const router = useRouter()
   const { modalStates, modalControl } = useModalStates()
   const { socket, socketMethods } = useSocketContext()
-  const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
+  const [activeUser, setActiveUser] = useState(CacheService.getData("EchoActiveUser"))
   const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
   const [communityData, setCommunityData] = useState(null)
   const [alert, setAlert] = useState(null)
@@ -58,14 +58,12 @@ export default function CommunityMembers() {
       setMemberLoader(false)
     }
     if (communityData) {
-      if (communityMembers.length < 1) {
-        if (socket) socketMethods.socketRequest("GET_MEMBERS", {
-          accountID: activeUser.accountID,
-          communityID: router.query.id,
-          page: memberPage,
-          pageSize: 10
-        }, updateCommunityMembers)
-      }
+      if (socket) socketMethods.socketRequest("GET_MEMBERS", {
+        accountID: activeUser.accountID,
+        communityID: router.query.id,
+        page: memberPage,
+        pageSize: 10
+      }, updateCommunityMembers)
     }
   }, [communityData, memberPage, socket])
 
@@ -83,7 +81,7 @@ export default function CommunityMembers() {
       communityNode: communityData.node
     } : null,
     router,
-    cookies: CookieService,
+    cookies: CacheService,
     cache: CacheService,
     activeUser,
     setActiveUser,
@@ -195,9 +193,16 @@ export default function CommunityMembers() {
                     }
                   </div>
                 )
-              : null
+              : 
+              !memberLoader ?
+                communityData && !communityData.userMember ?
+                <span className={styles.communityNull}>Nothing to show - Only members can see members.</span>
+                : 
+                <span className={styles.communityNull}>Nothing to show - This community has no members.</span>
+                : null
           }
         </div>
+        { memberLoader ? <Loader size="50px" thickness="5px" color="var(--primary)" style={{margin: "100px calc(50% - 25px) 0px calc(50% - 25px)"}} /> : null }
       </div>
 
       <Modals page={pageControl} />

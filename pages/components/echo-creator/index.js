@@ -24,7 +24,6 @@ export default function EchoCreator({toggle, control, page}) {
             setEchoAudience(toggle.audience)
             setOldEchoMedia(toggle.content.media ? toggle.content.media : [])
             setEchoLink(toggle.content.link)
-            setEchoNodes(toggle.nodes)
             setEchoText(toggle.content.text)
         }
     }, [toggle])
@@ -60,8 +59,10 @@ export default function EchoCreator({toggle, control, page}) {
     }
 
     const end = () => {
+        setEchoAudience("public")
         setEchoNodes([])
         setEchoMedia([])
+        setOldEchoMedia([])
         setEchoText("")
         control(false)
     }
@@ -136,33 +137,49 @@ export default function EchoCreator({toggle, control, page}) {
         }, createdEcho)
     }
 
+    const isValidData = () => {
+        if (!echoAudience) return false;
+        if (echoNodes.length < 1) return false;
+        if (!echoText && (echoMedia.length < 1 && oldEchoMedia.length < 1)) return false;
+        return true;
+    }
+
+    const closeModal = () => {
+        if (toggle.echoID) end()
+        else control(false)
+    }
+
     return (
         <>
-        <div className="modalOverlay" style={{display: toggle ? "block" : "none"}} onClick={() => control(false)}></div>
+        <div className="modalOverlay" style={{display: toggle ? "block" : "none"}} onClick={() => closeModal()}></div>
         <div className={styles.echoCreatorContainer} style={{right: !toggle ? "-700px" : null}}>
             <div className={styles.echoCreatorContainerHead}>
                 <span className={styles.echoCreatorContainerTitle}>{toggle.echoID ? "Edit" : "Create an"} <span className="titleGradient">Echo</span></span>
-                <span className={styles.echoCreatorContainerClose} onClick={() => control(false)} style={{ transform: "scale(1.3,1.3)" }}><SVGServer.CloseIcon color="var(--primary)" width="30px" height="30px" /></span>
+                <span className={styles.echoCreatorContainerClose} onClick={() => closeModal()} style={{ transform: "scale(1.3,1.3)" }}><SVGServer.CloseIcon color="var(--primary)" width="30px" height="30px" /></span>
             </div>
 
-            <Form.SelectSingleInput
-                label="Audience" 
-                style={{width: "100%", marginBottom: "20px", backgroundColor: "var(--surface)"}} 
-                value={echoAudience}
-                setValue={setEchoAudience}
-                options={
-                    communityData ? [{label: communityData.communityName, value: communityData.communityNode}] : [ {label: "Public", value: "public"}, {label: "Friends", value: "friends"}, {label: "Private", value: "private"} ]
-                }
-            />
+            <div style={{pointerEvents: communityData ? "none" : "all"}}>
+                <Form.SelectSingleInput
+                    label="Audience" 
+                    style={{width: "100%", marginBottom: "20px", backgroundColor: "var(--surface)"}} 
+                    value={echoAudience}
+                    setValue={setEchoAudience}
+                    options={
+                        communityData ? [{label: communityData.communityName, value: communityData.communityNode}] : [ {label: "Public", value: "public"}, {label: "Friends", value: "friends"}, {label: "Private", value: "private"} ]
+                    }
+                />
+            </div>
 
-            <Form.SelectMultipleInput
-                label="Nodes" 
-                style={{width: "100%", marginBottom: "20px", backgroundColor: "var(--surface)"}} 
-                defaultValue={echoNodes}
-                onAdd={(option) => setEchoNodes(echoNodes.concat(option))}
-                onRemove={(option) => setEchoNodes(echoNodes.filter((node) => node !== option))}
-                options={nodeList.map((node) => ({label: `${node.emoji} ${node.displayName}`, value: node.nodeID}))}
-            /> 
+            <div style={{pointerEvents: communityData ? "none" : "all"}}>
+                <Form.SelectMultipleInput
+                    label="Nodes" 
+                    style={{width: "100%", marginBottom: "20px", backgroundColor: "var(--surface)"}} 
+                    defaultValue={toggle.echoID ? toggle.nodes : []}
+                    onAdd={(option) => setEchoNodes(echoNodes.concat(option))}
+                    onRemove={(option) => setEchoNodes(echoNodes.filter((node) => node !== option))}
+                    options={nodeList.map((node) => ({label: `${node.emoji} ${node.displayName}`, value: node.nodeID}))}
+                /> 
+            </div>
 
             <Form.AreaInput
                 label="Content" 
@@ -212,7 +229,8 @@ export default function EchoCreator({toggle, control, page}) {
                 </>
                 <span onClick={() => setLinkSelector(true)}><SVGServer.LinkIcon color="var(--primary)" width="30px" height="30px" /></span>
             </div>
-            <Form.Submit text="POST" onClick={() => toggle.echoID ? editEcho() : createEcho()} loader={createEchoLoader} />
+
+            <Form.Submit text="POST" onClick={() => toggle.echoID ? editEcho() : createEcho()} loader={createEchoLoader} disabled={!isValidData()} />
         </div>
         </>
     )

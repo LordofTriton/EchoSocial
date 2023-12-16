@@ -105,6 +105,14 @@
     background-repeat: no-repeat;
 }
 
+.formErrorMessage {
+    display: block;
+    color: red;
+    font-size: 13px;
+    font-weight: 400;
+    translate: 5px -15px;
+}
+
 .signupFormFYP {
     font-size: 13px;
     display: block;

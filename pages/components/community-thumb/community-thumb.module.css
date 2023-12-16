@@ -82,6 +82,10 @@
     float: left;
 }
 
+.communityThumbStat span {
+    font-weight: 700;
+}
+
 .communityThumbJoin {
     display: block;
     color: var(--surface);

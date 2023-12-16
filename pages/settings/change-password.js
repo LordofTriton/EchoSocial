@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import styles from "./settings.module.css"
 import { useRouter } from 'next/router'
 
-import CookieService from '../../services/CookieService'
+import CacheService from '../../services/CacheService'
 import Modals from '../components/modals';
 import SVGServer from '../../services/svg/svgServer'
 import APIClient from "../../services/APIClient";
@@ -11,11 +11,10 @@ import { Form } from "../components/form";
 import useModalStates from '../hooks/useModalStates'
 import { useSocketContext } from '../../util/SocketProvider'
 import useDataStates from '../hooks/useDataStates'
-import CacheService from '../../services/CacheService'
 
 export default function ChangePasswordSettings() {
     const router = useRouter()
-    const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
+    const [activeUser, setActiveUser] = useState(CacheService.getData("EchoActiveUser"))
     const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
     const [userAccount, setUserAccount] = useState(activeUser)
     const [passwords, setPasswords] = useState({
@@ -27,6 +26,7 @@ export default function ChangePasswordSettings() {
     const {modalStates, modalControl} = useModalStates()
     const [showAccountDrop, setShowAccountDrop] = useState(true)
     const {socket, socketMethods} = useSocketContext()
+    const [loading, setLoading] = useState(false)
 
     const createAlert = (type, message) => {
         setAlert({ type, message })
@@ -44,7 +44,7 @@ export default function ChangePasswordSettings() {
     const pageControl = {
         title: "Settings",
         router,
-        cookies: CookieService,
+        cookies: CacheService,
         cache: CacheService,
         activeUser,
         setActiveUser,
@@ -56,6 +56,12 @@ export default function ChangePasswordSettings() {
         createAlert,
         ...modalStates,
         ...modalControl,
+    }
+
+    const isValidData = () => {
+        if (passwords.oldPassword.trim().length < 6) return false;
+        if (passwords.newPassword.trim().length < 6) return false;
+        if (passwords.newPassword !== passwords.confirmNewPassword) return false;
     }
 
     return (
@@ -84,7 +90,7 @@ export default function ChangePasswordSettings() {
                                     <span className={styles.settingsBodySubNavButton} onClick={() => router.push("/settings")}>Profile Info</span>
                                     <span className={styles.settingsBodySubNavButton} onClick={() => router.push("/settings/preferences")}>Preferences</span>
                                     <span className={styles.settingsBodySubNavButton} onClick={() => router.push("/settings/nodes")}>Nodes</span>
-                                    <span className={styles.settingsBodySubNavButton} style={{ color: "var(--accent)" }} onClick={() => router.push("/settings/cp")}>Change/Reset Password</span>
+                                    <span className={styles.settingsBodySubNavButton} style={{ color: "var(--accent)" }} onClick={() => router.push("/settings/change-password")}>Change/Reset Password</span>
                                 </> : null
                         }
                         <div className={styles.settingsBodyNavButton} onClick={() => router.push("/settings/privacy")}>
@@ -118,23 +124,29 @@ export default function ChangePasswordSettings() {
                                     style={{ width: "100%", float: "left", marginBottom: "20px" }}
                                     value={passwords.oldPassword}
                                     onChange={(e) => setPasswords({ ...passwords, oldPassword: e.target.value })}
+                                    isValid={(value) => value.trim().length > 6}
+                                    error="Please enter your current password."
                                 />
                                 <Form.TextInput
                                     type="password"
                                     label="New Password"
-                                    style={{ width: "calc(50% - 10px)", float: "right", marginBottom: "20px" }}
+                                    style={{ width: "calc(50% - 10px)", float: "left", marginBottom: "20px" }}
                                     value={passwords.newPassword}
                                     onChange={(e) => setPasswords({ ...passwords, newPassword: e.target.value })}
+                                    isValid={(value) => value.trim().length > 6}
+                                    error="Password must be at least 6 characters long."
                                 />
                                 <Form.TextInput
                                     type="password"
                                     label="Confirm New Password"
-                                    style={{ width: "calc(50% - 10px)", float: "left", marginBottom: "20px" }}
+                                    style={{ width: "calc(50% - 10px)", float: "right", marginBottom: "20px" }}
                                     value={passwords.email}
                                     onChange={(e) => setPasswords({ ...passwords, confirmNewPassword: e.target.value })}
+                                    isValid={(value) => value === passwords.newPassword}
+                                    error="Password don't match."
                                 />
                                 <div className={styles.formContainerFormButtons}>
-                                    <button className={styles.formContainerFormSubmitFull} onClick={() => handleSubmit()}>Change Password</button>
+                                    <button className={styles.formContainerFormSubmitFull} style={{opacity: isValidData() ? "1" : "0.5"}} onClick={() => isValidData() ? handleSubmit() : null}>Change Password</button>
                                 </div>
                             </div>
                         </div>

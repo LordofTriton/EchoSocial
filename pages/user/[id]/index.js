@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from 'next/router'
 import styles from './user.module.css';
 
-import CookieService from '../../../services/CookieService'
+import CacheService from '../../../services/CacheService'
 import Echo from "../../components/echo";
 import APIClient from "../../../services/APIClient";
 import SVGServer from "../../../services/svg/svgServer";
@@ -13,14 +13,14 @@ import useModalStates from '../../hooks/useModalStates';
 import { useSocketContext } from '../../../util/SocketProvider';
 import UserHead from '../../components/user-head';
 import useDataStates from '../../hooks/useDataStates';
-import CacheService from '../../../services/CacheService';
 import Helpers from '../../../util/Helpers';
+import ScrollTop from '../../hooks/useScrollTop';
 
 export default function User() {
   const router = useRouter()
   const {modalStates, modalControl} = useModalStates()
   const {socket, socketMethods} = useSocketContext()
-  const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
+  const [activeUser, setActiveUser] = useState(CacheService.getData("EchoActiveUser"))
   const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
   const [userData, setUserData] = useState(null)
   const [alert, setAlert] = useState(null)
@@ -38,6 +38,7 @@ export default function User() {
   const [echoLoader, setEchoLoader] = useState(true)
 
   useEffect(() => {
+    setUserData(null)
     setUserEchoes([])
     setUserMediaEchoes([])
     setUserFriends([])
@@ -63,7 +64,6 @@ export default function User() {
       if (data.success) {
         Helpers.setPaginatedState(data.data, setUserEchoes, data.pagination, "echoID")
         setPagination(data.pagination)
-        console.log(data.data[0])
       }
       setEchoLoader(false)
     }
@@ -114,7 +114,7 @@ export default function User() {
   const pageControl = {
     title: userData ? `${userData.firstName} ${userData.lastName}` : "User",
     router,
-    cookies: CookieService,
+    cookies: CacheService,
     cache: CacheService,
     activeUser,
     setActiveUser,

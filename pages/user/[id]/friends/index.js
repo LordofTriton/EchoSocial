@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from 'next/router'
 import styles from '../user.module.css';
 
-import CookieService from '../../../../services/CookieService'
+import CacheService from '../../../../services/CacheService'
 import APIClient from "../../../../services/APIClient";
 import SVGServer from "../../../../services/svg/svgServer";
 import Modals from '../../../components/modals';
@@ -13,14 +13,13 @@ import { useSocketContext } from '../../../../util/SocketProvider';
 import QuadMasonryLayout from '../../../components/masonry/quad-masonry';
 import UserThumb from '../../../components/user-thumb';
 import UserHead from '../../../components/user-head';
-import CacheService from '../../../../services/CacheService';
 import Helpers from '../../../../util/Helpers';
 
 export default function UserFriends() {
     const router = useRouter()
     const {modalStates, modalControl} = useModalStates()
     const {socket, socketMethods} = useSocketContext()
-    const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
+    const [activeUser, setActiveUser] = useState(CacheService.getData("EchoActiveUser"))
     const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
     const [userData, setUserData] = useState(null)
     const [alert, setAlert] = useState(null)
@@ -75,7 +74,7 @@ export default function UserFriends() {
     const pageControl = {
         title: userData ? `${userData.firstName} ${userData.lastName}` : "User",
         router,
-        cookies: CookieService,
+        cookies: CacheService,
         cache: CacheService,
         activeUser,
         setActiveUser,
@@ -122,7 +121,7 @@ export default function UserFriends() {
                             userFriends.map((friend, index) => 
                                 <UserThumb data={friend} page={pageControl} key={index} />
                             )
-                        } /> : null
+                        } /> : <span className={styles.userNull}>Nothing to show - {router.query.id === activeUser.accountID ? 'You have' : 'This user has'} no friends{router.query.id !== activeUser.accountID ? ' you can see' : ''}.</span>
                     }
                     
                     {friendLoader ?

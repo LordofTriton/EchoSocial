@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import styles from "./settings.module.css"
 import { useRouter } from 'next/router'
 
-import CookieService from '../../services/CookieService'
+import CacheService from '../../services/CacheService'
 import Modals from '../components/modals';
 import SVGServer from '../../services/svg/svgServer'
 import APIClient from "../../services/APIClient";
@@ -11,11 +11,10 @@ import { Form } from "../components/form";
 import useModalStates from '../hooks/useModalStates'
 import { useSocketContext } from '../../util/SocketProvider'
 import useDataStates from '../hooks/useDataStates'
-import CacheService from '../../services/CacheService'
 
 export default function MessagingSettings() {
     const router = useRouter()
-    const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
+    const [activeUser, setActiveUser] = useState(CacheService.getData("EchoActiveUser"))
     const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
     const [userSettings, setUserSettings] = useState(null)
     const [updatedSettings, setUpdatedSettings] = useState({
@@ -57,7 +56,7 @@ export default function MessagingSettings() {
     const pageControl = {
         title: "Settings",
         router,
-        cookies: CookieService,
+        cookies: CacheService,
         cache: CacheService,
         activeUser,
         setActiveUser,
@@ -97,7 +96,7 @@ export default function MessagingSettings() {
                                     <span className={styles.settingsBodySubNavButton} onClick={() => router.push("/settings")}>Profile Info</span>
                                     <span className={styles.settingsBodySubNavButton} onClick={() => router.push("/settings/preferences")}>Preferences</span>
                                     <span className={styles.settingsBodySubNavButton} onClick={() => router.push("/settings/nodes")}>Nodes</span>
-                                    <span className={styles.settingsBodySubNavButton} onClick={() => router.push("/settings/cp")}>Change/Reset Password</span>
+                                    <span className={styles.settingsBodySubNavButton} onClick={() => router.push("/settings/change-password")}>Change/Reset Password</span>
                                 </> : null
                         }
                         <div className={styles.settingsBodyNavButton} onClick={() => router.push("/settings/privacy")}>

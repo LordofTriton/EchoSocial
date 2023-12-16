@@ -7,7 +7,7 @@ import styles from './nodes.module.css';
 import Link from 'next/link';
 
 import Alert from "../components/alert";
-import CookieService from "../../services/CookieService";
+import CacheService from "../../services/CacheService";
 import APIClient from "../../services/APIClient";
 import { Form } from "../components/form";
 import SVGServer from '../../services/svg/svgServer';
@@ -15,7 +15,7 @@ import { useSocketContext } from '../../util/SocketProvider';
 
 export default function Nodes() {
     const router = useRouter()
-    const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
+    const [activeUser, setActiveUser] = useState(CacheService.getData("EchoActiveUser"))
     const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "light")
     const [selectedNodes, setSelectedNodes] = useState([])
     const [submitLoader, setSubmitLoader] = useState(false)
@@ -38,7 +38,7 @@ export default function Nodes() {
             accountID: activeUser.accountID,
             nodes: selectedNodes
         })
-        CookieService.saveData("EchoActiveUser", {...activeUser, nodes: selectedNodes})
+        CacheService.saveData("EchoActiveUser", {...activeUser, nodes: selectedNodes})
         router.push("/")
     }
 

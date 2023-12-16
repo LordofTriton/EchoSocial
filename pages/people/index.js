@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from 'next/router'
 import styles from './people.module.css';
 
-import CookieService from '../../services/CookieService'
+import CacheService from '../../services/CacheService'
 import APIClient from "../../services/APIClient";
 import Modals from "../components/modals";
 import Head from "next/head";
@@ -13,16 +13,16 @@ import { useSocketContext } from "../../util/SocketProvider";
 import QuadMasonryLayout from "../components/masonry/quad-masonry";
 import UserThumb from "../components/user-thumb";
 import useDataStates from "../hooks/useDataStates";
-import CacheService from "../../services/CacheService";
 import Helpers from "../../util/Helpers";
 
 export default function PeopleStrangers() {
     const router = useRouter()
-    const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
+    const [activeUser, setActiveUser] = useState(CacheService.getData("EchoActiveUser"))
     const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
     const [alert, setAlert] = useState(null)
     const {modalStates, modalControl} = useModalStates()
     const [people, setPeople] = useState([])
+    const [searchedPeople, setSearchedPeople] = useState([])
     const [searchQuery, setSearchQuery] = useState("")
     const [peoplePage, setPeoplePage] = useState(1)
     const {socket, socketMethods} = useSocketContext()
@@ -34,32 +34,13 @@ export default function PeopleStrangers() {
     })
     const [peopleLoader, setPeopleLoader] = useState(true)
 
-    useEffect(() => {
-        if (searchQuery.length > 1) return;
+    const fetchPeople = () => {
+        setPeopleLoader(true)
         if (socket) {
             const updatePeople = (data) => {
                 if (data.success) {
-                    Helpers.setPaginatedState(data.data, setPeople, data.pagination, "accountID")
-                    setPagination(data.pagination)
-                }
-                setPeopleLoader(false)
-            }
-            socketMethods.socketRequest("GET_ACCOUNTS", {
-                    accountID: activeUser.accountID,
-                    friends: false,
-                    page: peoplePage,
-                    pageSize: 10
-                },
-                updatePeople
-            )
-        }
-    }, [peoplePage, socket])
-
-    useEffect(() => {
-        if (socket && searchQuery.length % 3 === 0 && !peopleLoader) {
-            const updatePeople = (data) => {
-                if (data.success) {
-                    Helpers.setPaginatedState(data.data, setPeople, data.pagination, "accountID")
+                    if (data.data.length > 0) Helpers.setPaginatedState(data.data, searchQuery.length > 0 ? setSearchedPeople : setPeople, data.pagination, "accountID")
+                    else searchQuery.length > 0 ? setSearchedPeople([]) : setPeople([]);
                     setPagination(data.pagination)
                 }
                 setPeopleLoader(false)
@@ -72,7 +53,19 @@ export default function PeopleStrangers() {
                 filter: searchQuery.length ? searchQuery : null
             }, updatePeople)
         }
-    }, [peoplePage, searchQuery, socket])
+    }
+    
+    useEffect(() => {
+        fetchPeople()
+    }, [peoplePage, socket])
+
+    
+    useEffect(() => {
+        if (searchQuery.length < 3 || peopleLoader) return;
+        if (peoplePage !== 1) setPeoplePage(1)
+        else fetchPeople()
+        if (searchQuery.length < 1) setSearchedPeople([])
+    }, [searchQuery])
 
     const createAlert = (type, message) => {
         setAlert({type, message})
@@ -82,7 +75,7 @@ export default function PeopleStrangers() {
     const pageControl = {
         title: "People",
         router,
-        cookies: CookieService,
+        cookies: CacheService,
         cache: CacheService,
         activeUser,
         setActiveUser,
@@ -129,12 +122,20 @@ export default function PeopleStrangers() {
                 </div>
                 <div className={styles.peopleBody}>
                 {
-                    activeUser && people.length ? 
+                    activeUser && people.length > 0 && searchQuery.length < 1 ? 
                     <QuadMasonryLayout blocks={
                         people.map((person, index) => 
                             <UserThumb data={person} page={pageControl} key={index} />
                         )
-                    } /> : null
+                    } /> : !peopleLoader && searchQuery.length < 1 ? <span className={styles.peopleNull}>Sorry, we couldn't find anyone that matches your nodes. Consider adding more nodes.</span> : null
+                }
+                {
+                    activeUser && searchedPeople.length > 0 && searchQuery.length > 1 ? 
+                    <QuadMasonryLayout blocks={
+                        searchedPeople.map((person, index) => 
+                            <UserThumb data={person} page={pageControl} key={index} />
+                        )
+                    } /> : !peopleLoader && searchQuery.length > 1 ? <span className={styles.peopleNull}>Sorry, we couldn't find anyone that matches your search query.</span> : null
                 }
                 { peopleLoader ? 
                     <div className="loader" style={{

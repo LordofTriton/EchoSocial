@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from 'next/router'
 import styles from '../communities.module.css';
 
-import CookieService from '../../../services/CookieService'
+import CacheService from '../../../services/CacheService'
 import APIClient from "../../../services/APIClient";
 import Modals from "../../components/modals";
 import TriMasonryLayout from "../../components/masonry/tri-masonry";
@@ -11,16 +11,16 @@ import CommunityThumb from "../../components/community-thumb";
 import useModalStates from "../../hooks/useModalStates";
 import { useSocketContext } from "../../../util/SocketProvider";
 import useDataStates from "../../hooks/useDataStates";
-import CacheService from "../../../services/CacheService";
 import Helpers from "../../../util/Helpers";
 
 export default function CommunitiesFeed() {
     const router = useRouter()
-    const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
+    const [activeUser, setActiveUser] = useState(CacheService.getData("EchoActiveUser"))
     const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
     const [alert, setAlert] = useState(null)
     const {modalStates, modalControl} = useModalStates()
     const [communities, setCommunities] = useState([])
+    const [searchedCommunities, setSearchedCommunities] = useState([])
     const [searchQuery, setSearchQuery] = useState("")
     const {socket, socketMethods} = useSocketContext()
     const [communitiesPage, setCommunitiesPage] = useState(1)
@@ -32,49 +32,38 @@ export default function CommunitiesFeed() {
     })
     const [communityLoader, setCommunityLoader] = useState(true)
 
-    useEffect(() => {
-        if (searchQuery.length > 0) return;
+    const fetchCommunities = () => {
+        setCommunityLoader(true)
         if (socket) {
             const updateCommunities = (data) => {
                 if (data.success) {
-                    Helpers.setPaginatedState(data.data, setCommunities, data.pagination, "communityID")
+                    if (data.data.length > 0) Helpers.setPaginatedState(data.data, searchQuery.length > 0 ? setSearchedCommunities : setCommunities, data.pagination, "communityID")
+                    else searchQuery.length > 0 ? searchedCommunities([]) : setCommunities([])
                     setPagination(data.pagination)
                 }
                 setCommunityLoader(false)
             }
             socketMethods.socketRequest("GET_COMMUNITIES", {
-                    accountID: activeUser.accountID,
-                    userID: activeUser.accountID,
-                    member: true,
-                    page: communitiesPage,
-                    pageSize: 10
-                },
-                updateCommunities
-            )
+                accountID: activeUser.accountID,
+                userID: activeUser.accountID,
+                member: true,
+                page: 1,
+                pageSize: communitiesPage,
+                filter: searchQuery.length ? searchQuery : null
+            }, updateCommunities)
         }
+    }
+    
+    useEffect(() => {
+        fetchCommunities()
     }, [communitiesPage, socket])
 
     useEffect(() => {
-        if (socket && searchQuery.length % 3 === 0 && !communityLoader) {
-            const updateCommunities = (data) => {
-                if (data.success) {
-                    Helpers.setPaginatedState(data.data, setCommunities, data.pagination, "communityID")
-                    setPagination(data.pagination)
-                }
-                setCommunityLoader(false)
-            }
-            socketMethods.socketRequest("GET_COMMUNITIES", {
-                    accountID: activeUser.accountID,
-                    userID: activeUser.accountID,
-                    member: true,
-                    page: 1,
-                    pageSize: 10,
-                    filter: searchQuery.length ? searchQuery : null
-                },
-                updateCommunities
-            )
-        }
-    }, [communitiesPage, searchQuery, socket])
+        if (searchQuery.length < 3 || communityLoader) return;
+        if (communitiesPage !== 1) setCommunitiesPage(1)
+        else fetchCommunities()
+        if (searchQuery.length < 1) setSearchedCommunities([])
+    }, [searchQuery])
 
     const createAlert = (type, message) => {
         setAlert({type, message})
@@ -84,7 +73,7 @@ export default function CommunitiesFeed() {
     const pageControl = {
         title: "Communities",
         router,
-        cookies: CookieService,
+        cookies: CacheService,
         cache: CacheService,
         activeUser,
         setActiveUser,
@@ -132,12 +121,28 @@ export default function CommunitiesFeed() {
                     </div>
                 </div>
                 <div className={styles.communitiesBody}>
-                    <TriMasonryLayout blocks={
-                        communities && communities.length > 0 ?
-                        communities.map((community, index) => 
-                        <CommunityThumb data={community} page={pageControl} member={true} key={index} />
-                        ) : null
-                    } />
+                    {
+                        communities.length > 0 && searchQuery.length < 1 ?
+                        <TriMasonryLayout blocks={
+                            communities && communities.length > 0 ?
+                            communities.map((community, index) => 
+                            <CommunityThumb data={community} page={pageControl} member={true} key={index} />
+                            ) : null
+                        } />
+                        :
+                        !communityLoader && searchQuery.length < 1 ? <span className={styles.communityNull}>You haven't joined any communities.</span> : null
+                    }
+                    {
+                        searchedCommunities.length > 0 && searchQuery.length > 0 ?
+                        <TriMasonryLayout blocks={
+                            searchedCommunities && searchedCommunities.length > 0 ?
+                            searchedCommunities.map((community, index) => 
+                            <CommunityThumb data={community} page={pageControl} member={true} key={index} />
+                            ) : null
+                        } />
+                        :
+                        !communityLoader && searchQuery.length > 0 ? <span className={styles.communityNull}>Sorry, there are no communities that match your search query. Please try another.</span> : null
+                    }
                     { communityLoader ? 
                         <div className="loader" style={{
                             width: "70px",

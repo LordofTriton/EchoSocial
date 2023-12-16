@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from 'next/router'
 import styles from './communities.module.css';
 
-import CookieService from '../../services/CookieService'
+import CacheService from '../../services/CacheService'
 import APIClient from "../../services/APIClient";
 import Modals from "../components/modals";
 import Head from "next/head";
@@ -11,12 +11,11 @@ import Echo from "../components/echo";
 import useModalStates from "../hooks/useModalStates";
 import { useSocketContext } from "../../util/SocketProvider";
 import useDataStates from "../hooks/useDataStates";
-import CacheService from "../../services/CacheService";
 import Helpers from "../../util/Helpers";
 
 export default function CommunitiesFeed() {
     const router = useRouter()
-    const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
+    const [activeUser, setActiveUser] = useState(CacheService.getData("EchoActiveUser"))
     const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
     const [alert, setAlert] = useState(null)
     const {modalStates, modalControl} = useModalStates()
@@ -66,7 +65,7 @@ export default function CommunitiesFeed() {
     const pageControl = {
         title: "Communities",
         router,
-        cookies: CookieService,
+        cookies: CacheService,
         cache: CacheService,
         activeUser,
         setActiveUser,

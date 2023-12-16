@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from 'next/router'
 import styles from '../community.module.css';
 
-import CookieService from '../../../../services/CookieService'
+import CacheService from '../../../../services/CacheService'
 import Echo from "../../../components/echo";
 import APIClient from "../../../../services/APIClient";
 import SVGServer from "../../../../services/svg/svgServer";
@@ -16,7 +16,6 @@ import CommunityHead from '../../../components/community-head';
 import TriMasonryLayout from '../../../components/masonry/tri-masonry';
 import Helpers from '../../../../util/Helpers';
 import useDataStates from '../../../hooks/useDataStates';
-import CacheService from '../../../../services/CacheService';
 
 function VideoMedia({ source, callback }) {
   const handleClick = () => {
@@ -31,7 +30,7 @@ export default function CommunityMedia() {
   const router = useRouter()
   const {modalStates, modalControl} = useModalStates()
   const {socket, socketMethods} = useSocketContext()
-  const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
+  const [activeUser, setActiveUser] = useState(CacheService.getData("EchoActiveUser"))
   const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
   const [communityData, setCommunityData] = useState(null)
   const [alert, setAlert] = useState(null)
@@ -90,7 +89,7 @@ export default function CommunityMedia() {
         communityNode: communityData.node
     } : null,
     router,
-    cookies: CookieService,
+    cookies: CacheService,
     cache: CacheService,
     activeUser,
     setActiveUser,
@@ -130,26 +129,36 @@ export default function CommunityMedia() {
           <div className={styles.communityTimelineFeedHead}>
           <span className={styles.communityTimelineFeedHeadTitle}>{`${communityData ? communityData.displayName : "Community"}'s `} Photos & Videos</span>
           </div>
-          <TriMasonryLayout blocks={
-              communityMediaEchoes.length > 0 ?
-              communityMediaEchoes.map((echo) => 
-                  echo.content.media.map((media, index) => 
-                  <>
-                  { Helpers.getFileType(media.url) === "image" ? <div className={styles.communityMediaItem}><img className={styles.communityMediaImage} src={media.url} onClick={() => modalControl.setShowEchoViewer(echo)} alt="media" /></div> : null }
-                  { Helpers.getFileType(media.url) === "video" ? 
-                      <div className={styles.communityMediaItem}>
-                      <VideoMedia source={media.url} callback={() => modalControl.setShowEchoViewer(echo)} />
-                      <div className={styles.communityMediaVideoOverlay}>
-                          <span>
-                              <SVGServer.PlayIcon color="var(--primary)" width="50px" height="50px" />
-                          </span>
-                      </div>
-                      </div> : null 
-                  }
-                  </>
-                  )
-              ) : null
-          } />
+          {
+            communityMediaEchoes.length > 0 ?
+            <TriMasonryLayout blocks={
+                communityMediaEchoes.length > 0 ?
+                communityMediaEchoes.map((echo) => 
+                    echo.content.media.map((media, index) => 
+                    <>
+                    { Helpers.getFileType(media.url) === "image" ? <div className={styles.communityMediaItem}><img className={styles.communityMediaImage} src={media.url} onClick={() => modalControl.setShowEchoViewer(echo)} alt="media" /></div> : null }
+                    { Helpers.getFileType(media.url) === "video" ? 
+                        <div className={styles.communityMediaItem}>
+                        <VideoMedia source={media.url} callback={() => modalControl.setShowEchoViewer(echo)} />
+                        <div className={styles.communityMediaVideoOverlay}>
+                            <span>
+                                <SVGServer.PlayIcon color="var(--primary)" width="50px" height="50px" />
+                            </span>
+                        </div>
+                        </div> : null 
+                    }
+                    </>
+                    )
+                ) : null
+            } />
+            :
+            !echoLoader ?
+                communityData && !communityData.userMember ?
+                <span className={styles.communityNull}>Nothing to show - Only members can see media.</span>
+                : 
+                <span className={styles.communityNull}>Nothing to show - This community has no media.</span>
+                : null
+          }
         </div>
       </div>
 

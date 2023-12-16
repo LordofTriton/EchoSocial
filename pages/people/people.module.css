@@ -1,3 +1,17 @@
+.peopleNull {
+    width: 100%;
+    display: block;
+    background-color: var(--surface);
+    color: var(--primary);
+    border-radius: 5px;
+    padding: 13px 20px;
+    font-size: 12px;
+    font-weight: 400;
+    opacity: 0.7;
+    font-style: italic;
+    margin-top: 20px;
+}
+
 .peopleHead {
     width: 100%;
     height: fit-content;

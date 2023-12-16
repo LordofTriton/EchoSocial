@@ -8,7 +8,7 @@ import { useRouter } from 'next/router'
 import Link from 'next/link'
 
 import Alert from "../components/alert";
-import CookieService from "../../services/CookieService";
+import CacheService from "../../services/CacheService";
 import APIClient from "../../services/APIClient";
 
 export default function Signup() {
@@ -27,11 +27,16 @@ export default function Signup() {
     const handleSubmit = async (event) => {
         event.preventDefault()
         setSignupLoader(true)
+        if (!isValidData()) return;
 
         if (signupDetails.password.trim() === signupDetails.confirmPassword.trim()) {
             const authResult = (await APIClient.post("/accounts/create-account", signupDetails)).data;
             if (authResult.success) {
-                CookieService.saveData("EchoActiveUser", authResult.data)
+                localStorage.clear()
+                localStorage.setItem("EchoTheme", authResult.data.dark)
+                CacheService.saveData("EchoActiveUser", authResult.data)
+                CacheService.saveData("EchoUserToken", authResult.data.accessToken)
+
                 router.push("/nodes")
             }
             else {
@@ -43,6 +48,15 @@ export default function Signup() {
         }
 
         setSignupLoader(false)
+    }
+
+    const isValidData = () => {
+        if (signupDetails.firstName.trim().length < 2) return false;
+        if (signupDetails.lastName.trim().length < 2) return false;
+        if (signupDetails.email.trim().length < 2) return false;
+        if (signupDetails.password.trim().length < 6) return false;
+        if (signupDetails.password !== signupDetails.confirmPassword) return false;
+        return true;
     }
 
     return (
@@ -69,12 +83,21 @@ export default function Signup() {
                     <div>
                         <form onSubmit={handleSubmit}>
                             <input type="text" className={styles.signupFormField} placeholder="First Name" value={signupDetails.firstName} onChange={(e) => setSignupDetails({...signupDetails, firstName: e.target.value.trim()})} style={{backgroundImage: `url(/images/icons/user1.png)`, float: "left"}} required/>
-                            <input type="text" className={styles.signupFormField} placeholder="Last Name" value={signupDetails.lastName} onChange={(e) => setSignupDetails({...signupDetails, lastName: e.target.value.trim()})} style={{backgroundImage: `url(/images/icons/user1.png)`, float: "right"}} required/>
-                            <input type="text" className={styles.signupFormField} placeholder="Email Address" value={signupDetails.email} onChange={(e) => setSignupDetails({...signupDetails, email: e.target.value.trim()})} style={{backgroundImage: `url(/images/icons/email.png)`}} required/>
-                            <input type="password" className={styles.signupFormField} placeholder="Password" value={signupDetails.password} onChange={(e) => setSignupDetails({...signupDetails, password: e.target.value.trim()})} style={{backgroundImage: `url(/images/icons/password.png)`, float: "left"}} required/>
-                            <input type="password" className={styles.signupFormField} placeholder="Confirm Password" value={signupDetails.confirmPassword} onChange={(e) => setSignupDetails({...signupDetails, confirmPassword: e.target.value.trim()})} style={{backgroundImage: `url(/images/icons/password.png)`, float: "right"}} required/>
+                            {signupDetails.firstName && signupDetails.firstName.trim().length < 3 ? <span className={styles.formErrorMessage}>First Name must be more than 2 letters.</span> : null}
 
-                            <button className={styles.signupFormSubmit}>{ 
+                            <input type="text" className={styles.signupFormField} placeholder="Last Name" value={signupDetails.lastName} onChange={(e) => setSignupDetails({...signupDetails, lastName: e.target.value.trim()})} style={{backgroundImage: `url(/images/icons/user1.png)`, float: "right"}} required/>
+                            {signupDetails.lastName && signupDetails.lastName.trim().length < 3 ? <span className={styles.formErrorMessage}>Last Name must be more than 2 letters.</span> : null}
+
+                            <input type="email" className={styles.signupFormField} placeholder="Email Address" value={signupDetails.email} onChange={(e) => setSignupDetails({...signupDetails, email: e.target.value.trim()})} style={{backgroundImage: `url(/images/icons/email.png)`}} required/>
+                            {signupDetails.email && (signupDetails.email.trim().length < 3 || !signupDetails.email.includes("@")) ? <span className={styles.formErrorMessage}>Please enter a valid email.</span> : null}
+
+                            <input type="password" className={styles.signupFormField} placeholder="Password (at least six characters)" value={signupDetails.password} onChange={(e) => setSignupDetails({...signupDetails, password: e.target.value.trim()})} style={{backgroundImage: `url(/images/icons/password.png)`, float: "left"}} required/>
+                            {signupDetails.password && signupDetails.password.trim().length < 6 ? <span className={styles.formErrorMessage}>Password must be at least 6 characters.</span> : null}
+
+                            <input type="password" className={styles.signupFormField} placeholder="Confirm Password (same as above)" value={signupDetails.confirmPassword} onChange={(e) => setSignupDetails({...signupDetails, confirmPassword: e.target.value.trim()})} style={{backgroundImage: `url(/images/icons/password.png)`, float: "right"}} required/>
+                            {signupDetails.confirmPassword && signupDetails.password !== signupDetails.confirmPassword ? <span className={styles.formErrorMessage}>Passwords don't match.</span> : null}
+
+                            <button className={styles.signupFormSubmit} style={{opacity: isValidData() ? "1" : "0.5"}}>{ 
                                 signupLoader ? <center><div className="loader" style={{width: "30px", height: "30px"}}></div></center> : "SIGN UP" 
                             }</button>
                             <span className={styles.signupLogIn}>Already have an account? <Link href="/login"><span>Sign In</span></Link>!</span>

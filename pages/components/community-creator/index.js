@@ -45,6 +45,13 @@ export default function CommunityCreator({toggle, control, page}) {
         }, createdCommunity)
     }
 
+    const isValidData = () => {
+        if (communityName.trim().length < 3) return false;
+        if (communityNodes.length < 1) return false;
+        if (communityDesc.trim().length < 10) return false;
+        return true;
+    }
+
     return (
         <>
         <div className="modalOverlay" style={{display: toggle ? "block" : "none"}} onClick={() => control(false)}></div>
@@ -60,6 +67,8 @@ export default function CommunityCreator({toggle, control, page}) {
                 value={communityName} 
                 onChange={(e) => setCommunityName(e.target.value)}
                 placeholder="A unique name for your community." 
+                isValid={(value) => value.trim().length > 3}
+                error="Community name must be more than 3 letters."
             />
 
             <Form.SelectMultipleInput
@@ -71,11 +80,13 @@ export default function CommunityCreator({toggle, control, page}) {
             /> 
 
             <Form.AreaInput
-                label="Content" 
+                label="Description" 
                 style={{width: "100%", marginBottom: "20px", backgroundColor: "var(--surface)"}} 
                 value={communityDesc} 
                 onChange={(e) => setCommunityDesc(e.target.value)}
                 placeholder="What's your community about?"
+                isValid={(value) => value.trim().length > 10}
+                error="Community description must be more than 10 letters."
             />
             
             <Form.SelectSingleInput
@@ -89,7 +100,7 @@ export default function CommunityCreator({toggle, control, page}) {
                 ]}
             />
 
-            <Form.Submit text="CREATE" onClick={() => createCommunity()} loader={createCommunityLoader} />
+            <Form.Submit text="CREATE" onClick={() => createCommunity()} loader={createCommunityLoader} disabled={!isValidData()} />
         </div>
         </>
     )

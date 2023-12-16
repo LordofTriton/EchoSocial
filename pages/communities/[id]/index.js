@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from 'next/router'
 import styles from './community.module.css';
 
-import CookieService from '../../../services/CookieService'
+import CacheService from '../../../services/CacheService'
 import Echo from "../../components/echo";
 import APIClient from "../../../services/APIClient";
 import SVGServer from "../../../services/svg/svgServer";
@@ -14,7 +14,6 @@ import DateGenerator from '../../../services/generators/DateGenerator';
 import DuoMasonryLayout from '../../components/masonry/duo-masonry';
 import CommunityHead from '../../components/community-head';
 import useDataStates from '../../hooks/useDataStates';
-import CacheService from '../../../services/CacheService';
 import AccessBlocker from '../../components/access-blocker';
 import Helpers from '../../../util/Helpers';
 
@@ -22,7 +21,7 @@ export default function Community() {
   const router = useRouter()
   const {modalStates, modalControl} = useModalStates()
   const {socket, socketMethods} = useSocketContext()
-  const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
+  const [activeUser, setActiveUser] = useState(CacheService.getData("EchoActiveUser"))
   const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
   const [communityData, setCommunityData] = useState(null)
   const [alert, setAlert] = useState(null)
@@ -43,7 +42,6 @@ export default function Community() {
     setCommunityMediaEchoes([])
     setCommunityMembers([])
     const updateCommunityData = (data) => {
-      console.log(data.data)
       if (data.success) setCommunityData(data.data)
     };
     const showEcho = (data) => data.success ? modalControl.setShowEchoViewer(data.data) : null
@@ -86,7 +84,7 @@ export default function Community() {
           accountID: activeUser.accountID,
           communityID: router.query.id,
           page: 1,
-          pageSize: 10
+          pageSize: 12
         }, updateCommunityMembers)
       }
       if (communityMediaEchoes.length < 1) {
@@ -115,7 +113,7 @@ export default function Community() {
         communityNode: communityData.node
     } : null,
     router,
-    cookies: CookieService,
+    cookies: CacheService,
     cache: CacheService,
     activeUser,
     setActiveUser,

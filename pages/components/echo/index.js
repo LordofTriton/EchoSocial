@@ -109,11 +109,11 @@ export default function Echo({ data, page, fullText=false, saved=false }) {
                     </>
                 }
                 {
-                    echoData.accountID === page.activeUser.accountID ?
+                    echoData.accountID === page.activeUser.accountID && echoData.nodes.length > 0 ?
                     <div className={styles.echoHeadOptionIcon}>
                         <SVGServer.OptionIcon color="var(--secondary)" width="25px" height="25px" />
                         <div className={styles.echoHeadOptionBox}>
-                            <span className={styles.echoHeadOption} onClick={() => page.setShowEchoCreator(echoData)}>Edit Post</span>
+                            { echoData.communityID && !page.community ? null : <span className={styles.echoHeadOption} onClick={() => page.setShowEchoCreator(echoData)}>Edit Post</span> }
                             <span className={styles.echoHeadOption} onClick={() => handleDeleteEcho()}>Delete Post</span>
                         </div>
                     </div> : null

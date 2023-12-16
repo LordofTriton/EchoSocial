@@ -1,14 +1,18 @@
 import { useEffect, useState } from 'react';
 import io from 'socket.io-client';
-import CookieService from '../../services/CookieService';
 import CacheService from '../../services/CacheService';
 
 let socketInstance = null;
 let socketURL = "/api/socket";
 
-function currentUser() {
-    const account = CookieService.getData("EchoActiveUser");
-    return account;
+function getAccountID() {
+    const account = CacheService.getData("EchoActiveUser");
+    return account ? account.accountID : null;
+}
+
+function getToken() {
+    const token = CacheService.getData("EchoUserToken");
+    return token ? token : null;
 }
 
 const useSocket = () => {
@@ -26,7 +30,7 @@ const useSocket = () => {
             socketInstance.on('connect', () => {
                 console.log('Socket connected.');
 
-                socketInstance.emit("USER_CONNECT", currentUser().accountID);
+                socketInstance.emit("USER_CONNECT", getAccountID());
 
                 setSocket(socketInstance);
             });
@@ -46,7 +50,7 @@ const useSocket = () => {
 
     const socketRequest = (event, params, callback) => {
         if (!socketInstance) return;
-        const payload = { ...params, accountID: currentUser().accountID, accessToken: currentUser().accessToken }
+        const payload = { ...params, accountID: getAccountID(), accessToken: getToken() }
 
         const cachedResponse = CacheService.getData(`${event}_${JSON.stringify(params)}`)
         if (cachedResponse) callback(JSON.parse(cachedResponse))
@@ -62,7 +66,7 @@ const useSocket = () => {
     
     const socketEmitter = (event, data) => {
         if (!socketInstance) return;
-        const payload = { ...data, accountID: currentUser().accountID, accessToken: currentUser().accessToken }
+        const payload = { ...data, accountID: getAccountID(), accessToken: getToken() }
         socketInstance.emit(event, JSON.stringify(payload))
     }
     

@@ -2,7 +2,6 @@ import Head from 'next/head'
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 
-import CookieService from '../services/CookieService'
 import CacheService from '../services/CacheService'
 import styles from '../styles/index.module.css'
 import APIClient from '../services/APIClient';
@@ -16,7 +15,7 @@ import SVGServer from '../services/svg/svgServer'
 
 export default function Home() {
   const router = useRouter()
-  const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
+  const [activeUser, setActiveUser] = useState(CacheService.getData("EchoActiveUser"))
   const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
   const [alert, setAlert] = useState(null)
   const {modalStates, modalControl} = useModalStates()
@@ -78,7 +77,7 @@ export default function Home() {
   const pageControl = {
     title: "Feed",
     router,
-    cookies: CookieService,
+    cookies: CacheService,
     cache: CacheService,
     activeUser,
     setActiveUser,

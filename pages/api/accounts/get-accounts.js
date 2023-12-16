@@ -43,7 +43,8 @@ export default async function GetAccounts(params, io) {
             $or: []
         }
         if (params.friends === true) filters.accountID = { $in: friendsList }
-        else if (params.friends === false) filters.accountID = { $nin: friendsList, $ne: params.accountID }
+        if (params.friends === false) filters.accountID = { $nin: friendsList, $ne: params.accountID }
+        
         if (params.filter) {
             filters.$or.push({ firstName: { $regex: params.filter, $options: 'i' } })
             filters.$or.push({ lastName: { $regex: params.filter, $options: 'i' } })

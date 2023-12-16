@@ -14,10 +14,7 @@ function textLimiter(text, limit, fullText) {
 }
 
 function clearUserData() {
-    localStorage.removeItem("EchoActiveUser")
-    localStorage.removeItem("EchoFeedEchoFeed")
-    localStorage.removeItem("EchoMessengerFriends")
-    localStorage.removeItem("EchoRecentCommunities")
+    localStorage.clear()
 }
 
 function setPaginatedState(data, setState, pagination, identifier, concat=true) {

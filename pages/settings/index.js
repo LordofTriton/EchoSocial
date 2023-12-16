@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import styles from "./settings.module.css"
 import { useRouter } from 'next/router'
 
-import CookieService from '../../services/CookieService'
+import CacheService from '../../services/CacheService'
 import Modals from '../components/modals';
 import SVGServer from '../../services/svg/svgServer'
 import APIClient from "../../services/APIClient";
@@ -12,11 +12,10 @@ import useModalStates from '../hooks/useModalStates'
 import { useSocketContext } from '../../util/SocketProvider'
 import { nickDict } from '../../services/generators/NIckGenerator'
 import useDataStates from '../hooks/useDataStates'
-import CacheService from '../../services/CacheService'
 
 export default function ProfileSettings() {
     const router = useRouter()
-    const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
+    const [activeUser, setActiveUser] = useState(CacheService.getData("EchoActiveUser"))
     const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
     const [userAccount, setUserAccount] = useState(activeUser)
     const [updatedData, setUpdatedData] = useState({
@@ -51,7 +50,7 @@ export default function ProfileSettings() {
         const getAccount = (data) => {
             if (data.success) {
                 setUserAccount(data.data)
-                setUpdatedData({...updatedData, ...data.data})
+                setUpdatedData(data.data)
             }
         }
         if (activeUser.accountID) {
@@ -62,8 +61,9 @@ export default function ProfileSettings() {
     const handleSubmit = async () => {
         if (socket) socketMethods.socketEmitter("UPDATE_ACCOUNT", updatedData)
         createAlert("success", "Settings updated successfully.")
-        setActiveUser({...activeUser, ...updatedData})
-        CookieService.saveData("EchoActiveUser", {...activeUser, ...updatedData})
+        const data = {...activeUser, ...updatedData};
+        setActiveUser(data)
+        CacheService.saveData("EchoActiveUser", data)
     }
 
     const handleRevert = () => {
@@ -73,7 +73,7 @@ export default function ProfileSettings() {
     const pageControl = {
         title: "Settings",
         router,
-        cookies: CookieService,
+        cookies: CacheService,
         cache: CacheService,
         activeUser,
         setActiveUser,
@@ -85,6 +85,20 @@ export default function ProfileSettings() {
         createAlert,
         ...modalStates,
         ...modalControl,
+    }
+
+    const isValidData = () => {
+        if (!updatedData.firstName || updatedData.firstName.trim().length < 3) return false;
+        if (!updatedData.lastName || updatedData.lastName.trim().length < 3) return false;
+        if (updatedData.nickname && (updatedData.nickname.trim().length < 3 || updatedData.nickname.trim().length > 15)) return false;
+        if (!updatedData.email || updatedData.email.trim().length < 3 || !updatedData.email.includes("@")) return false;
+        if (updatedData.phone && updatedData.phone.trim().length !== 11) return false;
+        if (updatedData.bio && updatedData.bio.trim().length < 6) return false;
+        if (updatedData.occupation && updatedData.occupation.trim().length < 3) return false;
+        if (updatedData.fSocial && (updatedData.fSocial.trim().length < 6 || !updatedData.fSocial.includes("http"))) return false;
+        if (updatedData.iSocial && (updatedData.iSocial.trim().length < 6 || !updatedData.iSocial.includes("http"))) return false;
+        if (updatedData.tSocial && (updatedData.tSocial.trim().length < 6 || !updatedData.tSocial.includes("http"))) return false;
+        return true;
     }
 
     return (
@@ -113,7 +127,7 @@ export default function ProfileSettings() {
                                     <span className={styles.settingsBodySubNavButton} style={{ color: "var(--accent)" }} onClick={() => router.push("/settings")}>Profile Info</span>
                                     <span className={styles.settingsBodySubNavButton} onClick={() => router.push("/settings/preferences")}>Preferences</span>
                                     <span className={styles.settingsBodySubNavButton} onClick={() => router.push("/settings/nodes")}>Nodes</span>
-                                    <span className={styles.settingsBodySubNavButton} onClick={() => router.push("/settings/cp")}>Change/Reset Password</span>
+                                    <span className={styles.settingsBodySubNavButton} onClick={() => router.push("/settings/change-password")}>Change/Reset Password</span>
                                 </> : null
                         }
                         <div className={styles.settingsBodyNavButton} onClick={() => router.push("/settings/privacy")}>
@@ -147,12 +161,16 @@ export default function ProfileSettings() {
                                         style={{ float: "left", marginBottom: "20px" }}
                                         value={updatedData.firstName}
                                         onChange={(e) => setUpdatedData({ ...updatedData, firstName: e.target.value })}
+                                        isValid={(value) => value.trim().length > 2}
+                                        error="First Name must be more than 2 characters."
                                     />
                                     <Form.TextInput
                                         label="Last Name"
                                         style={{ float: "right", marginBottom: "20px" }}
                                         value={updatedData.lastName}
                                         onChange={(e) => setUpdatedData({ ...updatedData, lastName: e.target.value })}
+                                        isValid={(value) => value.trim().length > 2}
+                                        error="Last Name must be more than 2 characters."
                                     />
                                     <Form.TextInput
                                         label="Nickname"
@@ -160,16 +178,21 @@ export default function ProfileSettings() {
                                         value={updatedData.nickname}
                                         onChange={(e) => setUpdatedData({ ...updatedData, nickname: e.target.value })}
                                         placeholder="A fun nickname for yourself."
+                                        isValid={(value) => value.trim().length > 2 && value.trim().length < 16}
+                                        error="Nickname must be more than 2 characters and less than 16 characters."
                                     />
                                     <Form.TextInput
                                         label="Email"
+                                        type="email"
                                         style={{ float: "left", marginBottom: "20px" }}
                                         value={updatedData.email}
                                         onChange={(e) => setUpdatedData({ ...updatedData, email: e.target.value })}
+                                        isValid={(value) => value.trim().length > 3 && value.includes("@")}
+                                        error="Please use a valid email."
                                     />
                                     <Form.SelectSingleInput
                                         label="Gender"
-                                        style={{ float: "right", marginBottom: "20px" }}
+                                        style={{ float: "right" }}
                                         value={updatedData.gender}
                                         setValue={(value) => setUpdatedData({ ...updatedData, gender: value })}
                                         options={[
@@ -190,14 +213,17 @@ export default function ProfileSettings() {
                                 <Form.ThirdWrapper>
                                     <Form.TextInput
                                         label="Phone"
-                                        style={{ float: "left", marginBottom: "20px" }}
+                                        type="tel"
+                                        style={{ float: "left" }}
                                         value={updatedData.phone}
                                         onChange={(e) => setUpdatedData({ ...updatedData, phone: e.target.value })}
                                         placeholder="Your phone number."
+                                        isValid={(value) => value.trim().length === 11}
+                                        error="Please use a valid 11 digit phone number."
                                     />
                                     <Form.SelectSingleInput
                                         label="Country"
-                                        style={{ float: "left", marginBottom: "20px" }}
+                                        style={{ float: "left" }}
                                         value={updatedData.country}
                                         setValue={(value) => setUpdatedData({ ...updatedData, country: value })}
                                         options={[
@@ -209,7 +235,7 @@ export default function ProfileSettings() {
                                     />
                                     <Form.SelectSingleInput
                                         label="City"
-                                        style={{ float: "right", marginBottom: "20px" }}
+                                        style={{ float: "right" }}
                                         value={updatedData.city}
                                         setValue={(value) => setUpdatedData({ ...updatedData, city: value })}
                                         options={[
@@ -228,6 +254,8 @@ export default function ProfileSettings() {
                                         value={updatedData.bio}
                                         onChange={(e) => setUpdatedData({ ...updatedData, bio: e.target.value })}
                                         placeholder="A few words about you."
+                                        isValid={(value) => value.trim().length > 6}
+                                        error="Bio must be more than 5 characters."
                                     />
                                     <Form.TextInput
                                         label="Occupation"
@@ -235,10 +263,12 @@ export default function ProfileSettings() {
                                         value={updatedData.occupation}
                                         onChange={(e) => setUpdatedData({ ...updatedData, occupation: e.target.value })}
                                         placeholder="What do you do?"
+                                        isValid={(value) => value.trim().length > 3}
+                                        error="Occupation must be more than 3 characters."
                                     />
                                     <Form.SelectSingleInput
                                         label="Marital Status"
-                                        style={{ float: "right", marginBottom: "20px" }}
+                                        style={{ float: "right" }}
                                         value={updatedData.maritalStatus}
                                         setValue={(value) => setUpdatedData({ ...updatedData, maritalStatus: value })}
                                         options={[
@@ -257,6 +287,8 @@ export default function ProfileSettings() {
                                         value={updatedData.fSocial}
                                         onChange={(e) => setUpdatedData({ ...updatedData, fSocial: e.target.value })}
                                         placeholder="Link your Facebook page."
+                                        isValid={(value) => value.trim().length > 6 && value.inludes("http")}
+                                        error="Please use a valid url."
                                     />
                                     <Form.TextInput
                                         label="X"
@@ -264,6 +296,8 @@ export default function ProfileSettings() {
                                         value={updatedData.tSocial}
                                         onChange={(e) => setUpdatedData({ ...updatedData, tSocial: e.target.value })}
                                         placeholder="Link your X page."
+                                        isValid={(value) => value.trim().length > 6 && value.inludes("http")}
+                                        error="Please use a valid url."
                                     />
                                     <Form.TextInput
                                         label="Instagram"
@@ -271,12 +305,14 @@ export default function ProfileSettings() {
                                         value={updatedData.iSocial}
                                         onChange={(e) => setUpdatedData({ ...updatedData, iSocial: e.target.value })}
                                         placeholder="Link your Instagram page."
+                                        isValid={(value) => value.trim().length > 6 && value.inludes("http")}
+                                        error="Please use a valid url."
                                     />
                                 </Form.FullWrapper>
 
                                 <div className={styles.formContainerFormButtons}>
                                     <button className={styles.formContainerFormRevertHalf} onClick={() => handleRevert()}>Revert Changes</button>
-                                    <button className={styles.formContainerFormSubmitHalf} onClick={() => handleSubmit()}>Save Changes</button>
+                                    <button className={styles.formContainerFormSubmitHalf} style={{opacity: isValidData() ? "1" : "0.5"}} onClick={() => isValidData() ? handleSubmit() : null}>Save Changes</button>
                                 </div>
                             </div>
                         </div>

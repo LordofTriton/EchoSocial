@@ -8,7 +8,7 @@ import Link from 'next/link';
 
 import Alert from "../components/alert";
 import LogoSplash from '../components/logo-splash';
-import CookieService from "../../services/CookieService";
+import CacheService from "../../services/CacheService";
 import APIClient from "../../services/APIClient";
 import { Form } from '../components/form';
 
@@ -37,7 +37,8 @@ export default function Login() {
             if (authResult.success) {
                 localStorage.clear()
                 localStorage.setItem("EchoTheme", authResult.data.dark)
-                CookieService.saveData("EchoActiveUser", authResult.data)
+                CacheService.saveData("EchoActiveUser", authResult.data)
+                CacheService.saveData("EchoUserToken", authResult.data.accessToken)
 
                 document.location = "/"
             }

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from 'next/router'
 import styles from '../community.module.css';
 
-import CookieService from '../../../../services/CookieService'
+import CacheService from '../../../../services/CacheService'
 import Echo from "../../../components/echo";
 import APIClient from "../../../../services/APIClient";
 import SVGServer from "../../../../services/svg/svgServer";
@@ -15,12 +15,11 @@ import DateGenerator from '../../../../services/generators/DateGenerator';
 import DuoMasonryLayout from '../../../components/masonry/duo-masonry';
 import { Form } from '../../../components/form';
 import CommunityHead from '../../../components/community-head';
-import CacheService from '../../../../services/CacheService';
 
 export default function CommunitySettings() {
   const router = useRouter()
   const {modalStates, modalControl} = useModalStates()
-  const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
+  const [activeUser, setActiveUser] = useState(CacheService.getData("EchoActiveUser"))
   const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
   const [communityData, setCommunityData] = useState(null)
   const [updatedCommunityData, setUpdatedCommunityData] = useState({
@@ -73,7 +72,7 @@ export default function CommunitySettings() {
       communityNode: communityData.node
     } : null,
     router,
-    cookies: CookieService,
+    cookies: CacheService,
     cache: CacheService,
     activeUser,
     setActiveUser,
@@ -94,6 +93,13 @@ export default function CommunitySettings() {
       ...updatedCommunityData
     })
     createAlert("success", "Updated community succesfully.")
+  }
+
+  const isValidData = () => {
+    if (communityData.displayName.length < 4) return false;
+    if (communityData.displayName.length < 4) return false;
+    if (communityData.displayName.length < 4) return false;
+    if (communityData.displayName.length < 4) return false;
   }
 
   return (
@@ -129,6 +135,8 @@ export default function CommunitySettings() {
                     style={{ float: "left", marginBottom: "20px" }}
                     value={updatedCommunityData.displayName}
                     onChange={(e) => setUpdatedCommunityData({ ...updatedCommunityData, displayName: e.target.value })}
+                    isValid={(value) => value.trim().length > 4}
+                    error="Community name must be at least 4 characters."
                   />
                   <Form.AreaInput
                     label="Description"
@@ -136,6 +144,8 @@ export default function CommunitySettings() {
                     value={updatedCommunityData.description}
                     onChange={(e) => setUpdatedCommunityData({ ...updatedCommunityData, description: e.target.value })}
                     placeholder="A brief description of this community."
+                    isValid={(value) => value.trim().length > 10}
+                    error="Community description must be at least 10 characters."
                   />
                   <Form.SelectSingleInput
                     label="Privacy"
@@ -156,6 +166,8 @@ export default function CommunitySettings() {
                     value={updatedCommunityData.website}
                     onChange={(e) => setUpdatedCommunityData({ ...updatedCommunityData, website: e.target.value })}
                     placeholder="The communitiy's official website."
+                    isValid={(value) => value.trim().length > 4 && value.includes(".")}
+                    error="Please use a valid webiste."
                   />
                   <Form.SelectSingleInput
                     label="Country"

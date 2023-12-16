@@ -18,6 +18,6 @@ function deleteData(key) {
     if (key) Cookies.remove(key);
 }
 
-const CookieService = { saveData, getData, deleteData }
+const CacheService = { saveData, getData, deleteData }
 
-export default CookieService;
+export default CacheService;

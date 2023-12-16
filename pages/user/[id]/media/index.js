@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from 'next/router'
 import styles from '../user.module.css';
 
-import CookieService from '../../../../services/CookieService'
+import CacheService from '../../../../services/CacheService'
 import APIClient from "../../../../services/APIClient";
 import SVGServer from "../../../../services/svg/svgServer";
 import Modals from '../../../components/modals';
@@ -14,7 +14,6 @@ import Echo from '../../../components/echo';
 import Helpers from '../../../../util/Helpers';
 import UserHead from '../../../components/user-head';
 import useDataStates from '../../../hooks/useDataStates';
-import CacheService from '../../../../services/CacheService';
 
 function VideoMedia({ source, callback }) {
     const handleClick = () => {
@@ -29,7 +28,7 @@ export default function UserMedia() {
     const router = useRouter()
     const {modalStates, modalControl} = useModalStates()
     const {socket, socketMethods} = useSocketContext()
-    const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
+    const [activeUser, setActiveUser] = useState(CacheService.getData("EchoActiveUser"))
     const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
     const [userData, setUserData] = useState(null)
     const [alert, setAlert] = useState(null)
@@ -92,7 +91,7 @@ export default function UserMedia() {
     const pageControl = {
         title: userData ? `${userData.firstName} ${userData.lastName}` : "User",
         router,
-        cookies: CookieService,
+        cookies: CacheService,
         cache: CacheService,
         activeUser,
         setActiveUser,
@@ -133,26 +132,30 @@ export default function UserMedia() {
                     <div className={styles.userTimelineFeedHead}>
                         <span className={styles.userTimelineFeedHeadTitle}>{router.query.id === activeUser.accountID ? "Your " : userData ? `${userData.firstName}'s ` : ""}Photos & Videos</span>
                     </div>
-                    <TriMasonryLayout blocks={
+                    {
                         userMediaEchoes.length > 0 ?
-                        userMediaEchoes.map((echo) => 
-                            echo.content.media.map((media, index) => 
-                                <>
-                                { Helpers.getFileType(media.url) === "image" ? <div className={styles.userMediaItem}><img className={styles.userMediaImage} src={media.url} onClick={() => modalControl.setShowEchoViewer(echo)} alt="media" /></div> : null }
-                                { Helpers.getFileType(media.url) === "video" ? 
-                                    <div className={styles.userMediaItem}>
-                                    <VideoMedia source={media.url} callback={() => modalControl.setShowEchoViewer(echo)} />
-                                    <div className={styles.userMediaVideoOverlay}>
-                                        <span>
-                                            <SVGServer.PlayIcon color="var(--primary)" width="50px" height="50px" />
-                                        </span>
-                                    </div>
-                                    </div> : null 
-                                }
-                                </>
-                            )
-                        ) : null
-                    } />
+                        <TriMasonryLayout blocks={
+                            userMediaEchoes.length > 0 ?
+                            userMediaEchoes.map((echo) => 
+                                echo.content.media.map((media, index) => 
+                                    <>
+                                    { Helpers.getFileType(media.url) === "image" ? <div className={styles.userMediaItem}><img className={styles.userMediaImage} src={media.url} onClick={() => modalControl.setShowEchoViewer(echo)} alt="media" /></div> : null }
+                                    { Helpers.getFileType(media.url) === "video" ? 
+                                        <div className={styles.userMediaItem}>
+                                        <VideoMedia source={media.url} callback={() => modalControl.setShowEchoViewer(echo)} />
+                                        <div className={styles.userMediaVideoOverlay}>
+                                            <span>
+                                                <SVGServer.PlayIcon color="var(--primary)" width="50px" height="50px" />
+                                            </span>
+                                        </div>
+                                        </div> : null 
+                                    }
+                                    </>
+                                )
+                            ) : null
+                        } />
+                        : <span className={styles.userNull}>Nothing to show - {router.query.id === activeUser.accountID ? 'You have' : 'This user has'} no pictures or videos{router.query.id !== activeUser.accountID ? ' you can see' : ''}.</span>
+                    }
                     
                     {echoLoader ?
                         <div className="loader" style={{

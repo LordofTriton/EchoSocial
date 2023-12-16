@@ -34,6 +34,17 @@ export default function NodeCreator({toggle, control, page}) {
         }, createdNode)
     }
 
+    function containsSingleEmoji(inputString) {
+        const emojiRegex = /^[^\p{L}\p{N}\p{P}\p{Z}]{1}$/u;
+        return emojiRegex.test(inputString);
+    }
+
+    const isValidData = () => {
+        if (!containsSingleEmoji(newNode.emoji)) return false;
+        if (newNode.name.trim().length <= 3) return false;
+        return true;
+    }
+
     return (
         <>
         <div className="modalOverlay" style={{display: toggle ? "block" : "none"}} onClick={() => control(false)}></div>
@@ -47,7 +58,9 @@ export default function NodeCreator({toggle, control, page}) {
                 label="Emoji (Optional)" 
                 style={{width: "100%", float: "left", marginBottom: "20px", backgroundColor: "var(--surface)"}} 
                 value={newNode.emoji} 
-                onChange={(e) => setNewNode({...newNode, emoji: e.target.value })} 
+                onChange={(e) => setNewNode({...newNode, emoji: e.target.value })}
+                isValid={(value) => containsSingleEmoji(value)}
+                error="Please use a valid emoji."
             />
 
             <Form.TextInput 
@@ -55,8 +68,10 @@ export default function NodeCreator({toggle, control, page}) {
                 style={{width: "100%", float: "left", marginBottom: "20px", backgroundColor: "var(--surface)"}} 
                 value={newNode.name} 
                 onChange={(e) => setNewNode({...newNode, name: e.target.value })} 
+                isValid={(value) => value.trim().length > 3}
+                error="Node name must be more than 3 characters."
             />
-            <Form.Submit text="CREATE" onClick={() => createNode()} loader={createNodeLoader} />
+            <Form.Submit text="CREATE" onClick={() => createNode()} loader={createNodeLoader} disabled={!isValidData()} />
         </div>
         </>
     )

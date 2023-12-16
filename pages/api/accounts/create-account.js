@@ -113,7 +113,8 @@ export default async (request, response) => {
                 lastLogin: accountData.lastLogin,
                 lastActive: accountData.lastActive,
                 userStatus: accountData.userStatus,
-                isVerified: accountData.isVerified
+                isVerified: accountData.isVerified,
+                accessToken: accountData.access.token
             },
             message: "Account created successfully."
         })

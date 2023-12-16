@@ -2,15 +2,18 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import '../styles/globals.css'
 
-import CookieService from '../services/CookieService';
+import CacheService from '../services/CacheService';
 import { SocketProvider } from '../util/SocketProvider';
+import Helpers from '../util/Helpers';
+import DateGenerator from '../services/generators/DateGenerator';
+import ScrollTop from './hooks/useScrollTop';
 
 const authLess = ["/login", "/signup", "/password-reset"]
 
 export default function MyApp({ Component, pageProps }) {
   const router = useRouter()
   const [showChild, setShowChild] = useState(0);
-  const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
+  const [activeUser, setActiveUser] = useState()
 
   useEffect(() => {
     setShowChild(1);
@@ -22,10 +25,15 @@ export default function MyApp({ Component, pageProps }) {
         document.location = "http://13.53.39.114"
         return;
       }
-      const user = CookieService.getData("EchoActiveUser")
-      if (!user.accountID && !authLess.includes(router.route)) router.push("/login")
-      if (user.nodes && user.nodes.length < 3 && !authLess.includes(router.route)) router.push("/nodes")
-      setActiveUser(user)
+      const user = CacheService.getData("EchoActiveUser")
+      if (!user) {
+        if (!authLess.includes(router.route)) router.push("/login");
+      }
+      else {
+        if (DateGenerator.hoursBetween(Date.now(), user.lastLogin) > 24) router.push("/login")
+        if (user.nodes && user.nodes.length < 3 && !authLess.includes(router.route)) router.push("/nodes")
+        setActiveUser(user)
+      }
     }
     if (!activeUser || !activeUser.accountID) setTimeout(() => setShowChild(showChild + 1), 1000)
   }, [typeof window, showChild])
@@ -40,11 +48,13 @@ export default function MyApp({ Component, pageProps }) {
     return ( 
       <div className="app-container">
         { 
-          activeUser.accountID || authLess.includes(router.route) ? 
+          activeUser && activeUser.accountID ? 
             <SocketProvider>
+              <ScrollTop />
               <Component {...pageProps} /> 
             </SocketProvider>
-          : null 
+          : 
+            <Component {...pageProps} />
         }
       </div> 
     );

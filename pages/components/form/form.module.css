@@ -15,6 +15,14 @@
     display: block;
 }
 
+.formErrorMessage {
+    display: inline-block;
+    color: red;
+    font-size: 10px;
+    font-weight: 400;
+    margin-left: 5px;
+}
+
 .formTextInputFieldInput {
     width: 100%;
     height: 20px;
@@ -25,7 +33,8 @@
 }
 
 .formSelectInputField {
-    width: 100%; 
+    width: 100%;
+    height: fit-content;
     margin-left: 0px;
     margin-right: 0px;
     background-color: transparent;
@@ -33,6 +42,7 @@
     border-radius: 5px;
     border: 2px solid var(--base);
     position: relative;
+    transition: none;
 }
 
 .formTextAreaFieldInput {
@@ -113,21 +123,24 @@
 .formSelectDropDown {
     width: 100%;
     height: fit-content;
-    position: absolute;
-    top: 100%;
-    left: 0px;
-    background-color: var(--primary);
+    max-height: 400px;
+    background-color: var(--surface);
+    padding: 5px 0px;
     border-radius: 0px 0px 5px 5px;
-    outline: 1px solid var(--base);
-    z-index: 2;
+    border: 2px solid var(--base);
+    border-top: 0px;
+    overflow: hidden;
+    overflow-y: auto;
+    margin-bottom: 20px;
 }
 
 .formSelectOption {
-    color: var(--surface);
+    color: var(--primary);
     font-size: 15px;
     display: block;
     width: 100%;
-    padding: 5px 15px;
+    padding: 9px 15px;
+    font-weight: 600;
     cursor: pointer;
 }
 
@@ -190,6 +203,7 @@
     width: 100%;
     height: fit-content;
     padding: 0px 0px;
+    overflow: hidden;
 }
 
 .formHalfWrapper > div {

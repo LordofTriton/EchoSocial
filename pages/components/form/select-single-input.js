@@ -11,7 +11,7 @@ export default function SelectSingleInput({label, style, value, setValue, option
     }, [])
 
     useEffect(() => {
-        if (!value) setValue(options[0].value)
+        if (!value) setValue(options[0].value);
     })
 
     const handleOptionClick = (option) => {
@@ -20,11 +20,13 @@ export default function SelectSingleInput({label, style, value, setValue, option
     }
 
     return (
-        <div className={styles.formSelectInputField} style={{...style, borderRadius: showDrop ? "5px 5px 0px 0px" : null}}>
-            <span className={styles.formTextInputFieldLabel}>{label}</span>
-            <div className={styles.formSelectSingleSelected} onClick={() => setShowDrop(!showDrop)}>
-                <span className={styles.formSelectSingleSelectedItem}>{value ? value : ""}</span>
-                <span className={styles.formSelectSingleSelectedArrow}><SVGServer.ArrowRight color="var(--primary)" width="20px" height="20px" /></span>
+        <div style={{...style}}>
+            <div className={styles.formSelectInputField} style={{borderRadius: showDrop ? "5px 5px 0px 0px" : null, marginBottom: showDrop ? "0px" : "20px"}}>
+                <span className={styles.formTextInputFieldLabel}>{label}</span>
+                <div className={styles.formSelectSingleSelected} onClick={() => setShowDrop(!showDrop)}>
+                    <span className={styles.formSelectSingleSelectedItem}>{value ? value : ""}</span>
+                    <span className={styles.formSelectSingleSelectedArrow}><SVGServer.ArrowRight color="var(--primary)" width="20px" height="20px" /></span>
+                </div>
             </div>
             {
                 showDrop ?

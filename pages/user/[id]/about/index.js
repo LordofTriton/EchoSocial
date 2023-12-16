@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from 'next/router'
 import styles from '../user.module.css';
 
-import CookieService from '../../../../services/CookieService'
+import CacheService from '../../../../services/CacheService'
 import APIClient from "../../../../services/APIClient";
 import SVGServer from "../../../../services/svg/svgServer";
 import Modals from '../../../components/modals';
@@ -14,13 +14,12 @@ import UserThumb from '../../../components/user-thumb';
 import AppConfig from '../../../../util/config';
 import UserHead from '../../../components/user-head';
 import useDataStates from '../../../hooks/useDataStates';
-import CacheService from '../../../../services/CacheService';
 
 export default function UserAbout() {
     const router = useRouter()
     const {modalStates, modalControl} = useModalStates()
     const {socket, socketMethods} = useSocketContext()
-    const [activeUser, setActiveUser] = useState(CookieService.getData("EchoActiveUser"))
+    const [activeUser, setActiveUser] = useState(CacheService.getData("EchoActiveUser"))
     const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
     const [userData, setUserData] = useState(null)
     const [alert, setAlert] = useState(null)
@@ -47,7 +46,7 @@ export default function UserAbout() {
     const pageControl = {
         title: userData ? `${userData.firstName} ${userData.lastName}` : "User",
         router,
-        cookies: CookieService,
+        cookies: CacheService,
         cache: CacheService,
         activeUser,
         setActiveUser,

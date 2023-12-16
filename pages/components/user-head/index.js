@@ -5,9 +5,12 @@ import APIClient from "../../../services/APIClient";
 import SVGServer from "../../../services/svg/svgServer";
 import AccessBlocker from "../access-blocker";
 import Helpers from "../../../util/Helpers";
+import Loader from "../loader";
 
 export default function UserHead({ data, page, title }) {
     const [userData, setUserData] = useState(data)
+    const [profileLoader, setProfileLoader] = useState(false)
+    const [coverLoader, setCoverLoader] = useState(false)
 
     useEffect(() => {
         setUserData(data)
@@ -15,6 +18,8 @@ export default function UserHead({ data, page, title }) {
 
     const handleUpdateProfileCover = async (e) => {
         e.stopPropagation()
+        setCoverLoader(true)
+
         const formData = new FormData();
         formData.append(`media`, e.target.files[0])
         const uploadedFile = (await APIClient.post("/cloud/upload", formData, { 'Content-Type': "multipart/form-data" })).data;
@@ -24,6 +29,7 @@ export default function UserHead({ data, page, title }) {
         }
         if (userData.profileCover.publicID) await APIClient.del(`/cloud/delete?publicID=${userData.profileCover.publicID}`);
         setUserData({ ...userData, profileCover: uploadedFile.data[0] })
+        setCoverLoader(false)
 
         if (page.socket) page.socketMethods.socketEmitter("UPDATE_ACCOUNT", {
             accountID: page.activeUser.accountID,
@@ -35,6 +41,8 @@ export default function UserHead({ data, page, title }) {
 
     const handleUpdateProfileImage = async (e) => {
         e.stopPropagation()
+        setProfileLoader(true)
+
         const formData = new FormData();
         formData.append(`media`, e.target.files[0])
         const uploadedFile = (await APIClient.post("/cloud/upload", formData, { 'Content-Type': "multipart/form-data" })).data;
@@ -54,6 +62,7 @@ export default function UserHead({ data, page, title }) {
                     echoID: data.data.echoID
                 }
             })
+            setProfileLoader(false)
             page.cookies.saveData("EchoActiveUser", { ...userData, profileImage: updated })
             page.setActiveUser({ ...page.activeUser, profileImage: updated })
             setUserData({ ...userData, profileImage: updated })
@@ -117,8 +126,11 @@ export default function UserHead({ data, page, title }) {
             <div className={styles.userHeadCover} style={{ backgroundImage: userData ? `url(${userData.profileCover.url})` : null }}>
                 {
                     page.router.query.id === page.activeUser.accountID ?
-                    <><label htmlFor="coverSelector" className={styles.userHeadCoverButton}><SVGServer.ImageIcon color="var(--alt)" width="20px" height="20px" /></label>
-                    <input type="file" id="coverSelector" accept="image/*" onChange={(e) => handleUpdateProfileCover(e)} style={{ display: "none" }} multiple />
+                    <>
+                        <label htmlFor="coverSelector" className={styles.userHeadCoverButton}>
+                        { coverLoader ? <Loader size="20px" thickness="3px" color="white" style={{margin: "0px calc(50% - 10px) 0px calc(50% - 10px)"}} /> : <SVGServer.ImageIcon color="white" width="20px" height="20px" /> }
+                        </label>
+                        <input type="file" id="coverSelector" accept="image/*" onChange={(e) => handleUpdateProfileCover(e)} style={{ display: "none" }} multiple />
                     </> : null
                 }
                 <div className={styles.userHeadBar}></div>
@@ -126,8 +138,11 @@ export default function UserHead({ data, page, title }) {
                     <div className={styles.userHeadProfile} style={{ backgroundImage: userData ? `url(${userData.profileImage.url})` : null }} onClick={() => userData.profileImage.echo ? page.setShowMediaViewer(userData.profileImage.echo) : null}>
                         {
                             page.router.query.id === page.activeUser.accountID ?
-                            <><label htmlFor="profileSelector" className={styles.userHeadProfileButton}><SVGServer.CameraIcon color="var(--primary)" width="20px" height="20px" /></label>
-                            <input type="file" id="profileSelector" accept="image/*" onChange={(e) => handleUpdateProfileImage(e)} style={{ display: "none" }} multiple />
+                            <>
+                                <label htmlFor="profileSelector" className={styles.userHeadProfileButton}>
+                                { profileLoader ? <Loader size="20px" thickness="3px" color="var(--primary)" style={{margin: "0px calc(50% - 10px) 0px calc(50% - 10px)"}} /> : <SVGServer.CameraIcon color="var(--primary)" width="20px" height="20px" /> }
+                                </label>
+                                <input type="file" id="profileSelector" accept="image/*" onChange={(e) => handleUpdateProfileImage(e)} style={{ display: "none" }} multiple />
                             </>: null
                         }
                     </div>

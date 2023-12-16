@@ -41,7 +41,11 @@ export default function CommunityThumb({ data, page, member }) {
             <div className={styles.communityThumbProfile} style={{backgroundImage: `url(${data.profileImage.url})`}} onClick={() => page.router.push(`/communities/${data.communityID}`)}></div>
             <span className={styles.communityThumbTitle} onClick={() => page.router.push(`/communities/${data.communityID}`)}>{data.displayName}</span>
             <span className={styles.communityThumbDesc}>{Helpers.textLimiter(data.description, 180)}</span>
-            <span className={styles.communityThumbStat}>{data.memberCount} Member{data.memberCount > 1 ? "s" : ""}<span></span></span>
+            <span className={styles.communityThumbStat}>
+                <span>{data.memberCount}</span> Member{data.memberCount > 1 ? "s" : ""}
+                <br />
+                <span>{data.echoCount}</span> {data.echoCount > 1 ? "Echoes" : "Echo"}
+            </span>
             {
                 member ?
                 <span className={styles.communityThumbJoin} onClick={() => handleClickButton()}>View Community</span> :

@@ -1,21 +1,22 @@
 function saveData(key, value) {
     if (!key || !value) return;
-    localStorage.setItem(key, value)
+    let data = JSON.stringify(value)
+    if (typeof window !== undefined) localStorage.setItem(key, data)
 }
 
 function getData(key) {
-    if (!key) return null;
+    if (!key || typeof window === undefined) return null;
     let data = localStorage.getItem(key)
-    return data ? data : null;  
+    return data ? JSON.parse(data) ? JSON.parse(data) : data : null;
 }
 
 function deleteData(key) {
-    if (!key) localStorage.removeItem(key)
+    if (key && typeof window !== undefined) localStorage.removeItem(key)
     return null;    
 }
 
 function clearData() {
-    localStorage.clear();
+    if (typeof window !== undefined) localStorage.clear();
 }
 
 const CacheService = {
