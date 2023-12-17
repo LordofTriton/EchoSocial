@@ -32,18 +32,16 @@ export default function FeedSettings() {
     }
 
     useEffect(() => {
-        if (socket) {
-            const getSettings = (data) => {
-                if (data.success) {
-                    setUserSettings(data.data)
-                    setUpdatedSettings({...updatedSettings, ...data.data})
-                }
-            }
-            if (activeUser.accountID) {
-                APIClient.get(APIClient.routes.getSettings, { accountID: activeUser.accountID }, getSettings)
+        const getSettings = (data) => {
+            if (data.success) {
+                setUserSettings(data.data)
+                setUpdatedSettings({...updatedSettings, ...data.data})
             }
         }
-    }, [socket])
+        if (activeUser.accountID) {
+            APIClient.get(APIClient.routes.getSettings, { accountID: activeUser.accountID }, getSettings)
+        }
+    }, [])
 
     const handleSubmit = async () => {
         APIClient.post(APIClient.routes.updateSettings, updatedSettings)

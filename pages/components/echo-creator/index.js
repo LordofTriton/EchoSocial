@@ -73,13 +73,13 @@ export default function EchoCreator({toggle, control, page}) {
         const originalMedia = toggle.content.media ? toggle.content.media : []
         const removedMedia = originalMedia.filter((media) => !oldEchoMedia.map((oldMedia) => oldMedia.url).includes(media.url))
         for (let file of removedMedia) {
-            await APIClient.del(`/cloud/delete?publicID=${file.publicID}`);
+            await APIClient.del(APIClient.routes.deleteFile, { publicID: file.publicID });
         }
 
         if (echoMedia.length > 0) {
             const formData = new FormData();
             echoMedia.forEach((file) => { formData.append(`media`, file) });
-            const uploadedFiles = (await APIClient.post("/cloud/upload", formData, {'Content-Type': "multipart/form-data"})).data;
+            const uploadedFiles = (await APIClient.post(APIClient.routes.uploadFile, formData, null, {'Content-Type': "multipart/form-data"})).data;
             if (!uploadedFiles.success) {
                 page.createAlert({type: "error", message: uploadedFiles.message})
                 return;
@@ -109,7 +109,7 @@ export default function EchoCreator({toggle, control, page}) {
         if (echoMedia.length > 0) {
             const formData = new FormData();
             echoMedia.forEach((file) => { formData.append(`media`, file) });
-            const uploadedFiles = (await APIClient.post("/cloud/upload", formData, {'Content-Type': "multipart/form-data"})).data;
+            const uploadedFiles = (await APIClient.post(APIClient.routes.uploadFile, formData, null, {'Content-Type': "multipart/form-data"})).data;
             if (!uploadedFiles.success) {
                 page.createAlert({type: "error", message: uploadedFiles.message})
                 return;

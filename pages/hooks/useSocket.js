@@ -3,7 +3,6 @@ import io from 'socket.io-client';
 import CacheService from '../../services/CacheService';
 
 let eventSource = null;
-let socketURL = "/api/socket";
 
 function getAccountID() {
     const account = CacheService.getData("EchoActiveUser");

@@ -36,7 +36,7 @@ export default function EchoComment({ data, page }) {
     const handleDeleteComment = async () => {
         if (commentData.content.media) {
             const file = commentData.content.media;
-            await APIClient.del(`/cloud/delete?publicID=${file.publicID}`)
+            await APIClient.del(APIClient.routes.deleteFile, { publicID: file.publicID })
         }
 
         APIClient.del(APIClient.routes.deleteComment, { 

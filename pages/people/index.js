@@ -36,23 +36,21 @@ export default function PeopleStrangers() {
 
     const fetchPeople = () => {
         setPeopleLoader(true)
-        if (socket) {
-            const updatePeople = (data) => {
-                if (data.success) {
-                    if (data.data.length > 0) Helpers.setPaginatedState(data.data, searchQuery.length > 0 ? setSearchedPeople : setPeople, data.pagination, "accountID")
-                    else searchQuery.length > 0 ? setSearchedPeople([]) : setPeople([]);
-                    setPagination(data.pagination)
-                }
-                setPeopleLoader(false)
+        const updatePeople = (data) => {
+            if (data.success) {
+                if (data.data.length > 0) Helpers.setPaginatedState(data.data, searchQuery.length > 0 ? setSearchedPeople : setPeople, data.pagination, "accountID")
+                else searchQuery.length > 0 ? setSearchedPeople([]) : setPeople([]);
+                setPagination(data.pagination)
             }
-            APIClient.get(APIClient.routes.getAccounts, {
-                accountID: activeUser.accountID,
-                friends: false,
-                page: peoplePage,
-                pageSize: 10,
-                filter: searchQuery.length ? searchQuery : null
-            }, updatePeople)
+            setPeopleLoader(false)
         }
+        APIClient.get(APIClient.routes.getAccounts, {
+            accountID: activeUser.accountID,
+            friends: false,
+            page: peoplePage,
+            pageSize: 10,
+            filter: searchQuery.length ? searchQuery : null
+        }, updatePeople)
     }
     
     useEffect(() => {

@@ -21,7 +21,7 @@ export default function CommunityHead({ data, page, title }) {
 
         const formData = new FormData();
         formData.append(`media`, e.target.files[0])
-        const uploadedFile = (await APIClient.post("/cloud/upload", formData, { 'Content-Type': "multipart/form-data" })).data;
+        const uploadedFile = (await APIClient.post(APIClient.routes.uploadFile, formData, null, { 'Content-Type': "multipart/form-data" })).data;
         if (!uploadedFile.success) {
             page.createAlert({ type: "error", message: uploadedFile.message })
             return;
@@ -43,7 +43,7 @@ export default function CommunityHead({ data, page, title }) {
 
         const formData = new FormData();
         formData.append(`media`, e.target.files[0])
-        const uploadedFile = (await APIClient.post("/cloud/upload", formData, { 'Content-Type': "multipart/form-data" })).data;
+        const uploadedFile = (await APIClient.post(APIClient.routes.uploadFile, formData, null, { 'Content-Type': "multipart/form-data" })).data;
         if (!uploadedFile.success) {
             page.createAlert({ type: "error", message: uploadedFile.message })
             return;

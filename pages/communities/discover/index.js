@@ -34,24 +34,22 @@ export default function CommunitiesFeed() {
 
     const fetchCommunities = () => {
         setCommunityLoader(true)
-        if (socket) {
-            const updateCommunities = (data) => {
-                if (data.success) {
-                    if (data.data.length > 0) Helpers.setPaginatedState(data.data, searchQuery.length > 0 ? setSearchedCommunities : setCommunities, data.pagination, "communityID")
-                    else searchQuery.length > 0 ? searchedCommunities([]) : setCommunities([])
-                    setPagination(data.pagination)
-                }
-                setCommunityLoader(false)
+        const updateCommunities = (data) => {
+            if (data.success) {
+                if (data.data.length > 0) Helpers.setPaginatedState(data.data, searchQuery.length > 0 ? setSearchedCommunities : setCommunities, data.pagination, "communityID")
+                else searchQuery.length > 0 ? searchedCommunities([]) : setCommunities([])
+                setPagination(data.pagination)
             }
-            APIClient.get(APIClient.routes.getCommunities, {
-                accountID: activeUser.accountID,
-                userID: activeUser.accountID,
-                member: false,
-                page: 1,
-                pageSize: communitiesPage,
-                filter: searchQuery.length ? searchQuery : null
-            }, updateCommunities)
+            setCommunityLoader(false)
         }
+        APIClient.get(APIClient.routes.getCommunities, {
+            accountID: activeUser.accountID,
+            userID: activeUser.accountID,
+            member: false,
+            page: 1,
+            pageSize: communitiesPage,
+            filter: searchQuery.length ? searchQuery : null
+        }, updateCommunities)
     }
     
     useEffect(() => {

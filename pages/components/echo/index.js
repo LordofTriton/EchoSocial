@@ -51,7 +51,7 @@ export default function Echo({ data, page, fullText=false, saved=false }) {
     const handleDeleteEcho = async () => {
         if (echoData.content.media && echoData.content.media.length) {
             for (let file of echoData.content.media) {
-                await APIClient.del(`/cloud/delete?publicID=${file.publicID}`);
+                await APIClient.del(APIClient.routes.deleteFile, { publicID: file.publicID });
             }
         }
 

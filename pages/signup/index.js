@@ -30,7 +30,7 @@ export default function Signup() {
         if (!isValidData()) return;
 
         if (signupDetails.password.trim() === signupDetails.confirmPassword.trim()) {
-            const authResult = (await APIClient.post("/accounts/create-account", signupDetails)).data;
+            const authResult = (await APIClient.post(APIClient.routes.createAccount, signupDetails)).data;
             if (authResult.success) {
                 localStorage.clear()
                 localStorage.setItem("EchoTheme", authResult.data.dark)

@@ -22,12 +22,12 @@ export default function UserHead({ data, page, title }) {
 
         const formData = new FormData();
         formData.append(`media`, e.target.files[0])
-        const uploadedFile = (await APIClient.post("/cloud/upload", formData, { 'Content-Type': "multipart/form-data" })).data;
+        const uploadedFile = (await APIClient.post(APIClient.routes.uploadFile, formData, null, { 'Content-Type': "multipart/form-data" })).data;
         if (!uploadedFile.success) {
             page.createAlert({ type: "error", message: uploadedFile.message })
             return;
         }
-        if (userData.profileCover.publicID) await APIClient.del(`/cloud/delete?publicID=${userData.profileCover.publicID}`);
+        if (userData.profileCover.publicID) await APIClient.del(APIClient.routes.deleteFile, { publicID: userData.profileCover.publicID });
         setUserData({ ...userData, profileCover: uploadedFile.data[0] })
         setCoverLoader(false)
 
@@ -45,7 +45,7 @@ export default function UserHead({ data, page, title }) {
 
         const formData = new FormData();
         formData.append(`media`, e.target.files[0])
-        const uploadedFile = (await APIClient.post("/cloud/upload", formData, { 'Content-Type': "multipart/form-data" })).data;
+        const uploadedFile = (await APIClient.post(APIClient.routes.uploadFile, formData, null, { 'Content-Type': "multipart/form-data" })).data;
         if (!uploadedFile.success) {
             page.createAlert({ type: "error", message: uploadedFile.message })
             return;
