@@ -3,6 +3,7 @@ import styles from './accountnav.module.css';
 
 import SVGServer from "../../../services/svg/svgServer";
 import { Form } from "../form";
+import APIClient from "../../../services/APIClient";
 
 export default function AccountNav({toggle, control, page}) {
     const handleLogout = () => {
@@ -17,7 +18,7 @@ export default function AccountNav({toggle, control, page}) {
         page.setActiveUser({ ...page.activeUser, dark })
         localStorage.setItem("EchoTheme", dark)
         page.setActiveTheme(dark)
-        if (page.socket) page.socketMethods.socketEmitter("UPDATE_SETTINGS", {
+        APIClient.post(APIClient.routes.updateSettings, {
             accountID: page.activeUser.accountID,
             dark
         })

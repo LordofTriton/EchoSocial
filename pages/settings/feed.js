@@ -9,7 +9,7 @@ import SVGServer from '../../services/svg/svgServer'
 import APIClient from "../../services/APIClient";
 import { Form } from "../components/form";
 import useModalStates from '../hooks/useModalStates'
-import { useSocketContext } from '../../util/SocketProvider'
+import { useSSEContext } from '../../util/SocketProvider'
 import useDataStates from '../hooks/useDataStates'
 
 export default function FeedSettings() {
@@ -23,7 +23,7 @@ export default function FeedSettings() {
     })
     const [alert, setAlert] = useState(null)
     const {modalStates, modalControl} = useModalStates()
-    const {socket, socketMethods} = useSocketContext()
+    const { sse, sseListener, sseDeafener } = useSSEContext()
     const [showAccountDrop, setShowAccountDrop] = useState(false)
 
     const createAlert = (type, message) => {
@@ -40,13 +40,13 @@ export default function FeedSettings() {
                 }
             }
             if (activeUser.accountID) {
-                if (socket) socketMethods.socketRequest("GET_SETTINGS", { accountID: activeUser.accountID }, getSettings)
+                APIClient.get(APIClient.routes.getSettings, { accountID: activeUser.accountID }, getSettings)
             }
         }
     }, [socket])
 
     const handleSubmit = async () => {
-        if (socket) socketMethods.socketEmitter("UPDATE_SETTINGS", updatedSettings)
+        APIClient.post(APIClient.routes.updateSettings, updatedSettings)
         createAlert("success", "Settings updated successfully.")
     }
 
@@ -63,8 +63,9 @@ export default function FeedSettings() {
         setActiveUser,
         activeTheme,
         setActiveTheme,
-        socket,
-        socketMethods,
+        sse,
+        sseListener,
+        sseDeafener,
         alert,
         createAlert,
         ...modalStates,

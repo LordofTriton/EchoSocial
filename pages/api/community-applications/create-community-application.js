@@ -1,4 +1,5 @@
 import { getDB } from "../../../util/db/mongodb";
+import axios from "axios";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import IDGenerator from "../../../services/generators/IDGenerator";
@@ -19,12 +20,12 @@ function parseParams(params, data) {
     return result;
 }
 
-export default async function CreateApplication(params, io) {
+export default async function CreateCommunityApplication (request, response) {
     const { db } = await getDB();
-    params = parseParams([
+    let params = parseParams([
         "accountID",
         "communityID"
-    ], params);
+    ], request.body);
 
     try {
         ValidateCreateApplication(params)
@@ -50,21 +51,20 @@ export default async function CreateApplication(params, io) {
             data: result,
             message: "Application created successfully."
         })
-
-        await CreateHeart({
-            accountID: params.accountID,
-            applicationID: applicationData.applicationID
-        })
         
-        return responseData;
+        response.json(responseData);
+        
+        response.once("finish", async () => {
+            await CreateApplicationCallback(params, request)
+        })
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
-        return responseData;
+        response.json(responseData);
     }
 }
 
-export async function CreateApplicationCallback(params, io) {
+export async function CreateApplicationCallback(params, request) {
     const { db } = await getDB();
     const user = await db.collection("accounts").findOne({ accountID: params.accountID });
     const admins = await db.collection("members").find({ 
@@ -72,12 +72,12 @@ export async function CreateApplicationCallback(params, io) {
         $or: [ { role: "admin" }, { role: "moderator" } ] 
     }).toArray()
     for (let admin of admins) {
-        await CreateNotification({
+        await axios.post(request.headers.origin + "/api/notifications/create-notification", {
             accountID: admin.accountID,
             content: `${user.firstName} ${user.lastName} applied to join your community. Click to view.`,
             image: user.profileImage.url,
             clickable: true,
             redirect: `/communities/${params.communityID}/settings/applications`
-        }, io)
+        })
     }
 }

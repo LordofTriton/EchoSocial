@@ -9,7 +9,7 @@ import APIClient from "../../../services/APIClient";
 import SVGServer from "../../../services/svg/svgServer";
 import Modals from '../../components/modals';
 import useModalStates from '../../hooks/useModalStates';
-import { useSocketContext } from '../../../util/SocketProvider';
+import { useSSEContext } from '../../../util/SocketProvider';
 import DateGenerator from '../../../services/generators/DateGenerator';
 import DuoMasonryLayout from '../../components/masonry/duo-masonry';
 import CommunityHead from '../../components/community-head';
@@ -20,7 +20,7 @@ import Helpers from '../../../util/Helpers';
 export default function Community() {
   const router = useRouter()
   const {modalStates, modalControl} = useModalStates()
-  const {socket, socketMethods} = useSocketContext()
+  const {sse, sseListener, sseDeafener } = useSSEContext()
   const [activeUser, setActiveUser] = useState(CacheService.getData("EchoActiveUser"))
   const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
   const [communityData, setCommunityData] = useState(null)
@@ -41,24 +41,23 @@ export default function Community() {
     setCommunityEchoes([])
     setCommunityMediaEchoes([])
     setCommunityMembers([])
-    const updateCommunityData = (data) => {
-      if (data.success) setCommunityData(data.data)
-    };
-    const showEcho = (data) => data.success ? modalControl.setShowEchoViewer(data.data) : null
+    const updateCommunityData = (data) => data.success ? setCommunityData(data.data) : null;
+    const showEcho = (data) => data.success ? modalControl.setShowEchoViewer(data.data) : null;
+
     if (router.query.id) {
-      if (socket) socketMethods.socketRequest("GET_COMMUNITY", {
+      APIClient.get(APIClient.routes.getCommunity, {
         accountID: activeUser.accountID,
         communityID: router.query.id
       }, updateCommunityData)
     }
     if (router.query.echo) {
-      if (socket) socketMethods.socketRequest("GET_ECHO", {
+      APIClient.get(APIClient.routes.getEcho, {
         accountID: activeUser.accountID,
         communityID: router.query.id,
         echoID: router.query.echo
       }, showEcho)
     }
-  }, [router.query, socket])
+  }, [router.query])
 
   useEffect(() => {
     const updateCommunityEchoes = (data) => {
@@ -73,14 +72,14 @@ export default function Community() {
     }
     const updateCommunityMembers = (data) => data.success ? setCommunityMembers(data.data) : null;
     if (communityData) {
-      if (socket) socketMethods.socketRequest("COMMUNITY_FEED", {
+      APIClient.get(APIClient.routes.getCommunityFeed, {
         accountID: activeUser.accountID,
         communityID: router.query.id,
         page: feedPage,
         pageSize: 10
       }, updateCommunityEchoes)
       if (communityMembers.length < 1) {
-        if (socket) socketMethods.socketRequest("GET_MEMBERS", {
+        APIClient.get(APIClient.routes.getCommunityMembers, {
           accountID: activeUser.accountID,
           communityID: router.query.id,
           page: 1,
@@ -88,7 +87,7 @@ export default function Community() {
         }, updateCommunityMembers)
       }
       if (communityMediaEchoes.length < 1) {
-        if (socket) socketMethods.socketRequest("COMMUNITY_FEED", {
+        APIClient.get(APIClient.routes.getCommunityFeed, {
           accountID: activeUser.accountID,
           communityID: router.query.id,
           hasMedia: true,
@@ -97,7 +96,7 @@ export default function Community() {
         }, updateMediaEchoes)
       }
     }
-  }, [communityData, socket])
+  }, [communityData])
 
   const createAlert = (type, message) => {
     setAlert({ type, message })
@@ -119,8 +118,9 @@ export default function Community() {
     setActiveUser,
     activeTheme,
     setActiveTheme,
-    socket,
-    socketMethods,
+    sse,
+    sseListener,
+    sseDeafener,
     alert,
     createAlert,
     ...modalStates,

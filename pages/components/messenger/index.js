@@ -4,6 +4,7 @@ import styles from "./messenger.module.css"
 import DateGenerator from "../../../services/generators/DateGenerator";
 import SVGServer from "../../../services/svg/svgServer";
 import Helpers from "../../../util/Helpers";
+import APIClient from "../../../services/APIClient";
 
 export default function Messenger({ toggle, control, page }) {
     const [userChats, setUserChats] = useState([])
@@ -19,30 +20,28 @@ export default function Messenger({ toggle, control, page }) {
     })
 
     useEffect(() => {
-        if (page.socket) {
+        if (page.sse) {
             const updateChat = (data) => {
                 setUserChats((state) => [data, ...(state.filter((chat) => chat.chatID !== data.chatID))])
             }
-            page.socketMethods.socketListener(`UPDATED_CHAT_LIST`, updateChat)
+            page.sseListener(`UPDATED_CHAT_LIST`, updateChat)
         }
-    }, [page.socket])
+    }, [page.sse])
 
     useEffect(() => {
-        if (page.socket) {
-            const updateChats = (data) => {
-                if (data.success) {
-                    Helpers.setPaginatedState(data.data, setUserChats, data.pagination, "chatID")
-                    setPagination(data.pagination)
-                }
-                setChatsLoader(false)
+        const updateChats = (data) => {
+            if (data.success) {
+                Helpers.setPaginatedState(data.data, setUserChats, data.pagination, "chatID")
+                setPagination(data.pagination)
             }
-            page.socketMethods.socketRequest("GET_CHATS", { 
-                accountID: page.activeUser.accountID,
-                page: chatPage,
-                pageSize: 10
-            }, updateChats)
+            setChatsLoader(false)
         }
-    }, [page.socket, chatPage])
+        APIClient.get(APIClient.routes.getChats, { 
+            accountID: page.activeUser.accountID,
+            page: chatPage,
+            pageSize: 10
+        }, updateChats)
+    }, [chatPage])
 
     useEffect(() => {
         if (searchQuery.length < 2) {
@@ -57,7 +56,7 @@ export default function Messenger({ toggle, control, page }) {
                 }
                 setChatsLoader(false)
             }
-            if (page.socket) page.socketMethods.socketRequest("SEARCH_CHATS", { 
+            APIClient.get(APIClient.routes.searchChats, { 
                 accountID: page.activeUser.accountID,
                 filter: searchQuery,
                 page: 1,
@@ -67,8 +66,8 @@ export default function Messenger({ toggle, control, page }) {
     }, [searchQuery])
 
     const blockUser = async (accountID) => {
-        if (page.socket && accountID !== userData.accountID) {
-            page.socketMethods.socketEmitter("CREATE_BLACKLIST", {
+        if (accountID !== userData.accountID) {
+            APIClient.post(APIClient.routes.createBlacklist, {
                 accountID: page.activeUser.accountID,
                 blocker: page.activeUser.accountID,
                 blockee: accountID,

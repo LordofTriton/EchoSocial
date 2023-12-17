@@ -1,7 +1,9 @@
 import { getDB } from "../../../util/db/mongodb";
+import axios from "axios";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import IDGenerator from "../../../services/generators/IDGenerator";
+import { SSEPush } from "../sse";
 
 function ValidateCreateNotification(data) {
     if (!data.accountID || !ParamValidator.isValidAccountID(data.accountID)) throw new Error("Missing or Invalid: accountID.")
@@ -18,15 +20,15 @@ function parseParams(params, data) {
     return result;
 }
 
-export default async function CreateNotification(params, io) {
+export default async function CreateNotification(request, response) {
     const { db } = await getDB();
-    params = parseParams([
+    let params = parseParams([
         "accountID",
         "content",
         "image",
         "clickable",
         "redirect"
-    ], params);
+    ], request.body);
 
     try {
         ValidateCreateNotification(params)
@@ -45,16 +47,16 @@ export default async function CreateNotification(params, io) {
         const createNotificationResponse = await db.collection("notifications").insertOne(notificationData)
         if (createNotificationResponse.errors) throw new Error("An error occured when creating notification.");
 
-        if (io) io.to(params.accountID).emit("NEW_NOTIFICATION", JSON.stringify(notificationData))
+        SSEPush(params.accountID, "NEW_NOTIFICATION", notificationData)
 
         const responseData = ResponseClient.DBModifySuccess({
             data: createNotificationResponse,
             message: "Notification created successfully."
         })
-        return responseData;
+        response.json(responseData);
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
-        return responseData;
+        response.json(responseData);
     }
 }

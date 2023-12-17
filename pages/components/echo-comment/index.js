@@ -17,14 +17,20 @@ export default function EchoComment({ data, page }) {
     }, [data])
 
     const handleHeartClick = async () => {
-        if (!page.socket) return;
         if (commentData.userHearted) setCommentData({...commentData, userHearted: false, hearts: commentData.hearts - 1})
         else setCommentData({...commentData, userHearted: true, hearts: commentData.hearts + 1})
 
-        page.socketMethods.socketEmitter(commentData.userHearted ? "DELETE_HEART" : "CREATE_HEART", { 
-            accountID: page.activeUser.accountID,
-            commentID: commentData.commentID
-        })
+        if (commentData.userHearted) {
+            APIClient.del(APIClient.routes.deleteHeart, { 
+                accountID: page.activeUser.accountID,
+                commentID: commentData.commentID
+            })
+        } else {
+            APIClient.post(APIClient.routes.createHeart, { 
+                accountID: page.activeUser.accountID,
+                commentID: commentData.commentID
+            })
+        }
     }
 
     const handleDeleteComment = async () => {
@@ -33,7 +39,7 @@ export default function EchoComment({ data, page }) {
             await APIClient.del(`/cloud/delete?publicID=${file.publicID}`)
         }
 
-        if (page.socket) page.socketMethods.socketEmitter("DELETE_COMMENT", { 
+        APIClient.del(APIClient.routes.deleteComment, { 
             accountID: page.activeUser.accountID,
             commentID: commentData.commentID
         })

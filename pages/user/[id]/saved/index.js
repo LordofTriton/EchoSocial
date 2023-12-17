@@ -8,7 +8,7 @@ import APIClient from "../../../../services/APIClient";
 import SVGServer from "../../../../services/svg/svgServer";
 import Modals from '../../../components/modals';
 import useModalStates from '../../../hooks/useModalStates';
-import { useSocketContext } from '../../../../util/SocketProvider';
+import { useSSEContext } from '../../../../util/SocketProvider';
 import QuadMasonryLayout from '../../../components/masonry/quad-masonry';
 import UserThumb from '../../../components/user-thumb';
 import UserHead from '../../../components/user-head';
@@ -20,7 +20,7 @@ import Helpers from '../../../../util/Helpers';
 export default function UserSaved() {
     const router = useRouter()
     const {modalStates, modalControl} = useModalStates()
-    const {socket, socketMethods} = useSocketContext()
+    const { sse, sseListener, sseDeafener } = useSSEContext()
     const [activeUser, setActiveUser] = useState(CacheService.getData("EchoActiveUser"))
     const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
     const [userData, setUserData] = useState(null)
@@ -43,12 +43,12 @@ export default function UserSaved() {
             }
         }
         if (router.query.id) {
-            if (socket) socketMethods.socketRequest("GET_ACCOUNT", {
+            APIClient.get(APIClient.routes.getAccount, {
                 accountID: activeUser.accountID,
                 userID: router.query.id
             }, updateUserData)
         }
-    }, [router.query, socket])
+    }, [router.query])
 
     useEffect(() => {
         const updateUserSaved = (data) => {
@@ -59,13 +59,13 @@ export default function UserSaved() {
             setSavedLoader(false)
         }
         if (userData) {
-            if (socket) socketMethods.socketRequest("GET_SAVES", {
+            APIClient.get(APIClient.routes.getSaves, {
                 accountID: activeUser.accountID,
                 page: savedPage,
                 pageSize: 10
             }, updateUserSaved)
         }
-    }, [userData, savedPage, socket])
+    }, [userData, savedPage])
 
     const createAlert = (type, message) => {
         setAlert({ type, message })
@@ -81,8 +81,9 @@ export default function UserSaved() {
         setActiveUser,
         activeTheme,
         setActiveTheme,
-        socket,
-        socketMethods,
+        sse,
+        sseListener,
+        sseDeafener,
         alert,
         createAlert,
         ...modalStates,

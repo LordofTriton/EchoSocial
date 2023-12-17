@@ -9,7 +9,7 @@ import Head from "next/head";
 import DuoMasonryLayout from "../components/masonry/duo-masonry";
 import Echo from "../components/echo";
 import useModalStates from "../hooks/useModalStates";
-import { useSocketContext } from "../../util/SocketProvider";
+import { useSSEContext } from "../../util/SocketProvider";
 import QuadMasonryLayout from "../components/masonry/quad-masonry";
 import UserThumb from "../components/user-thumb";
 import useDataStates from "../hooks/useDataStates";
@@ -25,7 +25,7 @@ export default function PeopleStrangers() {
     const [searchedPeople, setSearchedPeople] = useState([])
     const [searchQuery, setSearchQuery] = useState("")
     const [peoplePage, setPeoplePage] = useState(1)
-    const {socket, socketMethods} = useSocketContext()
+    const { sse, sseListener, sseDeafener } = useSSEContext()
     const [pagination, setPagination] = useState({
       page: 1,
       pageSize: 10,
@@ -45,7 +45,7 @@ export default function PeopleStrangers() {
                 }
                 setPeopleLoader(false)
             }
-            socketMethods.socketRequest("GET_ACCOUNTS", {
+            APIClient.get(APIClient.routes.getAccounts, {
                 accountID: activeUser.accountID,
                 friends: false,
                 page: peoplePage,
@@ -57,7 +57,7 @@ export default function PeopleStrangers() {
     
     useEffect(() => {
         fetchPeople()
-    }, [peoplePage, socket])
+    }, [peoplePage])
 
     
     useEffect(() => {
@@ -81,8 +81,9 @@ export default function PeopleStrangers() {
         setActiveUser,
         activeTheme,
         setActiveTheme,
-        socket,
-        socketMethods,
+        sse,
+        sseListener,
+        sseDeafener,
         alert,
         createAlert,
         ...modalStates,

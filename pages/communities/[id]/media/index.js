@@ -9,7 +9,7 @@ import APIClient from "../../../../services/APIClient";
 import SVGServer from "../../../../services/svg/svgServer";
 import Modals from '../../../components/modals';
 import useModalStates from '../../../hooks/useModalStates';
-import { useSocketContext } from '../../../../util/SocketProvider';
+import { useSSEContext } from '../../../../util/SocketProvider';
 import DateGenerator from '../../../../services/generators/DateGenerator';
 import DuoMasonryLayout from '../../../components/masonry/duo-masonry';
 import CommunityHead from '../../../components/community-head';
@@ -29,7 +29,7 @@ function VideoMedia({ source, callback }) {
 export default function CommunityMedia() {
   const router = useRouter()
   const {modalStates, modalControl} = useModalStates()
-  const {socket, socketMethods} = useSocketContext()
+  const {sse, sseListener, sseDeafener } = useSSEContext()
   const [activeUser, setActiveUser] = useState(CacheService.getData("EchoActiveUser"))
   const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
   const [communityData, setCommunityData] = useState(null)
@@ -49,12 +49,12 @@ export default function CommunityMedia() {
       if (data.success) setCommunityData(data.data)
     }
     if (router.query.id) {
-      if (socket) socketMethods.socketRequest("GET_COMMUNITY", {
+      APIClient.get(APIClient.routes.getCommunity, {
         accountID: activeUser.accountID,
         communityID: router.query.id
       }, updateCommunityData)
     }
-  }, [router.query, socket])
+  }, [router.query])
 
   useEffect(() => {
     const updateCommunityMediaEchoes = (data) => {
@@ -65,7 +65,7 @@ export default function CommunityMedia() {
         setEchoLoader(false)
     }
     if (communityData) {
-        if (socket) socketMethods.socketRequest("COMMUNITY_FEED", {
+        APIClient.get(APIClient.routes.getCommunityFeed, {
             accountID: activeUser.accountID,
             communityID: router.query.id,
             hasMedia: true,
@@ -73,7 +73,7 @@ export default function CommunityMedia() {
             pageSize: 7
         }, updateCommunityMediaEchoes)
     }
-}, [communityData, echoPage, socket])
+}, [communityData, echoPage])
 
   const createAlert = (type, message) => {
     setAlert({ type, message })
@@ -95,8 +95,9 @@ export default function CommunityMedia() {
     setActiveUser,
     activeTheme,
     setActiveTheme,
-    socket,
-    socketMethods,
+    sse,
+    sseListener,
+    sseDeafener,
     alert,
     createAlert,
     ...modalStates,

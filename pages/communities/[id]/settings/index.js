@@ -10,7 +10,7 @@ import SVGServer from "../../../../services/svg/svgServer";
 import Modals from '../../../components/modals';
 import useModalStates from '../../../hooks/useModalStates';
 import useDataStates from '../../../hooks/useDataStates';
-import { useSocketContext } from '../../../../util/SocketProvider';
+import { useSSEContext } from '../../../../util/SocketProvider';
 import DateGenerator from '../../../../services/generators/DateGenerator';
 import DuoMasonryLayout from '../../../components/masonry/duo-masonry';
 import { Form } from '../../../components/form';
@@ -40,7 +40,7 @@ export default function CommunitySettings() {
   })
   const [communityApplications, setCommunityApplications] = useState([])
   const [alert, setAlert] = useState(null)
-  const {socket, socketMethods} = useSocketContext()
+  const { sse, sseListener, sseDeafener } = useSSEContext()
   const [settingsPage, setSettingsPage] = useState("general")
 
   useEffect(() => {
@@ -51,12 +51,12 @@ export default function CommunitySettings() {
       }
     }
     if (router.query.id) {
-      if (socket) socketMethods.socketRequest("GET_COMMUNITY", {
+      APIClient.get(APIClient.routes.getCommunity, {
         accountID: activeUser.accountID,
         communityID: router.query.id
       }, updateCommunityData)
     }
-  }, [router.query, socket])
+  }, [router.query])
 
   const createAlert = (type, message) => {
     setAlert({ type, message })
@@ -78,8 +78,9 @@ export default function CommunitySettings() {
     setActiveUser,
     activeTheme,
     setActiveTheme,
-    socket,
-    socketMethods,
+    sse,
+    sseListener,
+    sseDeafener,
     alert,
     createAlert,
     ...modalStates,
@@ -87,8 +88,7 @@ export default function CommunitySettings() {
   }
 
   const handleSubmitGeneral = async () => {
-    if (!socket) return;
-    socketMethods.socketEmitter("UPDATE_COMMUNITY", {
+    APIClient.post(APIClient.routes.updateCommunity, {
       accountID: activeUser.accountID,
       ...updatedCommunityData
     })

@@ -1,4 +1,5 @@
 import React from "react";
+import APIClient from "../../../services/APIClient";
 import SVGServer from "../../../services/svg/svgServer";
 import { Form } from "../form";
 import styles from "./sidenav.module.css"
@@ -16,7 +17,7 @@ export default function SideNav({toggle, control, page}) {
         page.setActiveUser({ ...page.activeUser, dark })
         localStorage.setItem("EchoTheme", dark)
         page.setActiveTheme(dark)
-        if (page.socket) page.socketMethods.socketEmitter("UPDATE_SETTINGS", {
+        APIClient.post(APIClient.routes.updateSettings, {
             accountID: page.activeUser.accountID,
             dark
         })

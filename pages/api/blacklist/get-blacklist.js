@@ -1,4 +1,5 @@
 import { getDB } from "../../../util/db/mongodb";
+import axios from "axios";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 
@@ -15,15 +16,15 @@ function parseParams(params, data) {
     return result;
 }
 
-export default async function GetBlacklists(params, io) {
+export default async function GetBlacklist (request, response) {
     const { db } = await getDB();
-    params = parseParams([
+    let params = parseParams([
         "accountID",
         "blocker",
         "blockeeType",
         "page",
         "pageSize"
-    ], params);
+    ], request.query);
 
     try {
         ValidateGetBlacklists(params);
@@ -65,10 +66,10 @@ export default async function GetBlacklists(params, io) {
             pagination: true
         })
         
-        return responseData;
+        response.json(responseData);
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
-        return responseData;
+        response.json(responseData);
     }
 }

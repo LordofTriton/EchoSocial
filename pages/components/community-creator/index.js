@@ -36,7 +36,7 @@ export default function CommunityCreator({toggle, control, page}) {
             page.createAlert(data.success ? "success" : "error", data.message)
             setCreateCommunityLoader(false)
         }
-        if (page.socket)  page.socketMethods.socketRequest("CREATE_COMMUNITY", {
+        APIClient.post(APIClient.routes.createCommunity, {
             accountID: page.activeUser.accountID,
             name: communityName,
             description: communityDesc,

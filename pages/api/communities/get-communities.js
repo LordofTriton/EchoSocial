@@ -1,4 +1,5 @@
 import { getDB } from "../../../util/db/mongodb";
+import axios from "axios";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 
@@ -14,9 +15,9 @@ function parseParams(params, data) {
     return result;
 }
 
-export default async function GetCommunities(params, io) {
+export default async function GetCommunities (request, response) {
     const { db } = await getDB();
-    params = parseParams([
+    let params = parseParams([
         "accountID",
         "userID",
         "member", 
@@ -24,7 +25,7 @@ export default async function GetCommunities(params, io) {
         "page", 
         "pageSize",
         "filter"
-    ], params);
+    ], request.query);
 
     try {
         ValidateGetCommunities(params);
@@ -39,8 +40,8 @@ export default async function GetCommunities(params, io) {
         }
         if (params.userID !== params.accountID) filters.$and.push({ nodes: { $elemMatch: { nodeID: { $in: userAccount.nodes.map((node) => node.nodeID) } } } })
 
-        if (params.member === true) filters.$and.push({ communityID: { $in: communities.map((obj) => obj.communityID) } })
-        if (params.member === false) {
+        if (params.member === 'true') filters.$and.push({ communityID: { $in: communities.map((obj) => obj.communityID) } })
+        if (params.member === 'false') {
             if (params.userID === params.accountID) filters.$and.push({ nodes: { $elemMatch: { nodeID: { $in: userAccount.nodes.map((node) => node.nodeID) } } } })
             filters.$and.push({ communityID: { $nin: communities.map((obj) => obj.communityID) } })
         }
@@ -85,10 +86,10 @@ export default async function GetCommunities(params, io) {
             pagination: true
         })
 
-        return responseData;
+        response.json(responseData);
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
-        return responseData;
+        response.json(responseData);
     }
 }

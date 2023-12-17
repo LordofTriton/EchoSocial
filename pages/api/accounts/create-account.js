@@ -1,4 +1,5 @@
 import { getDB } from "../../../util/db/mongodb";
+import axios from "axios";
 import AppConfig from "../../../util/config";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
@@ -28,7 +29,7 @@ function parseParams(params, data) {
     return result;
 }
 
-export default async (request, response) => {
+export default async function CreateAccount (request, response) {
     const { db } = await getDB();
     let params = parseParams([
         "firstName", 
@@ -118,17 +119,19 @@ export default async (request, response) => {
             },
             message: "Account created successfully."
         })
+        
         response.json(responseData)
-        response.once("close", async () => {
-            await CreateSettings({ accountID: accountData.accountID })
-            await CreateNotification({
+
+        response.once("finish", async () => {
+            await axios.post(request.headers.origin + "/api/settings/create-settings", { accountID: accountData.accountID })
+            await axios.post(request.headers.origin + "/api/notification/create-notification", {
                 accountID: accountData.accountID,
                 content: `Hi, ${accountData.firstName}! Welcome to Echo. Click here to set up your profile.`,
                 image: accountData.profileImage.url,
                 clickable: true,
                 redirect: `/settings`
             })
-            await CreateMember({
+            await axios.post(request.headers.origin + "/api/community-members/create-community-member", {
                 accountID: accountData.accountID,
                 communityID: "64f1cfcbfb50625f2c96883c"
             })

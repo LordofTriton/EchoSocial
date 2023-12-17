@@ -32,14 +32,20 @@ export default function Echo({ data, page, fullText=false, saved=false }) {
     }
 
     const handleHeartClick = async () => {
-        if (!page.socket) return;
         if (echoData.userHearted) setEchoData({...echoData, userHearted: false, hearts: echoData.hearts - 1})
         else setEchoData({...echoData, userHearted: true, hearts: echoData.hearts + 1})
 
-        page.socketMethods.socketEmitter(echoData.userHearted ? "DELETE_HEART" : "CREATE_HEART", { 
-            accountID: page.activeUser.accountID,
-            echoID: echoData.echoID
-        })
+        if (echoData.userHearted) {
+            APIClient.del(APIClient.routes.deleteHeart, { 
+                accountID: page.activeUser.accountID,
+                echoID: echoData.echoID
+            })
+        } else {
+            APIClient.post(APIClient.routes.createHeart, { 
+                accountID: page.activeUser.accountID,
+                echoID: echoData.echoID
+            })
+        }
     }
 
     const handleDeleteEcho = async () => {
@@ -49,7 +55,7 @@ export default function Echo({ data, page, fullText=false, saved=false }) {
             }
         }
 
-        if (page.socket) page.socketMethods.socketEmitter("DELETE_ECHO", { 
+        APIClient.del(APIClient.routes.deleteEcho, { 
             accountID: page.activeUser.accountID,
             echoID: echoData.echoID
         })
@@ -60,7 +66,7 @@ export default function Echo({ data, page, fullText=false, saved=false }) {
     const handleSaveEcho = async () => {
         if (echoData.accountID === page.activeUser.accountID) return;
         const createdSave = (data) => page.createAlert(data.success ? "success" : "error", data.success ? "Echo saved successfully." : data.message);
-        if (page.socket) page.socketMethods.socketRequest("CREATE_SAVE", { 
+        APIClient.post(APIClient.routes.createSave, { 
             accountID: page.activeUser.accountID,
             echoID: echoData.echoID
         }, createdSave)
@@ -69,7 +75,7 @@ export default function Echo({ data, page, fullText=false, saved=false }) {
 
     const handleUnsaveEcho = async () => {
         if (echoData.accountID === page.activeUser.accountID) return;
-        if (page.socket) page.socketMethods.socketEmitter("DELETE_SAVE", { 
+        APIClient.del(APIClient.routes.deleteSave, { 
             accountID: page.activeUser.accountID,
             echoID: echoData.echoID
         })

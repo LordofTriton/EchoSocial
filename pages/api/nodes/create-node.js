@@ -1,4 +1,5 @@
 import { getDB } from "../../../util/db/mongodb";
+import axios from "axios";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import IDGenerator from "../../../services/generators/IDGenerator";
@@ -15,13 +16,13 @@ function parseParams(params, data) {
     return result;
 }
 
-export default async function CreateNode(params, io) {
+export default async function CreateNode(request, response) {
     const { db } = await getDB();
-    params = parseParams([
+    let params = parseParams([
         "accountID",
         "name",
         "emoji"
-    ], params);
+    ], request.body);
 
     try {
         ValidateCreateNode(params)
@@ -32,7 +33,7 @@ export default async function CreateNode(params, io) {
                 data: userNode,
                 message: "Node fetched successfully."
             })
-            return responseData;
+            response.json(responseData);
         }
 
         const nodeData = {
@@ -51,10 +52,10 @@ export default async function CreateNode(params, io) {
             data: node,
             message: "Node created successfully."
         })
-        return responseData;
+        response.json(responseData);
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
-        return responseData;
+        response.json(responseData);
     }
 }

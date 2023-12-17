@@ -1,6 +1,7 @@
-import { getDB } from "../../../../../util/db/mongodb";
-import ParamValidator from "../../../../../services/validation/validator";
-import ResponseClient from "../../../../../services/validation/ResponseClient";
+import { getDB } from "../../../util/db/mongodb";
+import axios from "axios";
+import ParamValidator from "../../../services/validation/validator";
+import ResponseClient from "../../../services/validation/ResponseClient";
 
 function ValidateFeed(data) {
     if (!data.accountID || !ParamValidator.isValidAccountID(data.accountID)) throw new Error("Missing or Invalid: accountID.")
@@ -14,17 +15,15 @@ function parseParams(params, data) {
     return result;
 }
 
-export default async function UserFeed(params, io) {
+export default async function Feed(request, response) {
     const { db } = await getDB();
-    params = parseParams([
+    let params = parseParams([
         "accountID",
-        "userID",
-        "hasMedia",
-        "mediaType",
+        "nodes",
         "filter",
         "page",
         "pageSize"
-    ], params);
+    ], request.query);
 
     try {
         ValidateFeed(params);
@@ -35,20 +34,20 @@ export default async function UserFeed(params, io) {
         let friendsList = (await db.collection("friends").find({ accountID: params.accountID }).toArray()).map((friend) => friend.friendID)
         if (!userAccount) throw new Error("Account does not exist.")
 
-        const filters = { 
+        const filters = {
+            $or: [ 
+                { nodes: { $in: params.nodes ? params.nodes : userAccount.nodes.map((node) => node.nodeID) } }, 
+                { communityID: { $in: communities.map((obj) => obj.communityID) } } 
+            ],
             $and: [ 
-                { accountID: params.userID }, 
+                { $or: [ { communityID: { $in: communities.map((obj) => obj.communityID) } }, { audience: "public" }, { audience: "friends", accountID: { $in: friendsList } }, { accountID: params.accountID } ] },
                 { accountID: { $nin: blacklist.filter((blck) => blck.blocker === params.accountID).map((obj) => obj.blockee) } },
-                { accountID: { $nin: blacklist.filter((blck) => blck.blockee === params.accountID).map((obj) => obj.blocker) } } , 
+                { accountID: { $nin: blacklist.filter((blck) => blck.blockee === params.accountID).map((obj) => obj.blocker) } },
                 { communityID: { $nin: blacklist.filter((blck) => blck.blocker === params.accountID).map((obj) => obj.blockee) } }, 
                 { communityID: { $nin: blacklist.filter((blck) => blck.blockee === params.accountID).map((obj) => obj.blocker) } }
-            ],
-            $or: [ {communityID: { $in: communities.map((obj) => obj.communityID) }}, { audience: "public" }, { audience: "friends", accountID: { $in: friendsList } }, { accountID: userAccount.accountID } ],
-            
+            ]
         }
-        if (params.hasMedia) filters["content.media"] = { $ne: null }
-        if (params.mediaType) filters["content.media.type"] = params.mediaType
-        if (params.filter) filters.$or.push({ "content.text": { $regex: params.filter, $options: 'i' } })
+        if (params.filter) filters["content.text"] = { $regex: params.filter, $options: 'i' }
 
         const pagination = {
             page: parseInt(params.page),
@@ -56,7 +55,7 @@ export default async function UserFeed(params, io) {
         }
         const skip = (pagination.page - 1) * pagination.pageSize;
 
-        const echoes = await db.collection("echoes").find(filters).sort({ datetime: -1 }).skip(skip).limit(pagination.pageSize).toArray();
+        let echoes = await db.collection("echoes").find(filters).sort({ datetime: -1 }).skip(skip).limit(pagination.pageSize).toArray();
         const echoCount = await db.collection("echoes").countDocuments(filters);
         if (!echoes) throw new Error("Unable to fetch echoes.")
 
@@ -70,7 +69,7 @@ export default async function UserFeed(params, io) {
             let userHearted = await db.collection("hearts").findOne({ accountID: params.accountID, echoID: echo.echoID });
             let userSaved = await db.collection("saves").findOne({ accountID: params.accountID, echoID: echo.echoID });
 
-            const finalEchoData = {
+            const echoData = {
                 ...echo,
                 comments,
                 hearts: heartCount,
@@ -88,7 +87,7 @@ export default async function UserFeed(params, io) {
                     userRole: communityMember ? communityMember.role : null
                 }
             }
-            feedData.push(finalEchoData);
+            feedData.push(echoData);
         }
 
         const responseData = ResponseClient.DBFetchSuccess({
@@ -99,10 +98,10 @@ export default async function UserFeed(params, io) {
             totalItems: echoCount,
             pagination: true
         })
-        return responseData;
+        response.json(responseData);
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
-        return responseData;
+        response.json(responseData);
     }
 }

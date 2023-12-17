@@ -1,4 +1,5 @@
 import { getDB } from "../../../util/db/mongodb";
+import axios from "axios";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import IDGenerator from "../../../services/generators/IDGenerator";
@@ -16,7 +17,7 @@ function parseParams(params, data) {
     return result;
 }
 
-export default async (request, response) => {
+export default async function Login (request, response) {
     const { db } = await getDB();
     let params = parseParams([
         "email",

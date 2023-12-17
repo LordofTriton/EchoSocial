@@ -9,7 +9,7 @@ import SVGServer from '../../services/svg/svgServer'
 import APIClient from "../../services/APIClient";
 import { Form } from "../components/form";
 import useModalStates from '../hooks/useModalStates'
-import { useSocketContext } from '../../util/SocketProvider'
+import { useSSEContext } from '../../util/SocketProvider'
 import { nickDict } from '../../services/generators/NIckGenerator'
 import useDataStates from '../hooks/useDataStates'
 
@@ -39,7 +39,7 @@ export default function ProfileSettings() {
     const [alert, setAlert] = useState(null)
     const {modalStates, modalControl} = useModalStates()
     const [showAccountDrop, setShowAccountDrop] = useState(true)
-    const {socket, socketMethods} = useSocketContext()
+    const { sse, sseListener, sseDeafener } = useSSEContext()
 
     const createAlert = (type, message) => {
         setAlert({ type, message })
@@ -54,12 +54,12 @@ export default function ProfileSettings() {
             }
         }
         if (activeUser.accountID) {
-            if (socket) socketMethods.socketRequest("GET_ACCOUNT", { accountID: activeUser.accountID }, getAccount)
+            APIClient.get(APIClient.routes.getAccount, { accountID: activeUser.accountID }, getAccount)
         }
-    }, [socket])
+    }, [])
 
     const handleSubmit = async () => {
-        if (socket) socketMethods.socketEmitter("UPDATE_ACCOUNT", updatedData)
+        APIClient.post(APIClient.routes.updateAccount, updatedData)
         createAlert("success", "Settings updated successfully.")
         const data = {...activeUser, ...updatedData};
         setActiveUser(data)
@@ -79,8 +79,9 @@ export default function ProfileSettings() {
         setActiveUser,
         activeTheme,
         setActiveTheme,
-        socket,
-        socketMethods,
+        sse,
+        sseListener,
+        sseDeafener,
         alert,
         createAlert,
         ...modalStates,

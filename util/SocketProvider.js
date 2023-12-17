@@ -1,31 +1,31 @@
 import { useRouter } from 'next/router';
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import useSocket from '../pages/hooks/useSocket';
+import useSSE from '../pages/hooks/useSocket';
 
-const SocketContext = createContext();
+const SSEContext = createContext();
 const authLess = ["/login", "/signup", "/password-reset"]
 
-export const SocketProvider = ({ children }) => {
-    const socketProps = useSocket();
+export const SSEProvider = ({ children }) => {
+    const sseProps = useSSE();
     const router = useRouter();
 
     useEffect(() => {
-        const renewSocket = async () => {
-            if (socketProps.socket) {
-                socketProps.socketMethods.disconnectSocket();
-                if (!authLess.includes(router.route)) await socketProps.socketMethods.connectSocket();
+        const renewSSE = async () => {
+            if (sseProps.sse) {
+                sseProps.disconnectSSE();
+                if (!authLess.includes(router.route)) await sseProps.connectSSE();
             }
         }
-        renewSocket()
+        renewSSE()
     }, [router.route])
 
     return (
-        <SocketContext.Provider value={socketProps}>
+        <SSEContext.Provider value={sseProps}>
             {children}
-        </SocketContext.Provider>
+        </SSEContext.Provider>
     );
 };
 
-export const useSocketContext = () => {
-    return useContext(SocketContext);
+export const useSSEContext = () => {
+    return useContext(SSEContext);
 };

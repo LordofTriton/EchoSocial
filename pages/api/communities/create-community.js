@@ -1,4 +1,5 @@
 import { getDB } from "../../../util/db/mongodb";
+import axios from "axios";
 import AppConfig from "../../../util/config";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
@@ -23,15 +24,15 @@ function parseParams(params, data) {
     return result;
 }
 
-export default async function CreateCommunity(params, io) {
+export default async function CreateCommunity (request, response) {
     const { db } = await getDB();
-    params = parseParams([
+    let params = parseParams([
         "accountID",
         "name",
         "description",
         "nodes",
         "privacy"
-    ], params);
+    ], request.body);
 
     try {
         ValidateCreateCommunity(params)
@@ -39,11 +40,11 @@ export default async function CreateCommunity(params, io) {
         let newCommunity = await db.collection("communities").findOne({ name: String(params.name).toLowerCase().replace(/\s/g, "").trim() })
         if (newCommunity) throw new Error("A community with this name already exists.")
 
-        const nodeData = await CreateNode({
+        const nodeData = (await axios.post(request.headers.origin + "/api/nodes/create-node", {
             accountID: params.accountID,
             name: params.name,
             emoji: "⚜"
-        })
+        })).data;
 
         const communityData = {
             communityID: IDGenerator.GenerateCommunityID(),
@@ -81,11 +82,15 @@ export default async function CreateCommunity(params, io) {
             data: communityData,
             message: "Community created successfully."
         })
-        return responseData;
+        response.json(responseData);
+        
+        response.once("finish", async () => {
+            await CreateCommunityCallback(params, request)
+        })
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
-        return responseData;
+        response.json(responseData);
     }
 }
 
@@ -99,11 +104,11 @@ export async function CreateCommunityCallback(params, io, communityData) {
         muted: false,
         status: "active"
     })
-    await CreateNotification({
+    await axios.post(request.headers.origin + "/api/notifications/create-notification", {
         accountID: params.accountID,
         content: `You created a new community! Send an echo to spread the word.`,
         image: `/images/communityProfile.png`,
         clickable: true,
         redirect: `/communities/${communityData.communityID}`
-    }, io)
+    })
 }

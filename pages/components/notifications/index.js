@@ -18,10 +18,10 @@ export default function Notifications({toggle, control, page}) {
     })
 
     useEffect(() => {
-        if (!page.socket) return;
+        if (!page.sse) return;
         const updateNotifications = (data) => { setNotifications((state) => [data, ...state]) }
-        page.socketMethods.socketListener("NEW_NOTIFICATION", updateNotifications)
-    }, [page.socket]);
+        page.sseListener("NEW_NOTIFICATION", updateNotifications)
+    }, [page.sse]);
     
     useEffect(() => {
         if (notifications.filter((notification) => notification.status === "unread").length > 0) page.setShowNotificationDot(true)
@@ -29,21 +29,19 @@ export default function Notifications({toggle, control, page}) {
     }, [notifications])
 
     useEffect(() => {
-        if (page.socket) {
-            const updateNotifications = (data) => {
-                if (data.success) {
-                    Helpers.setPaginatedState(data.data, setNotifications, data.pagination, "notificationID")
-                    setPagination(data.pagination)
-                }
-                setNotificationsLoader(false)
+        const updateNotifications = (data) => {
+            if (data.success) {
+                Helpers.setPaginatedState(data.data, setNotifications, data.pagination, "notificationID")
+                setPagination(data.pagination)
             }
-            page.socketMethods.socketRequest("GET_NOTIFICATIONS", { 
-                accountID: page.activeUser.accountID,
-                page: notificationPage,
-                pageSize: 10
-            }, updateNotifications)
+            setNotificationsLoader(false)
         }
-    }, [page.socket, notificationPage])
+        APIClient.get(APIClient.routes.getNotifications, { 
+            accountID: page.activeUser.accountID,
+            page: notificationPage,
+            pageSize: 10
+        }, updateNotifications)
+    }, [notificationPage])
 
     const filterNotifications = async (status) => {
         setNotificationPage(1)
@@ -54,7 +52,7 @@ export default function Notifications({toggle, control, page}) {
             }
             setNotificationsLoader(false)
         }
-        if (page.socket) page.socketMethods.socketRequest("GET_NOTIFICATIONS", { 
+        APIClient.get(APIClient.routes.getNotifications, { 
             accountID: page.activeUser.accountID,
             page: 1,
             pageSize: 10,
@@ -64,7 +62,7 @@ export default function Notifications({toggle, control, page}) {
 
     const deleteNotification = async (notificationID) => {
         setNotifications(notifications.filter((notification) => notification.notificationID !== notificationID))
-        if (page.socket) page.socketMethods.socketEmitter("DELETE_NOTIFICATION", { 
+        APIClient.del(APIClient.routes.deleteNotification, { 
             accountID: page.activeUser.accountID,
             notificationID
         })
@@ -72,7 +70,7 @@ export default function Notifications({toggle, control, page}) {
 
     const readNotification = async (notificationID) => {
         const item = notifications.find((notification) => notification.notificationID === notificationID)
-        if (page.socket) page.socketMethods.socketEmitter("UPDATE_NOTIFICATION", { 
+        APIClient.post(APIClient.routes.updateNotification, { 
             accountID: page.activeUser.accountID,
             notificationID,
             status: "read"
@@ -83,7 +81,7 @@ export default function Notifications({toggle, control, page}) {
 
     const readAllNotifications = async () => {
         setNotifications(notifications.map((notification) => {return {...notification, status: "read"}}))
-        if (page.socket) page.socketMethods.socketEmitter("UPDATE_NOTIFICATION", { 
+        APIClient.post(APIClient.routes.updateNotification, { 
             accountID: page.activeUser.accountID,
             status: "read"
         })

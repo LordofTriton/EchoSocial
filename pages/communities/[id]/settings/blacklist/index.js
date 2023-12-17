@@ -9,7 +9,7 @@ import APIClient from "../../../../../services/APIClient";
 import SVGServer from "../../../../../services/svg/svgServer";
 import Modals from '../../../../components/modals';
 import useModalStates from '../../../../hooks/useModalStates';
-import { useSocketContext } from '../../../../../util/SocketProvider';
+import { useSSEContext } from '../../../../../util/SocketProvider';
 import DateGenerator from '../../../../../services/generators/DateGenerator';
 import DuoMasonryLayout from '../../../../components/masonry/duo-masonry';
 import { Form } from '../../../../components/form';
@@ -20,7 +20,7 @@ import Helpers from '../../../../../util/Helpers';
 export default function CommunitySettings() {
     const router = useRouter()
     const {modalStates, modalControl} = useModalStates()
-    const {socket, socketMethods} = useSocketContext()
+    const { sse, sseListener, sseDeafener } = useSSEContext()
     const [activeUser, setActiveUser] = useState(CacheService.getData("EchoActiveUser"))
     const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
     const [communityData, setCommunityData] = useState(null)
@@ -37,13 +37,13 @@ export default function CommunitySettings() {
 
     useEffect(() => {
         const updateCommunityData = (data) => (data.success) ? setCommunityData(data.data) : null;
-        if (router.query.id && socket) {
-            socketMethods.socketRequest("GET_COMMUNITY", {
+        if (router.query.id) {
+            APIClient.get(APIClient.routes.getCommunity, {
                 accountID: activeUser.accountID,
                 communityID: router.query.id
             }, updateCommunityData)
         }
-    }, [router.query, socket])
+    }, [router.query])
 
     useEffect(() => {
         const updateCommunityBanned = (data) => {
@@ -53,15 +53,15 @@ export default function CommunitySettings() {
             }
             setBannedLoader(false)
         }
-        if (router.query.id && socket) {
-            socketMethods.socketRequest("GET_BLACKLISTS", {
+        if (router.query.id) {
+            APIClient.get(APIClient.routes.getBlacklist, {
                 accountID: activeUser.accountID,
                 blocker: router.query.id,
                 page: bannedPage,
                 pageSize: 10
             }, updateCommunityBanned)
         }
-    }, [router.query, bannedPage, socket])
+    }, [router.query, bannedPage])
 
     const createAlert = (type, message) => {
         setAlert({ type, message })
@@ -83,8 +83,9 @@ export default function CommunitySettings() {
         setActiveUser,
         activeTheme,
         setActiveTheme,
-        socket,
-        socketMethods,
+        sse,
+        sseListener,
+        sseDeafener,
         alert,
         createAlert,
         ...modalStates,
@@ -92,8 +93,7 @@ export default function CommunitySettings() {
     }
 
     const handleLiftBan = async (blockee) => {
-        if (!socket) return;
-        socketMethods.socketEmitter("DELETE_BLACKLIST", {
+        APIClient.del(APIClient.routes.deleteBlacklist, {
             accountID: activeUser.accountID,
             blocker: communityData.communityID,
             blockee

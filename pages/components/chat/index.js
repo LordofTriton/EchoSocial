@@ -111,21 +111,36 @@ export default function Chat({ toggle, data, page }) {
       totalPages: 1
     })
 
+    const updateMessage = (data) => {
+        setChatMessages((state) => {
+            const update = state.map((message) => {
+                if (message.messageID === data.messageID) return data;
+                else return message;
+            })
+            return update;
+        })
+    }
+    const updateChat = (data) => setChatData(data)
+    const updateMessages = (data) => {
+        setChatMessages((state) => {
+            const update = state.filter((message) => message.messageID !== data.messageID).concat(data)
+            return update;
+        }) 
+    }
+
     useEffect(() => {
         if (data) {
-            if (chatData) {
-                page.socketMethods.socketDeafener(`NEW_MESSAGE_${data.chatID}`)
-                page.socketMethods.socketDeafener(`UPDATED_MESSAGE_${data.chatID}`)
-                page.socketMethods.socketDeafener(`UPDATED_CHAT_${data.chatID}`)
+            if (chatData && page.sse) {
+                page.sseDeafener(`NEW_MESSAGE_${data.chatID}`, updateMessages)
+                page.sseDeafener(`UPDATED_MESSAGE_${data.chatID}`, updateMessage)
+                page.sseDeafener(`UPDATED_CHAT_${data.chatID}`, updateChat)
             }
             setChatData(data)
-            if (page.socket) {
-                page.socketMethods.socketEmitter("UPDATE_CHAT", {
-                    accountID: page.activeUser.accountID,
-                    chatID: data.chatID,
-                    unread: 0
-                })
-            }
+            APIClient.post(APIClient.routes.updateChat, {
+                accountID: page.activeUser.accountID,
+                chatID: data.chatID,
+                unread: 0
+            })
         }
         setChatMessages([])
         setNewMessageText("")
@@ -136,38 +151,16 @@ export default function Chat({ toggle, data, page }) {
     }, [data])
 
     useEffect(() => {
-        if (page.socket) {
-            const updateChat = (data) => setChatData(data)
-            if (chatData) page.socketMethods.socketListener(`UPDATED_CHAT_${chatData.chatID}`, updateChat)
-        }
-    }, [chatData, page.socket])
+        if (chatData && page.sse) page.sseListener(`UPDATED_CHAT_${chatData.chatID}`, updateChat)
+    }, [chatData, page.sse])
 
     useEffect(() => {
-        if (page.socket) {
-            const updateMessage = (data) => {
-                setChatMessages((state) => {
-                    const update = state.map((message) => {
-                        if (message.messageID === data.messageID) return data;
-                        else return message;
-                    })
-                    return update;
-                })
-            }
-            if (chatData) page.socketMethods.socketListener(`UPDATED_MESSAGE_${chatData.chatID}`, updateMessage)
-        }
-    }, [chatData, page.socket])
+        if (chatData && page.sse) page.sseListener(`UPDATED_MESSAGE_${chatData.chatID}`, updateMessage)
+    }, [chatData, page.sse])
 
     useEffect(() => {
-        if (page.socket) {
-            const updateMessages = (data) => {
-                setChatMessages((state) => {
-                    const update = state.filter((message) => message.messageID !== data.messageID).concat(data)
-                    return update;
-                }) 
-            }
-            if (chatData) page.socketMethods.socketListener(`NEW_MESSAGE_${chatData.chatID}`, updateMessages)
-        }
-    }, [chatData, page.socket])
+        if (chatData && page.sse) page.sseListener(`NEW_MESSAGE_${chatData.chatID}`, updateMessages)
+    }, [chatData, page.sse])
 
     useEffect(() => {
         if (!data) return;
@@ -179,17 +172,17 @@ export default function Chat({ toggle, data, page }) {
             }
             setMessageLoader(false)
         }
-        if (page.socket && data) page.socketMethods.socketRequest("GET_MESSAGES", { 
+        if (data) APIClient.get(APIClient.routes.getMessages, { 
             accountID: page.activeUser.accountID,
             chatID: data.chatID,
             page: messagePage,
             pageSize: 10
         }, updateMessages)
-    }, [data, messagePage, page.socket])
+    }, [data, messagePage])
 
     useEffect(() => {
         if (toggle && chatData && chatMessages.length > 0) {
-            page.socketMethods.socketEmitter("UPDATE_CHAT", {
+            APIClient.post(APIClient.routes.updateChat, {
                 accountID: page.activeUser.accountID,
                 chatID: data.chatID,
                 unread: 0
@@ -258,7 +251,7 @@ export default function Chat({ toggle, data, page }) {
                 setChatMessages(chatMessages.filter((message) => message.messageID !== newTextMessage.messageID).concat(data.data))
             }
         }
-        if (page.socket) page.socketMethods.socketRequest("CREATE_MESSAGE", newTextMessage, createdTextMessage)
+        APIClient.post(APIClient.routes.createMessage, newTextMessage, createdTextMessage)
     }
 
     const createMediaMessage = async (file, reply) => {
@@ -290,7 +283,7 @@ export default function Chat({ toggle, data, page }) {
                 setChatMessages(chatMessages.filter((message) => message.messageID !== newMediaMessage.messageID).concat(data.data))
             }
         }
-        if (page.socket) page.socketMethods.socketRequest("CREATE_MESSAGE", {
+        APIClient.post(APIClient.routes.createMessage, {
             accountID: page.activeUser.accountID,
             chatID: chatData.chatID,
             content: {
@@ -302,8 +295,7 @@ export default function Chat({ toggle, data, page }) {
     }
 
     const deleteMessage = async (messageID) => {
-        if (!page.socket) return;
-        page.socketMethods.socketEmitter("UPDATE_MESSAGE", {
+        APIClient.post(APIClient.routes.updateMessage, {
             accountID: page.activeUser.accountID,
             messageID,
             deleted: true

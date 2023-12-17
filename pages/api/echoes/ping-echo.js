@@ -1,4 +1,5 @@
 import { getDB } from "../../../util/db/mongodb";
+import axios from "axios";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 
@@ -17,14 +18,14 @@ function parseParams(params, data) {
     return result;
 }
 
-export default async function PingEcho(params, io) {
+export default async function PingEcho(request, response) {
     const { db } = await getDB();
-    params = parseParams([
+    let params = parseParams([
         "accountID",
         "echoID",
         "addHeart",
         "removeHeart"
-    ], params);
+    ], request.body);
 
     try {
         ValidatePingEcho(params);
@@ -40,15 +41,19 @@ export default async function PingEcho(params, io) {
             data: echo,
             message: "Echo updated successfully."
         })
-        return responseData;
+        response.json(responseData);
+        
+        response.once("finish", async () => {
+            await PingEchoCallback(params, request)
+        })
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
-        return responseData;
+        response.json(responseData);
     }
 }
 
-export async function PingEchoCallback(params, io) {
+export async function PingEchoCallback(params, request) {
     const { db } = await getDB();
     const echo = await db.collection("echoes").findOne({ echoID: params.echoID })
     if (params.addHeart) await db.collection("accounts").updateOne({ accountID: echo.accountID }, { $inc: { hearts: 1 } })

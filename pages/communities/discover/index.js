@@ -9,7 +9,7 @@ import Modals from "../../components/modals";
 import TriMasonryLayout from "../../components/masonry/tri-masonry";
 import CommunityThumb from "../../components/community-thumb";
 import useModalStates from "../../hooks/useModalStates";
-import { useSocketContext } from "../../../util/SocketProvider";
+import { useSSEContext } from "../../../util/SocketProvider";
 import useDataStates from "../../hooks/useDataStates";
 import Helpers from "../../../util/Helpers";
 
@@ -22,7 +22,7 @@ export default function CommunitiesFeed() {
     const [communities, setCommunities] = useState([])
     const [searchedCommunities, setSearchedCommunities] = useState([])
     const [searchQuery, setSearchQuery] = useState("")
-    const {socket, socketMethods} = useSocketContext()
+    const { sse, sseListener, sseDeafener } = useSSEContext()
     const [communitiesPage, setCommunitiesPage] = useState(1)
     const [pagination, setPagination] = useState({
       page: 1,
@@ -43,7 +43,7 @@ export default function CommunitiesFeed() {
                 }
                 setCommunityLoader(false)
             }
-            socketMethods.socketRequest("GET_COMMUNITIES", {
+            APIClient.get(APIClient.routes.getCommunities, {
                 accountID: activeUser.accountID,
                 userID: activeUser.accountID,
                 member: false,
@@ -56,7 +56,7 @@ export default function CommunitiesFeed() {
     
     useEffect(() => {
         fetchCommunities()
-    }, [communitiesPage, socket])
+    }, [communitiesPage])
 
     useEffect(() => {
         if (searchQuery.length < 3 || communityLoader) return;
@@ -79,8 +79,9 @@ export default function CommunitiesFeed() {
         setActiveUser,
         activeTheme,
         setActiveTheme,
-        socket,
-        socketMethods,
+        sse,
+        sseListener,
+        sseDeafener,
         alert,
         createAlert,
         ...modalStates,

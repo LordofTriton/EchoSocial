@@ -1,7 +1,9 @@
 import { getDB } from "../../../util/db/mongodb";
+import axios from "axios";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import UpdateChat from "./update-chat";
+import { SSEPush } from "../sse/SSEClient";
 
 function ValidateUpdateMessage(data) {
     if (!data.accountID || !ParamValidator.isValidAccountID(data.accountID)) throw new Error("Missing or Invalid: accountID")
@@ -16,13 +18,13 @@ function parseParams(params, data) {
     return result;
 }
 
-export default async function UpdateMessage(params, io) {
+export default async function UpdateMessage(request, response) {
     const { db } = await getDB();
-    params = parseParams([
+    let params = parseParams([
         "accountID",
         "messageID",
         "deleted"
-    ], params);
+    ], request.body);
 
     try {
         ValidateUpdateMessage(params);
@@ -38,7 +40,7 @@ export default async function UpdateMessage(params, io) {
         if (params.deleted) {
             const messageData = await db.collection("messages").findOne({ messageID: params.messageID })
             const chatData = await db.collection("chats").findOne({ accountID: params.accountID, chatID: messageData.chatID })
-            await UpdateChat({
+            await axios.post(request.headers.origin + "/api/chats/update-chats", {
                 accountID: params.accountID,
                 chatID: messageData.chatID,
                 latestMessage: {
@@ -46,8 +48,8 @@ export default async function UpdateMessage(params, io) {
                     media: null
                 },
                 lastUpdated: Date.now()
-            }, io)
-            await UpdateChat({
+            })
+            await axios.post(request.headers.origin + "/api/chats/update-chats", {
                 accountID: chatData.targetID,
                 chatID: messageData.chatID,
                 latestMessage: {
@@ -55,15 +57,20 @@ export default async function UpdateMessage(params, io) {
                     media: null
                 },
                 lastUpdated: Date.now()
-            }, io)
-            io.to(chatData.accountID).emit(`UPDATED_MESSAGE_${messageData.chatID}`, JSON.stringify(messageData))
-            io.to(chatData.targetID).emit(`UPDATED_MESSAGE_${messageData.chatID}`, JSON.stringify(messageData))
+            })
+
+            SSEPush(chatData.accountID, `UPDATED_MESSAGE_${messageData.chatID}`, messageData)
+            SSEPush(chatData.targetID, `UPDATED_MESSAGE_${messageData.chatID}`, messageData)
         }
 
-        return responseData;
+        response.json(responseData);
+
+        response.once("finish", async () => {
+
+        })
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
-        return responseData;
+        response.json(responseData);
     }
 }

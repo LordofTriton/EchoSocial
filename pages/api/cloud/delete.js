@@ -1,4 +1,5 @@
 import { getDB } from "../../../util/db/mongodb";
+import axios from "axios";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import CloudinaryService from "../../../services/CloudinaryService";
 
@@ -11,7 +12,7 @@ function parseParams(data) {
     return { accountID, echoID, content, repliedTo };
 }
 
-export default async (request, response) => {
+export default async function DeleteFile (request, response) {
     let params = request.query;
 
     try {

@@ -28,7 +28,7 @@ export default function NodeCreator({toggle, control, page}) {
             page.createAlert(data.success ? "success" : "error", data.message)
             setCreateNodeLoader(false)
         }
-        if (page.socket) page.socketMethods.socketRequest("CREATE_NODE", { 
+        APIClient.post(APIClient.routes.createNode, { 
             accountID: page.activeUser.accountID,
             ...newNode
         }, createdNode)

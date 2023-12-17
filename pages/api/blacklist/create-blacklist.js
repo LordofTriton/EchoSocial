@@ -1,4 +1,5 @@
 import { getDB } from "../../../util/db/mongodb";
+import axios from "axios";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import IDGenerator from "../../../services/generators/IDGenerator";
@@ -20,14 +21,14 @@ function parseParams(params, data) {
     return result;
 }
 
-export default async function CreateBlacklist(params, io) {
+export default async function CreateBlacklist (request, response) {
     const { db } = await getDB();
-    params = parseParams([
+    let params = parseParams([
         "accountID",
         "blocker",
         "blockee",
         "blockeeType"
-    ], params);
+    ], request.body);
 
     try {
         ValidateCreateBlacklist(params)
@@ -35,8 +36,6 @@ export default async function CreateBlacklist(params, io) {
 
         let blocked = await db.collection("blacklists").findOne({ blocker: params.blocker, blockee: params.blockee })
         if (blocked) throw new Error("Already blocked :)")
-
-        await DeleteHeart({ accountID: params.blocker, userID: params.blockee }, io)
 
         const blacklistData = {
             blacklistID: IDGenerator.GenerateBlacklistID(),
@@ -56,10 +55,14 @@ export default async function CreateBlacklist(params, io) {
             message: "Blacklist created successfully."
         })
         
-        return responseData;
+        response.json(responseData);
+
+        response.once("finish", async () => {
+            await axios.post(request.headers.origin + "/api/hearts/delete-heart", { accountID: params.blocker, userID: params.blockee })
+        })
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
-        return responseData;
+        response.json(responseData);
     }
 }

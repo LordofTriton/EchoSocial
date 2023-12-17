@@ -1,4 +1,5 @@
 import { getDB } from "../../../util/db/mongodb";
+import axios from "axios";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 
@@ -14,13 +15,13 @@ function parseParams(params, data) {
     return result;
 }
 
-export default async function DeleteMember(params, io) {
+export default async function DeleteCommunityMember (request, response) {
     const { db } = await getDB();
-    params = parseParams([
+    let params = parseParams([
         "accountID",
         "communityID",
         "userID"
-    ], params);
+    ], request.query);
 
     try {
         ValidateDeleteMember(params)
@@ -32,15 +33,19 @@ export default async function DeleteMember(params, io) {
             message: "Member deleted successfully."
         })
 
-        return responseData;
+        response.json(responseData);
+        
+        response.once("finish", async () => {
+            await DeleteMemberCallback(params, request)
+        })
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
-        return responseData;
+        response.json(responseData);
     }
 }
 
-export async function DeleteMemberCallback(params, io) {
+export async function DeleteMemberCallback(params, request) {
     const community = await db.collection("communities").findOne({ communityID: params.communityID })
     await db.collection("nodes").findOneAndUpdate({ nodeID: community.node.nodeID }, { $inc: { pings: 1 }})
 }

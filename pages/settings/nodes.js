@@ -9,7 +9,7 @@ import { Form } from "../components/form";
 import APIClient from "../../services/APIClient";
 import SVGServer from "../../services/svg/svgServer";
 import useModalStates from '../hooks/useModalStates'
-import { useSocketContext } from '../../util/SocketProvider'
+import { useSSEContext } from '../../util/SocketProvider'
 import useDataStates from '../hooks/useDataStates'
 
 export default function NodesSettings() {
@@ -23,7 +23,7 @@ export default function NodesSettings() {
     const [alert, setAlert] = useState(null)
     const {modalStates, modalControl} = useModalStates()
     const [showAccountDrop, setShowAccountDrop] = useState(true)
-    const {socket, socketMethods} = useSocketContext()
+    const { sse, sseListener, sseDeafener } = useSSEContext()
 
     const createAlert = (type, message) => {
         setAlert({ type, message })
@@ -32,13 +32,13 @@ export default function NodesSettings() {
 
     useEffect(() => {
         updateNodeList()
-    }, [searchQuery, socket])
+    }, [searchQuery])
 
     const updateNodeList = async () => {
         if (searchQuery.length % 2 === 0) {
             const query = String(searchQuery).toLowerCase().replace(/\s/g, "").trim()
             const getNodes = (data) => data.success ? setNodeList(data.data) : null;
-            if (socket) socketMethods.socketRequest("GET_NODES", {
+            APIClient.get(APIClient.routes.getNodes, {
                 accountID: activeUser.accountID,
                 filter: query,
                 page: 1,
@@ -48,7 +48,7 @@ export default function NodesSettings() {
     }
 
     const handleSubmit = async () => {
-        if (socket) socketMethods.socketEmitter("UPDATE_ACCOUNT", {
+        APIClient.post(APIClient.routes.updateAccount, {
             accountID: activeUser.accountID,
             nodes: userNodes
         })
@@ -70,8 +70,9 @@ export default function NodesSettings() {
         setActiveUser,
         activeTheme,
         setActiveTheme,
-        socket,
-        socketMethods,
+        sse,
+        sseListener,
+        sseDeafener,
         alert,
         createAlert,
         ...modalStates,

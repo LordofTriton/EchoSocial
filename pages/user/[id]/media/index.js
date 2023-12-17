@@ -8,7 +8,7 @@ import APIClient from "../../../../services/APIClient";
 import SVGServer from "../../../../services/svg/svgServer";
 import Modals from '../../../components/modals';
 import useModalStates from '../../../hooks/useModalStates';
-import { useSocketContext } from '../../../../util/SocketProvider';
+import { useSSEContext } from '../../../../util/SocketProvider';
 import TriMasonryLayout from '../../../components/masonry/tri-masonry';
 import Echo from '../../../components/echo';
 import Helpers from '../../../../util/Helpers';
@@ -27,7 +27,7 @@ function VideoMedia({ source, callback }) {
 export default function UserMedia() {
     const router = useRouter()
     const {modalStates, modalControl} = useModalStates()
-    const {socket, socketMethods} = useSocketContext()
+    const { sse, sseListener, sseDeafener } = useSSEContext()
     const [activeUser, setActiveUser] = useState(CacheService.getData("EchoActiveUser"))
     const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
     const [userData, setUserData] = useState(null)
@@ -51,18 +51,18 @@ export default function UserMedia() {
         }
         const showEcho = (data) => data.success ? modalControl.setShowEchoViewer(data.data) : null
         if (router.query.id) {
-            if (socket) socketMethods.socketRequest("GET_ACCOUNT", {
+            APIClient.get(APIClient.routes.getAccount, {
                 accountID: activeUser.accountID,
                 userID: router.query.id
             }, updateUserData)
         }
         if (router.query.echo) {
-            if (socket) socketMethods.socketRequest("GET_ECHO", {
+            APIClient.get(APIClient.routes.getEcho, {
                 accountID: activeUser.accountID,
                 echoID: router.query.echo
             }, showEcho)
         }
-    }, [router.query, socket])
+    }, [router.query])
 
     useEffect(() => {
         const updateMediaEchoes = (data) => {
@@ -73,7 +73,7 @@ export default function UserMedia() {
             setEchoLoader(false)
         }
         if (userData) {
-            if (socket) socketMethods.socketRequest("USER_FEED", {
+            APIClient.get(APIClient.routes.getuserFeed, {
                 accountID: activeUser.accountID,
                 userID: router.query.id,
                 hasMedia: true,
@@ -81,7 +81,7 @@ export default function UserMedia() {
                 pageSize: 7
             }, updateMediaEchoes)
         }
-    }, [userData, echoPage, socket])
+    }, [userData, echoPage])
 
     const createAlert = (type, message) => {
         setAlert({ type, message })
@@ -97,10 +97,10 @@ export default function UserMedia() {
         setActiveUser,
         activeTheme,
         setActiveTheme,
-        socket,
-        socketMethods,
+        sse,
+        sseListener,
+        sseDeafener,
         alert,
-        socket,
         createAlert,
         ...modalStates,
         ...modalControl,

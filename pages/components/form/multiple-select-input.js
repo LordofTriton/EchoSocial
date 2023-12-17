@@ -12,7 +12,6 @@ export default function SelectMultipleInput({label, style, defaultValue, onAdd, 
         if (JSON.stringify(options) === selectOptions) return;
         setSelectOptions(JSON.stringify(options))
 
-        console.log("defaultValue", defaultValue)
         if (defaultValue && defaultValue.length > 0) {
             const preselected = options.filter((option) => defaultValue.includes(option.value))
             setSelected(preselected)

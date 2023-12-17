@@ -1,9 +1,9 @@
-import Feed from ".";
+import Feed from "./get-feed";
 import UpdateAccount from "../accounts/update-account";
 import SocketAuth from "../socket/auth";
-import CommunitiesFeed from "./communities";
-import CommunityFeed from "./communities/[id]";
-import UserFeed from "./user/[id]";
+import CommunitiesFeed from "./get-communities-feed";
+import CommunityFeed from "./get-community-feed";
+import UserFeed from "./get-user-feed";
 
 export default async function FeedSocket(io, socket) {
     socket.on('FEED_REQ', async (data) => {

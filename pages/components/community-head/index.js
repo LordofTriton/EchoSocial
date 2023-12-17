@@ -30,7 +30,7 @@ export default function CommunityHead({ data, page, title }) {
         setCommunityData({ ...communityData, profileCover: uploadedFile.data[0] })
         setCoverLoader(false)
 
-        if (page.socket) page.socketMethods.socketEmitter("UPDATE_COMMUNITY", {
+        APIClient.post(APIClient.routes.updateCommunity, {
             accountID: page.activeUser.accountID,
             communityID: communityData.communityID,
             profileCover: uploadedFile.data[0]
@@ -53,7 +53,7 @@ export default function CommunityHead({ data, page, title }) {
             if (!data.success) return;
             const updated = { ...uploadedFile.data[0], echo: data.data }
 
-            if (page.socket) page.socketMethods.socketEmitter("UPDATE_COMMUNITY", {
+            APIClient.post(APIClient.routes.updateCommunity, {
                 accountID: page.activeUser.accountID,
                 communityID: communityData.communityID,
                 profileImage: {
@@ -65,7 +65,7 @@ export default function CommunityHead({ data, page, title }) {
             setCommunityData({ ...communityData, profileImage: updated })
             page.createAlert({ type: "success", message: "Profile Image updated successfully." })
         }
-        if (page.socket) page.socketMethods.socketRequest("CREATE_ECHO", {
+        APIClient.post(APIClient.routes.createEcho, {
             accountID: page.activeUser.accountID,
             communityID: communityData.communityID,
             audience: communityData.displayName,
@@ -82,8 +82,7 @@ export default function CommunityHead({ data, page, title }) {
     }
 
     const handleLeaveGroup = async () => {
-        if (!page.socket) return;
-        page.socketMethods.socketEmitter("DELETE_MEMBER", {
+        APIClient.del(APIClient.routes.deleteCommunityMember, {
             accountID: page.activeUser.accountID,
             communityID: communityData.communityID,
             userID: page.activeUser.accountID
@@ -98,7 +97,7 @@ export default function CommunityHead({ data, page, title }) {
         else {
             if (communityData.entryApproval) {
                 const createdApplication = (data) => setCommunityData({...communityData, userApplied: true})
-                if (page.socket) page.socketMethods.socketRequest("CREATE_APPLICATION", {
+                APIClient.post(APIClient.routes.createCommunityApplication, {
                     accountID: page.activeUser.accountID,
                     communityID: communityData.communityID
                 }, createdApplication)
@@ -107,7 +106,7 @@ export default function CommunityHead({ data, page, title }) {
                     setCommunityData({ ...communityData, memberCount: communityData.memberCount + 1 })
                     page.createAlert("success", "Joined community successfully.")
                 }
-                if (page.socket) page.socketMethods.socketRequest("CREATE_MEMBER", {
+                APIClient.post(APIClient.routes.createCommunityMember, {
                     accountID: page.activeUser.accountID,
                     communityID: communityData.communityID
                 }, createdMember)
@@ -117,15 +116,13 @@ export default function CommunityHead({ data, page, title }) {
 
     const blockCommunity = async () => {
         if (communityData && communityData.userMember && communityData.userMember.role !== "member") return;
-        if (page.socket) {
-            page.socketMethods.socketEmitter("CREATE_BLACKLIST", {
-                accountID: page.activeUser.accountID,
-                blocker: page.activeUser.accountID,
-                blockee: communityData.accountID,
-                blockeeType: "community"
-            })
-            page.createAlert("success", "Community blocked successfully.")
-        }
+        APIClient.post(APIClient.routes.createBlacklist, {
+            accountID: page.activeUser.accountID,
+            blocker: page.activeUser.accountID,
+            blockee: communityData.accountID,
+            blockeeType: "community"
+        })
+        page.createAlert("success", "Community blocked successfully.")
     }
 
     return (

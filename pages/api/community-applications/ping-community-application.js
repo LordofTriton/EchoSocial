@@ -1,4 +1,5 @@
 import { getDB } from "../../../util/db/mongodb";
+import axios from "axios";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import CreateMember from "../community-members/create-community-member";
@@ -18,15 +19,15 @@ function parseParams(params, data) {
     return result;
 }
 
-export default async function PingApplication(params, io) {
+export default async function PingCommunityApplications (request, response) {
     const { db } = await getDB();
-    params = parseParams([
+    let params = parseParams([
         "accountID",
         "communityID",
         "applicationID",
         "approve",
         "deny"
-    ], params);
+    ], request.body);
 
     try {
         ValidatePingApplication(params);
@@ -38,46 +39,35 @@ export default async function PingApplication(params, io) {
         const application = await db.collection("applications").findOne({ applicationID: params.applicationID })
         const community = await db.collection("communities").findOne({ communityID: params.communityID });
 
+        
+        await axios.post(request.headers.origin + "/api/community-applications/delete-community-application", {
+            accountID: application.accountID,
+            applicationID: params.applicationID
+        })
+
         if (params.approve) {
-            await CreateMember({
+            await axios.post(request.headers.origin + "/api/community-members/create-community-member", {
                 accountID: application.accountID,
                 communityID: application.communityID
-            }, io)
-            await DeleteApplication({
-                accountID: application.accountID,
-                applicationID: params.applicationID
-            }, io)
-            await CreateNotification({
-                accountID: application.accountID,
-                content: `An admin approved your application to join the ${community.displayName} community.`,
-                image: community.profileImage.url,
-                clickable: false,
-                redirect: `/communities/${community.communityID}`
-            }, io)
-        } 
-        
-        if (params.deny) {
-            await DeleteApplication({
-                accountID: application.accountID,
-                applicationID: params.applicationID
-            }, io)
-            await CreateNotification({
-                accountID: application.accountID,
-                content: `An admin denied your application to join the ${community.displayName} community.`,
-                image: community.profileImage.url,
-                clickable: false,
-                redirect: ""
-            }, io)
+            })
         }
+
+        await axios.post(request.headers.origin + "/api/notifications/create-notification", {
+            accountID: params.userID,
+            content: `An admin ${params.approve ? "approved" : params.deny ? "denied" : "viewed"} your application to join the ${community.displayName} community.`,
+            image: community.profileImage.url,
+            clickable: params.approve ? true : false,
+            redirect: params.approve ? `/communities/${community.communityID}` : ""
+        })
 
         const responseData = ResponseClient.GenericSuccess({
             data: null,
             message: "Application updated successfully."
         })
-        return responseData;
+        response.json(responseData);
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
-        return responseData;
+        response.json(responseData);
     }
 }

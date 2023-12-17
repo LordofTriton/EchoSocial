@@ -5,19 +5,28 @@ import SVGServer from "../../../services/svg/svgServer";
 import { Form } from "../form";
 import Helpers from "../../../util/Helpers";
 import DateGenerator from "../../../services/generators/DateGenerator";
+import APIClient from "../../../services/APIClient";
 
 function Person({data, page}) {
     const [userLiked, setUserLiked] = useState(data.userLiked)
 
     const handleLikeButtonClick = async () => {
-        if (!page.socket) return;
         if (userLiked) setUserLiked(false)
         else setUserLiked(true)
 
-        if (page.activeUser.accountID !== data.accountID) page.socketMethods.socketEmitter(userLiked ? "DELETE_HEART" : "CREATE_HEART", {
-            accountID: page.activeUser.accountID,
-            userID: data.accountID
-        })
+        if (page.activeUser.accountID !== data.accountID) {
+            if (userLiked) {
+                APIClient.del(APIClient.routes.deleteHeart, {
+                    accountID: page.activeUser.accountID,
+                    userID: data.accountID
+                })
+            } else {
+                APIClient.post(APIClient.routes.createHeart, {
+                    accountID: page.activeUser.accountID,
+                    userID: data.accountID
+                })
+            }
+        }
     }
 
     return (
@@ -54,7 +63,7 @@ function Community({data, page}) {
         else {
             if (communityData.entryApproval) {
                 const createdApplication = (data) => setApplied(true)
-                if (page.socket) page.socketMethods.socketRequest("CREATE_APPLICATION", {
+                APIClient.post(APIClient.routes.createCommunityApplication, {
                     accountID: page.activeUser.accountID,
                     communityID: communityData.communityID
                 }, createdApplication)
@@ -62,7 +71,7 @@ function Community({data, page}) {
                 const createdMember = (data) => {
                     setCommunityData({ ...communityData, memberCount: communityData.memberCount + 1 })
                 }
-                if (page.socket) page.socketMethods.socketRequest("CREATE_MEMBER", {
+                APIClient.post(APIClient.routes.createCommunityMember, {
                     accountID: page.activeUser.accountID,
                     communityID: communityData.communityID
                 }, createdMember)
@@ -116,21 +125,21 @@ export default function Search({toggle, control, page}) {
             }
             setSearchLoader(false)
         }
-        if (page.socket && query.length > 2 && query.length % 2 === 0) {
-            if (searchClass === "people") page.socketMethods.socketRequest("GET_ACCOUNTS", {
+        if (query.length > 2 && query.length % 2 === 0) {
+            if (searchClass === "people") APIClient.get(APIClient.routes.getAccounts, {
                 accountID: page.activeUser.accountID,
                 filter: query,
                 page: searchPage,
                 pageSize: 10
             }, updateResults)
-            if (searchClass === "communities") page.socketMethods.socketRequest("GET_COMMUNITIES", {
+            if (searchClass === "communities") APIClient.get(APIClient.routes.getCommunities, {
                 accountID: page.activeUser.accountID,
                 filter: query,
                 page: searchPage,
                 pageSize: 10
             }, updateResults)
         }
-    }, [page.socket, query, searchPage, searchClass])
+    }, [query, searchPage, searchClass])
 
     useEffect(() => {
         setSearchPage(1)

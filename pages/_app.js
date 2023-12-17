@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import '../styles/globals.css'
 
 import CacheService from '../services/CacheService';
-import { SocketProvider } from '../util/SocketProvider';
+import { SSEProvider } from '../util/SocketProvider';
 import Helpers from '../util/Helpers';
 import DateGenerator from '../services/generators/DateGenerator';
 import ScrollTop from './hooks/useScrollTop';
@@ -45,10 +45,10 @@ export default function MyApp({ Component, pageProps }) {
       <div className="app-container">
         { 
           activeUser && activeUser.accountID ? 
-            <SocketProvider>
+            <SSEProvider>
               <ScrollTop />
               <Component {...pageProps} /> 
-            </SocketProvider>
+            </SSEProvider>
           : 
             <Component {...pageProps} />
         }

@@ -9,7 +9,7 @@ import Echo from './components/echo';
 import Modals from './components/modals';
 import DuoMasonryLayout from './components/masonry/duo-masonry'
 import useModalStates from './hooks/useModalStates'
-import { useSocketContext } from '../util/SocketProvider'
+import { useSSEContext } from '../util/SocketProvider'
 import Helpers from '../util/Helpers'
 import SVGServer from '../services/svg/svgServer'
 
@@ -21,8 +21,7 @@ export default function Home() {
   const {modalStates, modalControl} = useModalStates()
   const [echoFeed, setEchoFeed] = useState([])
   const [echoFeedPage, setEchoFeedPage] = useState(1)
-  const [echoFeedFilter, setEchoFeedFilter] = useState(null)
-  const {socket, socketMethods} = useSocketContext()
+  const {sse, sseListener, sseDeafener } = useSSEContext()
   const [pagination, setPagination] = useState({
     page: 1,
     pageSize: 10,
@@ -33,41 +32,19 @@ export default function Home() {
   const [pagePremier, setPagePremier] = useState(null)
 
   useEffect(() => {
-    if (socket) {
-      const updateFeed = (data) => {
-        if (data.success) {
-          console.log(data.data)
-          Helpers.setPaginatedState(data.data, setEchoFeed, data.pagination, "echoID")
-          setPagination(data.pagination)
-        }
-        setFeedLoader(false)
+    const updateFeed = (data) => {
+      if (data.success) {
+        Helpers.setPaginatedState(data.data, setEchoFeed, data.pagination, "echoID")
+        setPagination(data.pagination)
       }
-      socketMethods.socketRequest("FEED", {
-        accountID: activeUser.accountID,
-        page: echoFeedPage,
-        pageSize: 10
-      }, updateFeed)
+      setFeedLoader(false)
     }
-  }, [echoFeedPage, socket])
-
-  useEffect(() => {
-    setFeedLoader(true)
-    if (socket) {
-      const updateFeed = (data) => {
-        if (data.success) {
-          if (data.data.length > 0) setPagePremier(data.data[0].echoID)
-          Helpers.setPaginatedState(data.data, setEchoFeed, data.pagination, "echoID")
-          setPagination(data.pagination)
-        }
-        setFeedLoader(false)
-      }
-      socketMethods.socketRequest("FEED", {
-        accountID: activeUser.accountID,
-        page: 1,
-        pageSize: 10
-      }, updateFeed)
-    }
-  }, [echoFeedFilter])
+    APIClient.get(APIClient.routes.getFeed, {
+      accountID: activeUser.accountID,
+      page: echoFeedPage,
+      pageSize: 10
+    }, updateFeed)
+  }, [echoFeedPage])
 
   const createAlert = (type, message) => {
     setAlert({ type, message })
@@ -83,16 +60,13 @@ export default function Home() {
     setActiveUser,
     activeTheme,
     setActiveTheme,
-    socket,
-    socketMethods,
+    sse,
+    sseListener,
+    sseDeafener,
     alert,
     createAlert,
     ...modalStates,
     ...modalControl,
-  }
-
-  const filteredFeed = () => {
-    return echoFeed.filter((echo) => echoFeedFilter === null ? true : echo.nodes.includes(echoFeedFilter))
   }
 
   const handleScroll = (event) => {
@@ -104,7 +78,6 @@ export default function Home() {
       let premierIsAboveTop = false;
       const premier = document.getElementById(pagePremier);
       if (premier) {
-        premier.style.backgroundColor = "red"
         const rect = premier.getBoundingClientRect();
         premierIsAboveTop = rect.bottom < 0;
       }
@@ -161,7 +134,7 @@ export default function Home() {
               </div>
             </div>
 
-            { filteredFeed().length ? <DuoMasonryLayout blocks={filteredFeed().map((echo, index) => <Echo data={echo} page={pageControl} key={index} /> )} /> : null }
+            { echoFeed.length ? <DuoMasonryLayout blocks={echoFeed.map((echo, index) => <Echo data={echo} page={pageControl} key={index} /> )} /> : null }
 
             {feedLoader ?
               <div className="loader" style={{

@@ -1,4 +1,5 @@
 import { getDB } from "../../../util/db/mongodb";
+import axios from "axios";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import DeleteNode from "../nodes/delete-node";
@@ -16,12 +17,12 @@ function parseParams(params, data) {
     return result;
 }
 
-export default async function DeleteCommunity(params, io) {
+export default async function DeleteCommunity (request, response) {
     const { db } = await getDB();
-    params = parseParams([
+    let params = parseParams([
         "accountID",
         "communityID"
-    ], params);
+    ], request.query);
 
     try {
         ValidateDeleteCommunity(params)
@@ -32,7 +33,7 @@ export default async function DeleteCommunity(params, io) {
 
         const deleteCommunityResponse = await db.collection("communities").deleteOne({ communityID: params.communityID })
 
-        await DeleteNode({
+        await axios.post(request.headers.origin + "/api/nodes/delete-node", {
             accountID: params.accountID,
             nodeID: community.node.nodeID
         })
@@ -41,10 +42,10 @@ export default async function DeleteCommunity(params, io) {
             data: deleteCommunityResponse,
             message: "Community deleted successfully."
         })
-        return responseData;
+        response.json(responseData);
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
-        return responseData;
+        response.json(responseData);
     }
 }

@@ -9,7 +9,7 @@ import SVGServer from "../../../../services/svg/svgServer";
 import Modals from '../../../components/modals';
 import useModalStates from '../../../hooks/useModalStates';
 import useDataStates from '../../../hooks/useDataStates';
-import { useSocketContext } from '../../../../util/SocketProvider';
+import { useSSEContext } from '../../../../util/SocketProvider';
 import QuadMasonryLayout from '../../../components/masonry/quad-masonry';
 import UserThumb from '../../../components/user-thumb';
 import UserHead from '../../../components/user-head';
@@ -18,7 +18,7 @@ import Helpers from '../../../../util/Helpers';
 export default function UserFriends() {
     const router = useRouter()
     const {modalStates, modalControl} = useModalStates()
-    const {socket, socketMethods} = useSocketContext()
+    const { sse, sseListener, sseDeafener } = useSSEContext()
     const [activeUser, setActiveUser] = useState(CacheService.getData("EchoActiveUser"))
     const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
     const [userData, setUserData] = useState(null)
@@ -41,12 +41,12 @@ export default function UserFriends() {
             }
         }
         if (router.query.id) {
-            if (socket) socketMethods.socketRequest("GET_ACCOUNT", {
+            APIClient.get(APIClient.routes.getAccount, {
                 accountID: activeUser.accountID,
                 userID: router.query.id
             }, updateUserData)
         }
-    }, [router.query, socket])
+    }, [router.query])
 
     useEffect(() => {
         const updateUserFriends = (data) => {
@@ -57,14 +57,14 @@ export default function UserFriends() {
             setFriendLoader(false)
         }
         if (userData) {
-            if (socket) socketMethods.socketRequest("GET_FRIENDS", {
+            APIClient.get(APIClient.routes.getFriends, {
                 accountID: activeUser.accountID,
                 userID: router.query.id,
                 page: friendPage,
                 pageSize: 10
             }, updateUserFriends)
         }
-    }, [userData, socket])
+    }, [userData])
 
     const createAlert = (type, message) => {
         setAlert({ type, message })
@@ -80,10 +80,10 @@ export default function UserFriends() {
         setActiveUser,
         activeTheme,
         setActiveTheme,
-        socket,
-        socketMethods,
+        sse,
+        sseListener,
+        sseDeafener,
         alert,
-        socket,
         createAlert,
         ...modalStates,
         ...modalControl,

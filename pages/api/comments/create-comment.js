@@ -1,9 +1,11 @@
 import { getDB } from "../../../util/db/mongodb";
+import axios from "axios";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import IDGenerator from "../../../services/generators/IDGenerator";
 import CreateNotification from "../notifications/create-notification";
 import CreateHeart from "../hearts/create-heart";
+import { SSEBroadcast } from "../sse/SSEClient";
 
 function ValidateCreateComment(data) {
     if (!data.accountID || !ParamValidator.isValidAccountID(data.accountID)) throw new Error("Missing or Invalid: accountID.")
@@ -22,14 +24,14 @@ function parseParams(params, data) {
     return result;
 }
 
-export default async function CreateComment(params, io) {
+export default async function CreateComment (request, response) {
     const { db } = await getDB();
-    params = parseParams([
+    let params = parseParams([
         "accountID",
         "echoID",
         "content",
         "repliedTo"
-    ], params);
+    ], request.body);
 
     try {
         ValidateCreateComment(params)
@@ -59,54 +61,58 @@ export default async function CreateComment(params, io) {
             profileImage: commentUser.profileImage
         }
 
-        io.emit(`NEW_COMMENT_${params.echoID}`, JSON.stringify(result))
+        SSEBroadcast(`NEW_COMMENT_${params.echoID}`, result)
 
         const responseData = ResponseClient.DBModifySuccess({
             data: result,
             message: "Comment created successfully."
         })
-
-        await CreateHeart({
-            accountID: params.accountID,
-            commentID: commentData.commentID
-        })
         
-        return responseData;
+        response.json(responseData);
+        
+        response.once("finish", async () => {
+            await CreateCommentCallback(params, request)
+        })
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
-        return responseData;
+        response.json(responseData);
     }
 }
 
-export async function CreateCommentCallback(params, io) {
+export async function CreateCommentCallback(params, request) {
     const { db } = await getDB();
     const echo = (await db.collection("echoes").findOne({ echoID: params.echoID }))
     const commentUser = (await db.collection("accounts").findOne({ accountID: params.accountID }))
+    
+    await axios.post(request.headers.origin + "/api/hearts/create-heart", {
+        accountID: params.accountID,
+        commentID: commentData.commentID
+    })
 
     if (params.accountID !== echo.accountID) {
         const echoUserSettings = await db.collection("settings").findOne({ accountID: echo.accountID })
         if (echoUserSettings.commentNotification) {
-            await CreateNotification({
+            await axios.post(request.headers.origin + "/api/notifications/create-notification", {
                 accountID: echo.accountID,
                 content: `${commentUser.firstName} ${commentUser.lastName} commented on your echo.`,
                 image: commentUser.profileImage.url,
                 clickable: true,
                 redirect: echo.url
-            }, io)
+            })
         }
     }
 
     if (params.repliedTo && params.accountID !== params.repliedTo.accountID) {
         const replyUserSettings = await db.collection("settings").findOne({ accountID: params.repliedTo.accountID })
         if (replyUserSettings.commentReplyNotification) {
-            await CreateNotification({
+            await axios.post(request.headers.origin + "/api/notifications/create-notification", {
                 accountID: params.repliedTo.accountID,
                 content: `${commentUser.firstName} ${commentUser.lastName} replied to your comment on an echo.`,
                 image: commentUser.profileImage.url,
                 clickable: true,
                 redirect: echo.url
-            }, io)
+            })
         }
     }
 }

@@ -9,7 +9,7 @@ import SVGServer from '../../services/svg/svgServer'
 import APIClient from "../../services/APIClient";
 import { Form } from "../components/form";
 import useModalStates from '../hooks/useModalStates'
-import { useSocketContext } from '../../util/SocketProvider'
+import { useSSEContext } from '../../util/SocketProvider'
 import useDataStates from '../hooks/useDataStates'
 import Helpers from '../../util/Helpers'
 
@@ -21,7 +21,7 @@ export default function BlacklistSettings() {
     const [alert, setAlert] = useState(null)
     const {modalStates, modalControl} = useModalStates()
     const [showAccountDrop, setShowAccountDrop] = useState(false)
-    const {socket, socketMethods} = useSocketContext()
+    const { sse, sseListener, sseDeafener } = useSSEContext()
     const [blacklistLoader, setBlacklistLoader] = useState(true)
     const [blacklistPage, setBlacklistPage] = useState(1)
     const [pagination, setPagination] = useState({
@@ -37,28 +37,25 @@ export default function BlacklistSettings() {
     }
 
     useEffect(() => {
-        if (socket) {
-            const updateBlacklists = (data) => {
-                if (data.success) {
-                    Helpers.setPaginatedState(data.data, setBlacklists, data.pagination, "accountID")
-                    setPagination(data.pagination)
-                }
-                setBlacklistLoader(false)
+        const updateBlacklists = (data) => {
+            if (data.success) {
+                Helpers.setPaginatedState(data.data, setBlacklists, data.pagination, "accountID")
+                setPagination(data.pagination)
             }
-            if (activeUser.accountID) {
-                if (socket) socketMethods.socketRequest("GET_BLACKLISTS", {
-                    accountID: activeUser.accountID,
-                    blocker: activeUser.accountID,
-                    page: blacklistPage,
-                    pageSize: 10
-                }, updateBlacklists)
-            }
+            setBlacklistLoader(false)
         }
-    }, [socket, blacklistPage])
+        if (activeUser.accountID) {
+            APIClient.get(APIClient.routes.getBlacklist, {
+                accountID: activeUser.accountID,
+                blocker: activeUser.accountID,
+                page: blacklistPage,
+                pageSize: 10
+            }, updateBlacklists)
+        }
+    }, [blacklistPage])
 
     const handleLiftBan = async (blockee) => {
-        if (!socket) return;
-        socketMethods.socketEmitter("DELETE_BLACKLIST", {
+        APIClient.del(APIClient.routes.deleteBlacklist, {
             accountID: activeUser.accountID,
             blocker: activeUser.accountID,
             blockee
@@ -76,8 +73,9 @@ export default function BlacklistSettings() {
         setActiveUser,
         activeTheme,
         setActiveTheme,
-        socket,
-        socketMethods,
+        sse,
+        sseListener,
+        sseDeafener,
         alert,
         createAlert,
         ...modalStates,

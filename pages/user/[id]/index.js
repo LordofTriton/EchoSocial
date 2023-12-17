@@ -10,7 +10,7 @@ import SVGServer from "../../../services/svg/svgServer";
 import Modals from '../../components/modals';
 import DuoMasonryLayout from '../../components/masonry/duo-masonry';
 import useModalStates from '../../hooks/useModalStates';
-import { useSocketContext } from '../../../util/SocketProvider';
+import { useSSEContext } from '../../../util/SocketProvider';
 import UserHead from '../../components/user-head';
 import useDataStates from '../../hooks/useDataStates';
 import Helpers from '../../../util/Helpers';
@@ -19,7 +19,7 @@ import ScrollTop from '../../hooks/useScrollTop';
 export default function User() {
   const router = useRouter()
   const {modalStates, modalControl} = useModalStates()
-  const {socket, socketMethods} = useSocketContext()
+  const { sse, sseListener, sseDeafener } = useSSEContext()
   const [activeUser, setActiveUser] = useState(CacheService.getData("EchoActiveUser"))
   const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
   const [userData, setUserData] = useState(null)
@@ -46,18 +46,18 @@ export default function User() {
     const updateUserData = (data) => data.success ? setUserData(data.data) : null;
     const showEcho = (data) => data.success ? modalControl.setShowEchoViewer(data.data) : null
     if (router.query.id) {
-      if (socket) socketMethods.socketRequest("GET_ACCOUNT", {
+      APIClient.get(APIClient.routes.getAccount, {
         accountID: activeUser.accountID,
         userID: router.query.id
       }, updateUserData)
     }
     if (router.query.echo) {
-      if (socket) socketMethods.socketRequest("GET_ECHO", {
+      APIClient.get(APIClient.routes.getEcho, {
         accountID: activeUser.accountID,
         echoID: router.query.echo
       }, showEcho)
     }
-  }, [router.query, socket])
+  }, [router.query])
 
   useEffect(() => {
     const updateEchoes = (data) => {
@@ -71,14 +71,14 @@ export default function User() {
     const updateUserFriends = (data) => data.success ? setUserFriends(data.data) : null;
     const updateUserCommunities = (data) => data.success ? setUserCommunities(data.data) : null;
     if (userData) {
-      if (socket) socketMethods.socketRequest("USER_FEED", {
+      APIClient.get(APIClient.routes.getuserFeed, {
         accountID: activeUser.accountID,
         userID: router.query.id,
         page: feedPage,
         pageSize: 10
       }, updateEchoes)
       if (userFriends.length < 1) {
-        if (socket) socketMethods.socketRequest("GET_FRIENDS", {
+        APIClient.get(APIClient.routes.getFriends, {
           accountID: activeUser.accountID,
           userID: router.query.id,
           page: 1,
@@ -86,7 +86,7 @@ export default function User() {
         }, updateUserFriends)
       }
       if (userCommunities.length < 1) {
-        if (socket) socketMethods.socketRequest("GET_COMMUNITIES", {
+        APIClient.get(APIClient.routes.getCommunities, {
           accountID: activeUser.accountID,
           userID: router.query.id,
           member: true,
@@ -95,7 +95,7 @@ export default function User() {
         }, updateUserCommunities)
       }
       if (userMediaEchoes.length < 1) {
-        if (socket) socketMethods.socketRequest("USER_FEED", {
+        APIClient.get(APIClient.routes.getuserFeed, {
           accountID: userData.accountID,
           userID: router.query.id,
           hasMedia: true,
@@ -104,7 +104,7 @@ export default function User() {
         }, updateMediaEchoes)
       }
     }
-  }, [userData, feedPage, socket])
+  }, [userData, feedPage])
 
   const createAlert = (type, message) => {
     setAlert({ type, message })
@@ -120,10 +120,10 @@ export default function User() {
     setActiveUser,
     activeTheme,
     setActiveTheme,
-    socket,
-    socketMethods,
+    sse,
+    sseListener,
+    sseDeafener,
     alert,
-    socket,
     createAlert,
     ...modalStates,
     ...modalControl,

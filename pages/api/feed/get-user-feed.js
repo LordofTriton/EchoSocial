@@ -1,6 +1,6 @@
-import { getDB } from "../../../../../util/db/mongodb";
-import ParamValidator from "../../../../../services/validation/validator";
-import ResponseClient from "../../../../../services/validation/ResponseClient";
+import { getDB } from "../../../util/db/mongodb";
+import ParamValidator from "../../../services/validation/validator";
+import ResponseClient from "../../../services/validation/ResponseClient";
 
 function ValidateFeed(data) {
     if (!data.accountID || !ParamValidator.isValidAccountID(data.accountID)) throw new Error("Missing or Invalid: accountID.")
@@ -14,44 +14,41 @@ function parseParams(params, data) {
     return result;
 }
 
-export default async function CommunityFeed(params, io) {
+export default async function UserFeed(request, response) {
     const { db } = await getDB();
-    params = parseParams([
+    let params = parseParams([
         "accountID",
-        "communityID",
+        "userID",
         "hasMedia",
         "mediaType",
+        "filter",
         "page",
         "pageSize"
-    ], params);
+    ], request.query);
 
     try {
         ValidateFeed(params);
 
-        const userAccount = await db.collection("accounts").findOne({ accountID: params.accountID })
+        const userAccount = (await db.collection("accounts").findOne({ accountID: params.accountID }))
         let communities = await db.collection("members").find({ accountID: params.accountID }).toArray()
         let blacklist = await db.collection("blacklists").find({ $or: [{ blocker: params.accountID }, { blockee: params.accountID}] }).toArray()
+        let friendsList = (await db.collection("friends").find({ accountID: params.accountID }).toArray()).map((friend) => friend.friendID)
         if (!userAccount) throw new Error("Account does not exist.")
 
-        const community = await db.collection("communities").findOne({ communityID: params.communityID })
-        if (!community) throw new Error("This community does not exist.")
-        if (community.privacy === "private" && !communities.map((obj) => obj.communityID).includes(params.communityID)) {
-            throw new Error("This community is private. Join to see echoes.")
-        }
-
-        let filters = { 
-            $and: [
-                { communityID: params.communityID }, 
-                { communityID: { $in: communities.map((obj) => obj.communityID) } }, 
+        const filters = { 
+            $and: [ 
+                { accountID: params.userID }, 
+                { accountID: { $nin: blacklist.filter((blck) => blck.blocker === params.accountID).map((obj) => obj.blockee) } },
+                { accountID: { $nin: blacklist.filter((blck) => blck.blockee === params.accountID).map((obj) => obj.blocker) } } , 
                 { communityID: { $nin: blacklist.filter((blck) => blck.blocker === params.accountID).map((obj) => obj.blockee) } }, 
-                { communityID: { $nin: blacklist.filter((blck) => blck.blockee === params.accountID).map((obj) => obj.blocker) } },
-                { accountID: { $nin: blacklist.filter((blck) => blck.blocker === params.accountID).map((obj) => obj.blockee) } }, 
-                { accountID: { $nin: blacklist.filter((blck) => blck.blockee === params.accountID).map((obj) => obj.blocker) } }
-            ]
+                { communityID: { $nin: blacklist.filter((blck) => blck.blockee === params.accountID).map((obj) => obj.blocker) } }
+            ],
+            $or: [ {communityID: { $in: communities.map((obj) => obj.communityID) }}, { audience: "public" }, { audience: "friends", accountID: { $in: friendsList } }, { accountID: userAccount.accountID } ],
+            
         }
         if (params.hasMedia) filters["content.media"] = { $ne: null }
         if (params.mediaType) filters["content.media.type"] = params.mediaType
-        if (params.filter) filters.$or = [{ "content.text": { $regex: params.filter, $options: 'i' } }]
+        if (params.filter) filters.$or.push({ "content.text": { $regex: params.filter, $options: 'i' } })
 
         const pagination = {
             page: parseInt(params.page),
@@ -68,7 +65,7 @@ export default async function CommunityFeed(params, io) {
             const user = (await db.collection("accounts").findOne({ accountID: echo.accountID }))
             const comments = await db.collection("comments").countDocuments({ echoID: echo.echoID })
             const community = echo.communityID ? await db.collection("communities").findOne({ communityID: echo.communityID }) : null
-            const communityMember = community ? await db.collection("members").findOne({ communityID: echo.communityID, accountID: echo.accountID }) : null
+            const communityMember = community ? await db.collection("members").findOne({ communityID: echo.communityID, accountID: params.accountID }) : null
             let heartCount = await db.collection("hearts").countDocuments({ echoID: echo.echoID });
             let userHearted = await db.collection("hearts").findOne({ accountID: params.accountID, echoID: echo.echoID });
             let userSaved = await db.collection("saves").findOne({ accountID: params.accountID, echoID: echo.echoID });
@@ -102,10 +99,10 @@ export default async function CommunityFeed(params, io) {
             totalItems: echoCount,
             pagination: true
         })
-        return responseData;
+        response.json(responseData);
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
-        return responseData;
+        response.json(responseData);
     }
 }

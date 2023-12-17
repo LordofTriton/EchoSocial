@@ -1,10 +1,12 @@
 import { getDB } from "../../../util/db/mongodb";
+import axios from "axios";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import IDGenerator from "../../../services/generators/IDGenerator";
 import CreateNotification from "../notifications/create-notification";
 import CreateHeart from "../hearts/create-heart";
 import CreateChat from "../messenger/create-chat";
+import { SSEPush } from "../sse/SSEClient";
 
 function ValidateCreateFriend(data) {
     if (!data.accountID || !ParamValidator.isValidAccountID(data.accountID)) throw new Error("Missing or Invalid: accountID.")
@@ -19,12 +21,12 @@ function parseParams(params, data) {
     return result;
 }
 
-export default async function CreateFriend(params, io) {
+export default async function CreateFriend(request, response) {
     const { db } = await getDB();
-    params = parseParams([
+    let params = parseParams([
         "accountID",
         "friendID"
-    ], params);
+    ], request.body);
 
     try {
         ValidateCreateFriend(params)
@@ -52,42 +54,47 @@ export default async function CreateFriend(params, io) {
             message: "Friend created successfully."
         })
         
-        return responseData;
+        response.json(responseData);
+        
+        response.once("finish", async () => {
+            await CreateFriendCallback(params, request)
+        })
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
-        return responseData;
+        response.json(responseData);
     }
 }
 
-export async function CreateFriendCallback(params, io) {
+export async function CreateFriendCallback(params, request) {
     const { db } = await getDB();
     const userAccount = await db.collection("accounts").findOne({ accountID: params.accountID })
     const friend = await db.collection("accounts").findOne({ accountID: params.friendID })
     
-    await CreateNotification({
+    await axios.post(request.headers.origin + "/api/notifications/create-notification", {
         accountID: userAccount.accountID,
         content: `You are now friends with ${friend.firstName} ${friend.lastName}.`,
         image: friend.profileImage.url,
         clickable: true,
         redirect: `/user/${friend.accountID}`
-    }, io)
-    await CreateNotification({
+    })
+    await axios.post(request.headers.origin + "/api/notifications/create-notification", {
         accountID: friend.accountID,
         content: `${userAccount.firstName} ${userAccount.lastName} liked your page! You are now friends. Click to view their profile.`,
         image: userAccount.profileImage.url,
         clickable: true,
         redirect: `/user/${userAccount.accountID}`
-    }, io)
-    const userChat = await CreateChat({
+    })
+    const userChat = (await axios.post(request.headers.origin + "/api/chats/create-chat", {
         accountID: params.accountID,
         targetID: friend.accountID
-    }, io)
-    const friendChat = await CreateChat({
+    })).data;
+    const friendChat = (await axios.post(request.headers.origin + "/api/chats/create-chat", {
         accountID: friend.accountID,
         targetID: params.accountID
-    }, io)
-    io.to(params.accountID).emit("NEW_FRIEND", JSON.stringify({
+    })).data;
+
+    SSEPush(params.accountID, "NEW_FRIEND", {
         accountID: friend.accountID,
         firstName: friend.firstName,
         lastName: friend.lastName,
@@ -98,8 +105,9 @@ export async function CreateFriendCallback(params, io) {
         userLiked: true,
         userLikee: true,
         userFriend: true
-    }))
-    io.to(params.friendID).emit("NEW_FRIEND", JSON.stringify({
+    })
+
+    SSEPush(params.friendID, "NEW_FRIEND", {
         accountID: userAccount.accountID,
         firstName: userAccount.firstName,
         lastName: userAccount.lastName,
@@ -110,5 +118,5 @@ export async function CreateFriendCallback(params, io) {
         userLiked: true,
         userLikee: true,
         userFriend: true
-    }))
+    })
 }

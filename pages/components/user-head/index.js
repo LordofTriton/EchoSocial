@@ -31,7 +31,7 @@ export default function UserHead({ data, page, title }) {
         setUserData({ ...userData, profileCover: uploadedFile.data[0] })
         setCoverLoader(false)
 
-        if (page.socket) page.socketMethods.socketEmitter("UPDATE_ACCOUNT", {
+        APIClient.post(APIClient.routes.updateAccount, {
             accountID: page.activeUser.accountID,
             profileCover: uploadedFile.data[0]
         })
@@ -55,7 +55,7 @@ export default function UserHead({ data, page, title }) {
             if (!data.success) return;
             const updated = { ...uploadedFile.data[0], echo: data.data }
 
-            if (page.socket) page.socketMethods.socketEmitter("UPDATE_ACCOUNT", {
+            APIClient.post(APIClient.routes.updateAccount, {
                 accountID: page.activeUser.accountID,
                 profileImage: {
                     ...uploadedFile.data[0],
@@ -68,7 +68,7 @@ export default function UserHead({ data, page, title }) {
             setUserData({ ...userData, profileImage: updated })
             page.createAlert({ type: "success", message: "Profile Image updated successfully." })
         }
-        if (page.socket) page.socketMethods.socketRequest("CREATE_ECHO", {
+        APIClient.post(APIClient.routes.createEcho, {
             accountID: page.activeUser.accountID,
             communityID: null,
             audience: "public",
@@ -85,19 +85,27 @@ export default function UserHead({ data, page, title }) {
     }
 
     const handleFollowButtonClick = async () => {
-        if (!page.socket) return;
         if (userData.userHearted) setUserData({ ...userData, userHearted: false, hearts: userData.hearts - 1 })
         else setUserData({ ...userData, userHearted: true, hearts: userData.hearts + 1 })
 
-        if (page.activeUser.accountID !== userData.accountID) page.socketMethods.socketEmitter(userData.userHearted ? "DELETE_HEART" : "CREATE_HEART", {
-            accountID: page.activeUser.accountID,
-            userID: userData.accountID
-        })
+        if (page.activeUser.accountID !== userData.accountID) {
+            if (userData.userHearted) {
+                APIClient.del(APIClient.routes.deleteHeart, { 
+                    accountID: page.activeUser.accountID,
+                    userID: userData.accountID
+                })
+            } else {
+                APIClient.post(APIClient.routes.createHeart, { 
+                    accountID: page.activeUser.accountID,
+                    userID: userData.accountID
+                })
+            }
+        }
     }
 
     const blockUser = async () => {
-        if (page.socket && page.activeUser.accountID !== userData.accountID) {
-            page.socketMethods.socketEmitter("CREATE_BLACKLIST", {
+        if (page.activeUser.accountID !== userData.accountID) {
+            APIClient.post(APIClient.routes.createBlacklist, {
                 accountID: page.activeUser.accountID,
                 blocker: page.activeUser.accountID,
                 blockee: userData.accountID,
@@ -109,8 +117,8 @@ export default function UserHead({ data, page, title }) {
     }
 
     const unblockUser = async () => {
-        if (page.socket && page.activeUser.accountID !== userData.accountID) {
-            page.socketMethods.socketEmitter("DELETE_BLACKLIST", {
+        if (page.activeUser.accountID !== userData.accountID) {
+            APIClient.del(APIClient.routes.deleteBlacklist, {
                 accountID: page.activeUser.accountID,
                 blocker: page.activeUser.accountID,
                 blockee: userData.accountID

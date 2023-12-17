@@ -14,39 +14,44 @@ function parseParams(params, data) {
     return result;
 }
 
-export default async function Feed(params, io) {
+export default async function CommunityFeed(request, response) {
     const { db } = await getDB();
-    params = parseParams([
+    let params = parseParams([
         "accountID",
-        "nodes",
-        "filter",
+        "communityID",
+        "hasMedia",
+        "mediaType",
         "page",
         "pageSize"
-    ], params);
+    ], request.query);
 
     try {
         ValidateFeed(params);
 
-        const userAccount = (await db.collection("accounts").findOne({ accountID: params.accountID }))
+        const userAccount = await db.collection("accounts").findOne({ accountID: params.accountID })
         let communities = await db.collection("members").find({ accountID: params.accountID }).toArray()
         let blacklist = await db.collection("blacklists").find({ $or: [{ blocker: params.accountID }, { blockee: params.accountID}] }).toArray()
-        let friendsList = (await db.collection("friends").find({ accountID: params.accountID }).toArray()).map((friend) => friend.friendID)
         if (!userAccount) throw new Error("Account does not exist.")
 
-        const filters = {
-            $or: [ 
-                { nodes: { $in: params.nodes ? params.nodes : userAccount.nodes.map((node) => node.nodeID) } }, 
-                { communityID: { $in: communities.map((obj) => obj.communityID) } } 
-            ],
-            $and: [ 
-                { $or: [ { communityID: { $in: communities.map((obj) => obj.communityID) } }, { audience: "public" }, { audience: "friends", accountID: { $in: friendsList } }, { accountID: params.accountID } ] },
-                { accountID: { $nin: blacklist.filter((blck) => blck.blocker === params.accountID).map((obj) => obj.blockee) } },
-                { accountID: { $nin: blacklist.filter((blck) => blck.blockee === params.accountID).map((obj) => obj.blocker) } },
+        const community = await db.collection("communities").findOne({ communityID: params.communityID })
+        if (!community) throw new Error("This community does not exist.")
+        if (community.privacy === "private" && !communities.map((obj) => obj.communityID).includes(params.communityID)) {
+            throw new Error("This community is private. Join to see echoes.")
+        }
+
+        let filters = { 
+            $and: [
+                { communityID: params.communityID }, 
+                { communityID: { $in: communities.map((obj) => obj.communityID) } }, 
                 { communityID: { $nin: blacklist.filter((blck) => blck.blocker === params.accountID).map((obj) => obj.blockee) } }, 
-                { communityID: { $nin: blacklist.filter((blck) => blck.blockee === params.accountID).map((obj) => obj.blocker) } }
+                { communityID: { $nin: blacklist.filter((blck) => blck.blockee === params.accountID).map((obj) => obj.blocker) } },
+                { accountID: { $nin: blacklist.filter((blck) => blck.blocker === params.accountID).map((obj) => obj.blockee) } }, 
+                { accountID: { $nin: blacklist.filter((blck) => blck.blockee === params.accountID).map((obj) => obj.blocker) } }
             ]
         }
-        if (params.filter) filters["content.text"] = { $regex: params.filter, $options: 'i' }
+        if (params.hasMedia) filters["content.media"] = { $ne: null }
+        if (params.mediaType) filters["content.media.type"] = params.mediaType
+        if (params.filter) filters.$or = [{ "content.text": { $regex: params.filter, $options: 'i' } }]
 
         const pagination = {
             page: parseInt(params.page),
@@ -54,7 +59,7 @@ export default async function Feed(params, io) {
         }
         const skip = (pagination.page - 1) * pagination.pageSize;
 
-        let echoes = await db.collection("echoes").find(filters).sort({ datetime: -1 }).skip(skip).limit(pagination.pageSize).toArray();
+        const echoes = await db.collection("echoes").find(filters).sort({ datetime: -1 }).skip(skip).limit(pagination.pageSize).toArray();
         const echoCount = await db.collection("echoes").countDocuments(filters);
         if (!echoes) throw new Error("Unable to fetch echoes.")
 
@@ -63,12 +68,12 @@ export default async function Feed(params, io) {
             const user = (await db.collection("accounts").findOne({ accountID: echo.accountID }))
             const comments = await db.collection("comments").countDocuments({ echoID: echo.echoID })
             const community = echo.communityID ? await db.collection("communities").findOne({ communityID: echo.communityID }) : null
-            const communityMember = community ? await db.collection("members").findOne({ communityID: echo.communityID, accountID: params.accountID }) : null
+            const communityMember = community ? await db.collection("members").findOne({ communityID: echo.communityID, accountID: echo.accountID }) : null
             let heartCount = await db.collection("hearts").countDocuments({ echoID: echo.echoID });
             let userHearted = await db.collection("hearts").findOne({ accountID: params.accountID, echoID: echo.echoID });
             let userSaved = await db.collection("saves").findOne({ accountID: params.accountID, echoID: echo.echoID });
 
-            const echoData = {
+            const finalEchoData = {
                 ...echo,
                 comments,
                 hearts: heartCount,
@@ -86,7 +91,7 @@ export default async function Feed(params, io) {
                     userRole: communityMember ? communityMember.role : null
                 }
             }
-            feedData.push(echoData);
+            feedData.push(finalEchoData);
         }
 
         const responseData = ResponseClient.DBFetchSuccess({
@@ -97,10 +102,10 @@ export default async function Feed(params, io) {
             totalItems: echoCount,
             pagination: true
         })
-        return responseData;
+        response.json(responseData);
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
-        return responseData;
+        response.json(responseData);
     }
 }

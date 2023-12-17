@@ -16,7 +16,7 @@ export default function CommunityThumb({ data, page, member }) {
         else {
             if (communityData.entryApproval) {
                 const createdApplication = (data) => setApplied(true)
-                if (page.socket) page.socketMethods.socketRequest("CREATE_APPLICATION", {
+                APIClient.post(APIClient.routes.createCommunityApplication, {
                     accountID: page.activeUser.accountID,
                     communityID: communityData.communityID
                 }, createdApplication)
@@ -25,7 +25,7 @@ export default function CommunityThumb({ data, page, member }) {
                     setCommunityData({ ...communityData, memberCount: communityData.memberCount + 1 })
                     page.router.push(`/communities/${communityData.communityID}`)
                 }
-                if (page.socket) page.socketMethods.socketRequest("CREATE_MEMBER", {
+                APIClient.post(APIClient.routes.createCommunityMember, {
                     accountID: page.activeUser.accountID,
                     communityID: communityData.communityID
                 }, createdMember)

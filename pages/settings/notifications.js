@@ -9,7 +9,7 @@ import SVGServer from '../../services/svg/svgServer'
 import APIClient from "../../services/APIClient";
 import { Form } from "../components/form";
 import useModalStates from '../hooks/useModalStates'
-import { useSocketContext } from '../../util/SocketProvider'
+import { useSSEContext } from '../../util/SocketProvider'
 import useDataStates from '../hooks/useDataStates'
 
 export default function NotificationsSettings() {
@@ -29,7 +29,7 @@ export default function NotificationsSettings() {
     const [alert, setAlert] = useState(null)
     const {modalStates, modalControl} = useModalStates()
     const [showAccountDrop, setShowAccountDrop] = useState(false)
-    const {socket, socketMethods} = useSocketContext()
+    const { sse, sseListener, sseDeafener } = useSSEContext()
 
     const createAlert = (type, message) => {
         setAlert({ type, message })
@@ -37,21 +37,19 @@ export default function NotificationsSettings() {
     }
 
     useEffect(() => {
-        if (socket) {
-            const getSettings = (data) => {
-                if (data.success) {
-                    setUserSettings(data.data)
-                    setUpdatedSettings({...updatedSettings, ...data.data})
-                }
-            }
-            if (activeUser.accountID) {
-                if (socket) socketMethods.socketRequest("GET_SETTINGS", { accountID: activeUser.accountID }, getSettings)
+        const getSettings = (data) => {
+            if (data.success) {
+                setUserSettings(data.data)
+                setUpdatedSettings({...updatedSettings, ...data.data})
             }
         }
-    }, [socket])
+        if (activeUser.accountID) {
+            APIClient.get(APIClient.routes.getSettings, { accountID: activeUser.accountID }, getSettings)
+        }
+    }, [])
 
     const handleSubmit = async () => {
-        if (socket) socketMethods.socketEmitter("UPDATE_SETTINGS", updatedSettings)
+        APIClient.post(APIClient.routes.updateSettings, updatedSettings)
         createAlert("success", "Settings updated successfully.")
     }
 
@@ -68,8 +66,9 @@ export default function NotificationsSettings() {
         setActiveUser,
         activeTheme,
         setActiveTheme,
-        socket,
-        socketMethods,
+        sse,
+        sseListener,
+        sseDeafener,
         alert,
         createAlert,
         ...modalStates,

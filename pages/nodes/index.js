@@ -11,7 +11,7 @@ import CacheService from "../../services/CacheService";
 import APIClient from "../../services/APIClient";
 import { Form } from "../components/form";
 import SVGServer from '../../services/svg/svgServer';
-import { useSocketContext } from '../../util/SocketProvider';
+import { useSSEContext } from '../../util/SocketProvider';
 
 export default function Nodes() {
     const router = useRouter()
@@ -22,19 +22,19 @@ export default function Nodes() {
     const [nodeList, setNodeList] = useState([])
     const [nodeFilter, setNodeFilter] = useState(null)
     const [alert, setAlert] = useState(null)
-    const {socket, socketMethods} = useSocketContext()
+    const { sse, sseListener, sseDeafener } = useSSEContext()
 
     useEffect(() => {
         const getNodes = (data) => data.success ? setNodeList(data.data) : null;
-        if (socket) socketMethods.socketRequest("GET_NODES", { 
+        APIClient.get(APIClient.routes.getNodes, { 
             accountID: activeUser.accountID,
             page: 1,
             pageSize: 20
         }, getNodes)
-    }, [socket])
+    }, [])
 
     const handleSubmit = async () => {
-        if (socket) socketMethods.socketEmitter("UPDATE_ACCOUNT", { 
+        APIClient.post(APIClient.routes.updateAccount, { 
             accountID: activeUser.accountID,
             nodes: selectedNodes
         })

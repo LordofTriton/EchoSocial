@@ -8,7 +8,7 @@ import APIClient from "../../../../services/APIClient";
 import SVGServer from "../../../../services/svg/svgServer";
 import Modals from '../../../components/modals';
 import useModalStates from '../../../hooks/useModalStates';
-import { useSocketContext } from '../../../../util/SocketProvider';
+import { useSSEContext } from '../../../../util/SocketProvider';
 import QuadMasonryLayout from '../../../components/masonry/quad-masonry';
 import UserThumb from '../../../components/user-thumb';
 import AppConfig from '../../../../util/config';
@@ -18,7 +18,7 @@ import useDataStates from '../../../hooks/useDataStates';
 export default function UserAbout() {
     const router = useRouter()
     const {modalStates, modalControl} = useModalStates()
-    const {socket, socketMethods} = useSocketContext()
+    const { sse, sseListener, sseDeafener } = useSSEContext()
     const [activeUser, setActiveUser] = useState(CacheService.getData("EchoActiveUser"))
     const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
     const [userData, setUserData] = useState(null)
@@ -31,12 +31,12 @@ export default function UserAbout() {
             }
         }
         if (router.query.id) {
-            if (socket) socketMethods.socketRequest("GET_ACCOUNT", {
+            APIClient.get(APIClient.routes.getAccount, {
                 accountID: activeUser.accountID,
                 userID: router.query.id
             }, updateUserData)
         }
-    }, [router.query, socket])
+    }, [router.query])
 
     const createAlert = (type, message) => {
         setAlert({ type, message })
@@ -52,10 +52,10 @@ export default function UserAbout() {
         setActiveUser,
         activeTheme,
         setActiveTheme,
-        socket,
-        socketMethods,
+        sse,
+        sseListener,
+        sseDeafener,
         alert,
-        socket,
         createAlert,
         ...modalStates,
         ...modalControl,

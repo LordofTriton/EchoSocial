@@ -1,4 +1,5 @@
 import { getDB } from "../../../util/db/mongodb";
+import axios from "axios";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 
@@ -14,12 +15,12 @@ function parseParams(params, data) {
     return result;
 }
 
-export default async function DeleteNotification(params, io) {
+export default async function DeleteNotification(request, response) {
     const { db } = await getDB();
-    params = parseParams([
+    let params = parseParams([
         "accountID",
         "notificationID"
-    ], params);
+    ], request.query);
 
     try {
         ValidateDeleteNotification(params)
@@ -30,10 +31,10 @@ export default async function DeleteNotification(params, io) {
             data: deleteNotificationResponse,
             message: "Notification deleted successfully."
         })
-        return responseData;
+        response.json(responseData);
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
-        return responseData;
+        response.json(responseData);
     }
 }

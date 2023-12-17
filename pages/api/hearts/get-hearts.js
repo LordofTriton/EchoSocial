@@ -1,4 +1,5 @@
 import { getDB } from "../../../util/db/mongodb";
+import axios from "axios";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 
@@ -17,16 +18,16 @@ function parseParams(params, data) {
     return result;
 }
 
-export default async function GetHearts(params, io) {
+export default async function GetHearts(request, response) {
     const { db } = await getDB();
-    params = parseParams([
+    let params = parseParams([
         "accountID",
         "echoID",
         "commentID",
         "userID",
         "page",
         "pageSize"
-    ], params);
+    ], request.query);
 
     try {
         ValidateGetHearts(params);
@@ -69,10 +70,10 @@ export default async function GetHearts(params, io) {
             totalItems: heartCount,
             pagination: true
         })
-        return responseData;
+        response.json(responseData);
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
-        return responseData;
+        response.json(responseData);
     }
 }

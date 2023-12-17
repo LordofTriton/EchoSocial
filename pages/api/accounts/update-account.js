@@ -1,4 +1,5 @@
 import { getDB } from "../../../util/db/mongodb";
+import axios from "axios";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 
@@ -32,9 +33,9 @@ function parseParams(params, data) {
     return result;
 }
 
-export default async function UpdateAccount(params, io) {
+export default async function UpdateAccount (request, response) {
     const { db } = await getDB();
-    params = parseParams([
+    let params = parseParams([
         "accountID",
         "firstName", 
         "lastName", 
@@ -57,7 +58,7 @@ export default async function UpdateAccount(params, io) {
         "fSocial",
         "tSocial",
         "iSocial"
-    ], params);
+    ], request.body);
 
     try {
         ValidateUpdateAccount(params);
@@ -74,15 +75,19 @@ export default async function UpdateAccount(params, io) {
             data: userAccount,
             message: "Account updated successfully."
         })
-        return responseData;
+        response.json(responseData);
+        
+        response.once("finish", async () => {
+            await UpdateAccountCallback(params, request)
+        })
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
-        return responseData;
+        response.json(responseData);
     }
 }
 
-export async function UpdateAccountCallback(params, io) {
+export async function UpdateAccountCallback(params, request) {
     const { db } = await getDB();
     if (params.nodes) {
         for (let node of params.nodes) {

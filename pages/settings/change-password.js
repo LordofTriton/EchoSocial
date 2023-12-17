@@ -9,7 +9,7 @@ import SVGServer from '../../services/svg/svgServer'
 import APIClient from "../../services/APIClient";
 import { Form } from "../components/form";
 import useModalStates from '../hooks/useModalStates'
-import { useSocketContext } from '../../util/SocketProvider'
+import { useSSEContext } from '../../util/SocketProvider'
 import useDataStates from '../hooks/useDataStates'
 
 export default function ChangePasswordSettings() {
@@ -25,7 +25,7 @@ export default function ChangePasswordSettings() {
     const [alert, setAlert] = useState(null)
     const {modalStates, modalControl} = useModalStates()
     const [showAccountDrop, setShowAccountDrop] = useState(true)
-    const {socket, socketMethods} = useSocketContext()
+    const { sse, sseListener, sseDeafener } = useSSEContext()
     const [loading, setLoading] = useState(false)
 
     const createAlert = (type, message) => {
@@ -34,7 +34,7 @@ export default function ChangePasswordSettings() {
     }
 
     const handleSubmit = async () => {
-        if (socket) socketMethods.socketEmitter("CHANGE_PASSWORD", {
+        APIClient.post(APIClient.routes.changePassword, {
             accountID: activeUser.accountID,
             ...passwords
         })
@@ -50,8 +50,9 @@ export default function ChangePasswordSettings() {
         setActiveUser,
         activeTheme,
         setActiveTheme,
-        socket,
-        socketMethods,
+        sse,
+        sseListener,
+        sseDeafener,
         alert,
         createAlert,
         ...modalStates,

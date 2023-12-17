@@ -9,7 +9,7 @@ import SVGServer from "../../../../services/svg/svgServer";
 import Modals from '../../../components/modals';
 import useModalStates from '../../../hooks/useModalStates';
 import useDataStates from '../../../hooks/useDataStates';
-import { useSocketContext } from '../../../../util/SocketProvider';
+import { useSSEContext } from '../../../../util/SocketProvider';
 import QuadMasonryLayout from '../../../components/masonry/quad-masonry';
 import UserThumb from '../../../components/user-thumb';
 import CommunityThumb from '../../../components/community-thumb';
@@ -19,7 +19,7 @@ import Helpers from '../../../../util/Helpers';
 export default function UserCommunities() {
     const router = useRouter()
     const {modalStates, modalControl} = useModalStates()
-    const {socket, socketMethods} = useSocketContext()
+    const { sse, sseListener, sseDeafener } = useSSEContext()
     const [activeUser, setActiveUser] = useState(CacheService.getData("EchoActiveUser"))
     const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
     const [userData, setUserData] = useState(null)
@@ -42,12 +42,12 @@ export default function UserCommunities() {
             }
         }
         if (router.query.id) {
-            if (socket) socketMethods.socketRequest("GET_ACCOUNT", {
+            APIClient.get(APIClient.routes.getAccount, {
                 accountID: activeUser.accountID,
                 userID: router.query.id
             }, updateUserData)
         }
-    }, [router.query, socket])
+    }, [router.query])
 
     useEffect(() => {
         const updateUserCommunities = (data) => {
@@ -58,7 +58,7 @@ export default function UserCommunities() {
             setCommunityLoader(false)
         }
         if (userData) {
-            if (socket) socketMethods.socketRequest("GET_COMMUNITIES", {
+            APIClient.get(APIClient.routes.getCommunities, {
                 accountID: activeUser.accountID,
                 userID: router.query.id,
                 member: true,
@@ -66,7 +66,7 @@ export default function UserCommunities() {
                 pageSize: 10
             }, updateUserCommunities)
         }
-    }, [userData, communityPage, socket])
+    }, [userData, communityPage])
 
     const createAlert = (type, message) => {
         setAlert({ type, message })
@@ -82,10 +82,10 @@ export default function UserCommunities() {
         setActiveUser,
         activeTheme,
         setActiveTheme,
-        socket,
-        socketMethods,
+        sse,
+        sseListener,
+        sseDeafener,
         alert,
-        socket,
         createAlert,
         ...modalStates,
         ...modalControl,

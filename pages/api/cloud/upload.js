@@ -17,7 +17,7 @@ function parseParams(data) {
     return { accountID, echoID, content, repliedTo };
 }
 
-export default async (req, res) => {
+export default async function CreateFile (req, res) {
     // Use the 'upload' middleware to handle file uploads and store the files temporarily in 'uploads/' directory
     const responseData = await new Promise((resolve, reject) => {
         upload.array('media')(req, res, async (err) => {

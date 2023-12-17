@@ -1,6 +1,6 @@
-import { getDB } from "../../../../util/db/mongodb";
-import ParamValidator from "../../../../services/validation/validator";
-import ResponseClient from "../../../../services/validation/ResponseClient";
+import { getDB } from "../../../util/db/mongodb";
+import ParamValidator from "../../../services/validation/validator";
+import ResponseClient from "../../../services/validation/ResponseClient";
 
 function ValidateFeed(data) {
     if (!data.accountID || !ParamValidator.isValidAccountID(data.accountID)) throw new Error("Missing or Invalid: accountID.")
@@ -14,14 +14,14 @@ function parseParams(params, data) {
     return result;
 }
 
-export default async function CommunitiesFeed(params, io) {
+export default async function CommunitiesFeed(request, response) {
     const { db } = await getDB();
-    params = parseParams([
+    let params = parseParams([
         "accountID",
         "filter",
         "page",
         "pageSize"
-    ], params);
+    ], request.query);
 
     try {
         ValidateFeed(params);
@@ -91,10 +91,10 @@ export default async function CommunitiesFeed(params, io) {
             totalItems: echoCount,
             pagination: true
         })
-        return responseData;
+        response.json(responseData);
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
-        return responseData;
+        response.json(responseData);
     }
 }

@@ -1,4 +1,5 @@
 import { getDB } from "../../../util/db/mongodb";
+import axios from "axios";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 
@@ -27,9 +28,9 @@ function parseParams(params, data) {
     return result;
 }
 
-export default async function UpdateCommunity(params, io) {
+export default async function UpdateCommunity (request, response) {
     const { db } = await getDB();
-    params = parseParams([
+    let params = parseParams([
         "communityID",
         "name",
         "profileImage",
@@ -47,7 +48,7 @@ export default async function UpdateCommunity(params, io) {
         "fSocial",
         "iSocial",
         "tSocial"
-    ], params);
+    ], request.body);
 
     try {
         ValidateUpdateCommunity(params);
@@ -59,15 +60,19 @@ export default async function UpdateCommunity(params, io) {
             data: updatedCommunity,
             message: "Community updated successfully."
         })
-        return responseData;
+        response.json(responseData);
+        
+        response.once("finish", async () => {
+            await UpdateCommunityCallback(params, request)
+        })
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
-        return responseData;
+        response.json(responseData);
     }
 }
 
-export async function UpdateCommunityCallback(params, io) {
+export async function UpdateCommunityCallback(params, request) {
     const { db } = await getDB();
     if (params.nodes) {
         for (let node of params.nodes) {

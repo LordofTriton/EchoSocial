@@ -1,6 +1,8 @@
 import { getDB } from "../../../util/db/mongodb";
+import axios from "axios";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
+import { SSEPush } from "../sse/SSEClient";
 
 function ValidateUpdateChat(data) {
     if (!data.chatID || !ParamValidator.isValidObjectID(data.chatID)) throw new Error("Missing or Invalid: chatID")
@@ -14,9 +16,9 @@ function parseParams(params, data) {
     return result;
 }
 
-export default async function UpdateChat(params, io) {
+export default async function UpdateChat(request, response) {
     const { db } = await getDB();
-    params = parseParams([
+    let params = parseParams([
         "accountID",
         "chatID",
         "muted",
@@ -24,7 +26,7 @@ export default async function UpdateChat(params, io) {
         "cleared",
         "latestMessage",
         "lastUpdated"
-    ], params);
+    ], request.body);
 
     try {
         ValidateUpdateChat(params);
@@ -64,13 +66,13 @@ export default async function UpdateChat(params, io) {
             userFriend: userFriend ? true : false
         }
 
-        io.to(origin.accountID).emit(`UPDATED_CHAT_${updatedChat.chatID}`, JSON.stringify(finalChatData))
-        io.to(origin.accountID).emit(`UPDATED_CHAT_LIST`, JSON.stringify(finalChatData))
+        SSEPush(origin.accountID, `UPDATED_CHAT_${updatedChat.chatID}`, finalChatData)
+        SSEPush(origin.accountID, `UPDATED_CHAT_LIST`, finalChatData)
 
-        return responseData;
+        response.json(responseData);
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
-        return responseData;
+        response.json(responseData);
     }
 }

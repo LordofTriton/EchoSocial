@@ -1,7 +1,9 @@
 import { getDB } from "../../../util/db/mongodb";
+import axios from "axios";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import IDGenerator from "../../../services/generators/IDGenerator";
+import { SSEPush } from "../sse/SSEClient";
 
 function ValidateCreateChat(data) {
     if (!data.accountID || !ParamValidator.isValidAccountID(data.accountID)) throw new Error("Missing or Invalid: accountID.")
@@ -16,13 +18,13 @@ function parseParams(params, data) {
     return result;
 }
 
-export default async function CreateChat(params, io) {
+export default async function CreateChat(request, response) {
     const { db } = await getDB();
-    params = parseParams([
+    let params = parseParams([
         "accountID",
         "targetID",
         "lastestMessage"
-    ], params);
+    ], request.body);
 
     try {
         ValidateCreateChat(params)
@@ -76,17 +78,17 @@ export default async function CreateChat(params, io) {
             userFriend: userFriend ? true : false
         }
 
-        io.to(params.accountID).emit(`UPDATED_CHAT`, JSON.stringify(finalChatData))
+        SSEPush(params.accountID, `UPDATED_CHAT`, finalChatData)
 
         const responseData = ResponseClient.DBModifySuccess({
             data: createdChat,
             message: "Chat created successfully."
         })
 
-        return responseData;
+        response.json(responseData);
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
-        return responseData;
+        response.json(responseData);
     }
 }

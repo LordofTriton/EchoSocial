@@ -87,22 +87,20 @@ export default function EchoCreator({toggle, control, page}) {
             media = media.concat(uploadedFiles.data.map((file) => { return { ...file, type: Helpers.getFileType(file.url) }}))
         }
 
-        if (page.socket) {
-            page.socketMethods.socketEmitter("UPDATE_ECHO", {
-                accountID: page.activeUser.accountID,
-                echoID: toggle.echoID,
-                audience: echoAudience,
-                nodes: echoNodes,
-                content: {
-                    text: echoText ? echoText : null,
-                    media: media.length > 0 ? media : null,
-                    link: echoLink ? echoLink : null
-                }
-            })
-            page.createAlert("success", "Updated echo successfully.")
-            setCreateEchoLoader(false)
-            end()
-        }
+        APIClient.post(APIClient.routes.updateEcho, {
+            accountID: page.activeUser.accountID,
+            echoID: toggle.echoID,
+            audience: echoAudience,
+            nodes: echoNodes,
+            content: {
+                text: echoText ? echoText : null,
+                media: media.length > 0 ? media : null,
+                link: echoLink ? echoLink : null
+            }
+        })
+        page.createAlert("success", "Updated echo successfully.")
+        setCreateEchoLoader(false)
+        end()
     }
 
     const createEcho = async () => {
@@ -124,7 +122,7 @@ export default function EchoCreator({toggle, control, page}) {
             page.createAlert(data.success ? "success" : "error", data.message)
             setCreateEchoLoader(false)
         }
-        if (page.socket) page.socketMethods.socketRequest("CREATE_ECHO", {
+        APIClient.post(APIClient.routes.createEcho, {
             accountID: page.activeUser.accountID,
             communityID: communityData ? communityData.communityID : null,
             audience: echoAudience,

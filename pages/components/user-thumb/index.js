@@ -32,10 +32,19 @@ export default function UserThumb({ data, page }) {
         if (userData.userLiked) setUserData({ ...userData, userLiked: false, userFriend: false })
         else setUserData({ ...userData, userLiked: true, userFriend: userData.userLikee ? true : false })
     
-        if (page.activeUser.accountID !== userData.accountID) page.socketMethods.socketEmitter(userData.userLiked ? "DELETE_HEART" : "CREATE_HEART", {
-          accountID: page.activeUser.accountID,
-          userID: userData.accountID
-        })
+        if (page.activeUser.accountID !== userData.accountID) {
+            if (userData.userLiked) {
+                APIClient.del(APIClient.routes.deleteHeart, { 
+                    accountID: page.activeUser.accountID,
+                    userID: userData.accountID
+                })
+            } else {
+                APIClient.post(APIClient.routes.createHeart, { 
+                    accountID: page.activeUser.accountID,
+                    userID: userData.accountID
+                })
+            }
+        }
     }
 
     const handleClickChatButton = () => {

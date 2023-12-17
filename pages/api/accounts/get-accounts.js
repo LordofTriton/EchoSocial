@@ -1,4 +1,5 @@
 import { getDB } from "../../../util/db/mongodb";
+import axios from "axios";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 
@@ -18,15 +19,15 @@ function parseParams(params, data) {
     return result;
 }
 
-export default async function GetAccounts(params, io) {
+export default async function GetAccounts (request, response) {
     const { db } = await getDB();
-    params = parseParams([
+    let params = parseParams([
         "accountID",
         "friends",
         "filter",
         "page",
         "pageSize"
-    ], params);
+    ], request.query);
 
     try {
         ValidateGetAccounts(params);
@@ -42,9 +43,9 @@ export default async function GetAccounts(params, io) {
             ],
             $or: []
         }
-        if (params.friends === true) filters.accountID = { $in: friendsList }
-        if (params.friends === false) filters.accountID = { $nin: friendsList, $ne: params.accountID }
-        
+        if (params.friends === 'true') filters.accountID = { $in: friendsList }
+        if (params.friends === 'false') filters.accountID = { $nin: friendsList, $ne: params.accountID }
+
         if (params.filter) {
             filters.$or.push({ firstName: { $regex: params.filter, $options: 'i' } })
             filters.$or.push({ lastName: { $regex: params.filter, $options: 'i' } })
@@ -142,10 +143,10 @@ export default async function GetAccounts(params, io) {
             pagination: true
         })
 
-        return responseData;
+        response.json(responseData);
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
-        return responseData;
+        response.json(responseData);
     }
 }

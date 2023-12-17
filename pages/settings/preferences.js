@@ -9,7 +9,7 @@ import SVGServer from '../../services/svg/svgServer'
 import APIClient from "../../services/APIClient";
 import { Form } from "../components/form";
 import useModalStates from '../hooks/useModalStates'
-import { useSocketContext } from '../../util/SocketProvider'
+import { useSSEContext } from '../../util/SocketProvider'
 import useDataStates from '../hooks/useDataStates'
 
 export default function PreferencesSettings() {
@@ -25,7 +25,7 @@ export default function PreferencesSettings() {
     const [alert, setAlert] = useState(null)
     const {modalStates, modalControl} = useModalStates()
     const [showAccountDrop, setShowAccountDrop] = useState(true)
-    const {socket, socketMethods} = useSocketContext()
+    const { sse, sseListener, sseDeafener } = useSSEContext()
 
     const createAlert = (type, message) => {
         setAlert({ type, message })
@@ -33,21 +33,19 @@ export default function PreferencesSettings() {
     }
 
     useEffect(() => {
-        if (socket) {
-            const getSettings = (data) => {
-                if (data.success) {
-                    setUserSettings(data.data)
-                    setUpdatedSettings({...updatedSettings, ...data.data})
-                }
-            }
-            if (activeUser.accountID) {
-                if (socket) socketMethods.socketRequest("GET_SETTINGS", { accountID: activeUser.accountID }, getSettings)
+        const getSettings = (data) => {
+            if (data.success) {
+                setUserSettings(data.data)
+                setUpdatedSettings({...updatedSettings, ...data.data})
             }
         }
-    }, [socket])
+        if (activeUser.accountID) {
+            APIClient.get(APIClient.routes.getSettings, { accountID: activeUser.accountID }, getSettings)
+        }
+    }, [])
 
     const handleSubmit = async () => {
-        if (socket) socketMethods.socketEmitter("UPDATE_SETTINGS", updatedSettings)
+        APIClient.post(APIClient.routes.updateSettings, updatedSettings)
         createAlert("success", "Settings updated successfully.")
     }
 
@@ -61,7 +59,7 @@ export default function PreferencesSettings() {
         localStorage.setItem("EchoTheme", dark)
         setActiveTheme(dark)
         setActiveUser({ ...activeUser, dark })
-        if (socket) socketMethods.socketEmitter("UPDATE_SETTINGS", {
+        APIClient.post(APIClient.routes.updateSettings, {
             accountID: activeUser.accountID,
             dark
         })
@@ -76,8 +74,9 @@ export default function PreferencesSettings() {
         setActiveUser,
         activeTheme,
         setActiveTheme,
-        socket,
-        socketMethods,
+        sse,
+        sseListener,
+        sseDeafener,
         alert,
         createAlert,
         ...modalStates,

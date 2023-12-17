@@ -26,14 +26,14 @@ export default function EchoConversation({ data, control, page }) {
     })
 
     useEffect(() => {
-        if (page.socket) {
+        if (page.sse) {
             const updateComments = (data) => setEchoComments((state) => state.concat(data))
-            if (data) page.socketMethods.socketListener(`NEW_COMMENT_${data.echoID}`, updateComments)
-            else page.socketMethods.socketDeafener(`NEW_COMMENT_${data.echoID}`)
+            if (data) page.sseListener(`NEW_COMMENT_${data.echoID}`, updateComments)
+            else page.sseDeafener(`NEW_COMMENT_${data.echoID}`)
         }
         setEchoData(data)
         if (data) setCommentLoader(true)
-    }, [data, page.socket])
+    }, [data, page.sse])
 
     useEffect(() => {
         if (!data) {
@@ -52,14 +52,14 @@ export default function EchoConversation({ data, control, page }) {
                 }
                 setCommentLoader(false)
             }
-            if (page.socket) page.socketMethods.socketRequest("GET_COMMENTS", { 
+            APIClient.get(APIClient.routes.getComments, { 
                 accountID: page.activeUser.accountID,
                 echoID: data.echoID,
                 page: commentPage,
                 pageSize: 10
             }, updateComments)
         }
-    }, [data, commentPage, page.socket])
+    }, [data, commentPage])
 
     const handleFileSelect = (event) => {
         const file = event.target.files[0];
@@ -89,7 +89,7 @@ export default function EchoConversation({ data, control, page }) {
             setShowCommentEditor(false)
             setCommentEditorLoader(false)
         }
-        if (page.socket) page.socketMethods.socketRequest("CREATE_COMMENT", { 
+        APIClient.post(APIClient.routes.createComment, { 
             echoID: echoData.echoID,
             accountID: page.activeUser.accountID,
             content: {

@@ -1,4 +1,5 @@
 import { getDB } from "../../../util/db/mongodb";
+import axios from "axios";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 
@@ -17,14 +18,14 @@ function parseParams(params, data) {
     return result;
 }
 
-export default async function PingComment(params, io) {
+export default async function PingComment (request, response) {
     const { db } = await getDB();
-    params = parseParams([
+    let params = parseParams([
         "accountID",
         "commentID",
         "addHeart",
         "removeHeart"
-    ], params);
+    ], request.body);
 
     try {
         ValidatePingComment(params);
@@ -40,15 +41,19 @@ export default async function PingComment(params, io) {
             data: comment,
             message: "Comment updated successfully."
         })
-        return responseData;
+        response.json(responseData);
+        
+        response.once("finish", async () => {
+            await PingCommentCallback(params, request)
+        })
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
-        return responseData;
+        response.json(responseData);
     }
 }
 
-export async function PingCommentCallback(params, io) {
+export async function PingCommentCallback(params, request) {
     const { db } = await getDB();
     if (params.addHeart) await db.collection("accounts").updateOne({ accountID: comment.value.accountID }, { $inc: { hearts: 1 } })
     if (params.removeHeart) await db.collection("accounts").updateOne({ accountID: comment.value.accountID }, { $inc: { hearts: -1 } })

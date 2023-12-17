@@ -3,6 +3,7 @@ import AppConfig from "../../../util/config";
 import styles from "./leftnav.module.css"
 import SVGServer from "../../../services/svg/svgServer";
 import Helpers from "../../../util/Helpers";
+import APIClient from "../../../services/APIClient";
 
 export default function LeftNav({ page }) {
     const [userCommunities, setUserCommunities] = useState([])
@@ -16,7 +17,7 @@ export default function LeftNav({ page }) {
             setCommunityLoader(false)
         }
         if (page.activeUser) {
-            if (page.socket) page.socketMethods.socketRequest("GET_COMMUNITIES", {
+            APIClient.get(APIClient.routes.getCommunities, {
                 accountID: page.activeUser.accountID,
                 userID: page.activeUser.accountID,
                 member: true,
@@ -24,7 +25,7 @@ export default function LeftNav({ page }) {
                 pageSize: 4
             }, updateUserCommunities)
         }
-    }, [page.activeUser, page.socket])
+    }, [page.activeUser])
 
     return (
         <div className={styles.leftnavContainer}>

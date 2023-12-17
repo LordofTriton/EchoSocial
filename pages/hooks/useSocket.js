@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import io from 'socket.io-client';
 import CacheService from '../../services/CacheService';
 
-let socketInstance = null;
+let eventSource = null;
 let socketURL = "/api/socket";
 
 function getAccountID() {
@@ -15,97 +15,66 @@ function getToken() {
     return token ? token : null;
 }
 
-const useSocket = () => {
-    const [socket, setSocket] = useState(socketInstance);
+const useSSE = () => {
+    const [sse, setSSE] = useState(eventSource);
 
-    const connectSocket = async () => {
-        if (!socketInstance) {
-            console.log("Connecting to Socket.")
-            await fetch(socketURL)
+    const connectSSE = async () => {
+        if (!eventSource) {
+            console.log("Connecting to SSE.")
+            eventSource = new EventSource(`/api/sse?accountID=${getAccountID()}`);
 
-            socketInstance = io(undefined, {
-                path: socketURL
-            });
-
-            socketInstance.on('connect', () => {
-                console.log('Socket connected.');
-
-                socketInstance.emit("USER_CONNECT", getAccountID());
-
-                setSocket(socketInstance);
-            });
-
-            socketInstance.on('disconnect', () => {
-                console.log('Socket disconnected.');
-            });
+            eventSource.onerror = (error) => {
+                console.error('SSE Error: ', error);
+                // eventSource.close();
+            };
         }
     };
 
-    const  disconnectSocket = () => {
-        if (!socketInstance) return;
-        console.log(`Disconnecting Socket.`);
-        socketInstance.disconnect();
-        socketInstance = null;
+    const disconnectSSE = () => {
+        if (!eventSource) return;
+        console.log(`Disconnecting SSE.`);
+        eventSource.close();
+        eventSource = null;
     };
-
-    const socketRequest = (event, params, callback) => {
-        if (!socketInstance) return;
-        const payload = { ...params, accountID: getAccountID(), accessToken: getToken() }
-
-        const cachedResponse = CacheService.getData(`${event}_${JSON.stringify(params)}`)
-        if (cachedResponse) callback(JSON.parse(cachedResponse))
-
-        const serial = String(Math.random() * 100000000000000);
-        socketInstance.emit(`${event}_REQ`, JSON.stringify({...payload, serial: serial}))
-        socketInstance.on(`${event}_RES_${serial}`, (data) => {
-            callback(JSON.parse(data))
-            CacheService.saveData(`${event}_${JSON.stringify(params)}`, data)
-            socketInstance.off(`${event}_RES_${serial}`)
-        })
-    }
     
-    const socketEmitter = (event, data) => {
-        if (!socketInstance) return;
-        const payload = { ...data, accountID: getAccountID(), accessToken: getToken() }
-        socketInstance.emit(event, JSON.stringify(payload))
-    }
-    
-    const socketListener = (event, callback) => {
-        if (!socketInstance) return;
-        socketInstance.on(event, (data) => {
-            callback(JSON.parse(data))
+    const sseListener = (header, callback) => {
+        if (!eventSource) return;
+        eventSource.addEventListener("message", (event) => {
+            console.log("Event: ", event);
+            const data = JSON.parse(event.data);
+            if (data.header && data.header === header) callback(JSON.parse(data))
         })
     }
 
-    const socketDeafener = (event) => {
-        if (!socketInstance) return;
-        socketInstance.off(event)
+    const sseDeafener = (header, callback) => {
+        if (!eventSource) return;
+        eventSource.removeEventListener(header, callback)
     }
 
     useEffect(() => {
-        setSocket(socketInstance)
-    }, [socketInstance])
+        setSSE(eventSource)
+    }, [eventSource])
 
     useEffect(() => {
-        if (!socketInstance) connectSocket();
+        if (!eventSource) connectSSE();
 
         return () => {
-            if (socketInstance) {
-                socketInstance.disconnect();
-                socketInstance = null;
-                console.log('Socket disconnected on unmount');
+            if (eventSource) {
+                eventSource.close();
+                eventSource = null;
+                console.log('SSE disconnected on unmount');
             }
         };
     }, []);
 
-    return { socket, socketMethods: {
-        socketEmitter,
-        socketListener,
-        socketDeafener,
-        socketRequest,
-        connectSocket,
-        disconnectSocket
-    } };
+    return { 
+        sse,
+        sseListener,
+        sseDeafener,
+        connectSSE,
+        disconnectSSE
+
+    };
 };
 
-export default useSocket;
+export default useSSE;

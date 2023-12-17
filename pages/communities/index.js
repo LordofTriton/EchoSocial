@@ -9,7 +9,7 @@ import Head from "next/head";
 import DuoMasonryLayout from "../components/masonry/duo-masonry";
 import Echo from "../components/echo";
 import useModalStates from "../hooks/useModalStates";
-import { useSocketContext } from "../../util/SocketProvider";
+import { useSSEContext } from "../../util/SocketProvider";
 import useDataStates from "../hooks/useDataStates";
 import Helpers from "../../util/Helpers";
 
@@ -23,7 +23,7 @@ export default function CommunitiesFeed() {
     const [searchQuery, setSearchQuery] = useState("")
     const [echoFeed, setEchoFeed] = useState([])
     const [feedPage, setFeedPage] = useState(1)
-    const {socket, socketMethods} = useSocketContext()
+    const {sse, sseListener, sseDeafener } = useSSEContext()
     const [pagination, setPagination] = useState({
       page: 1,
       pageSize: 10,
@@ -34,24 +34,20 @@ export default function CommunitiesFeed() {
 
     useEffect(() => {
         if (searchQuery.length > 0 && searchQuery.length % 3 !== 0) return;
-        if (socket) {
-            const updateFeed = (data) => {
-                if (data.success) {
-                    Helpers.setPaginatedState(data.data, setEchoFeed, data.pagination, "echoID")
-                    setPagination(data.pagination)
-                }
-                setFeedLoader(false)
+        const updateFeed = (data) => {
+            if (data.success) {
+                Helpers.setPaginatedState(data.data, setEchoFeed, data.pagination, "echoID")
+                setPagination(data.pagination)
             }
-            socketMethods.socketRequest("COMMUNITIES_FEED", {
-                    accountID: activeUser.accountID,
-                    filter: searchQuery ? searchQuery : null,
-                    page: feedPage,
-                    pageSize: 10
-                },
-                updateFeed
-            )
+            setFeedLoader(false)
         }
-    }, [feedPage, socket])
+        APIClient.get(APIClient.routes.getCommunitiesFeed, {
+            accountID: activeUser.accountID,
+            filter: searchQuery ? searchQuery : null,
+            page: feedPage,
+            pageSize: 10
+        }, updateFeed)
+    }, [feedPage])
 
     useEffect(() => {
         if (router.query.create) modalControl.setShowCommunityCreator(true)
@@ -71,8 +67,9 @@ export default function CommunitiesFeed() {
         setActiveUser,
         activeTheme,
         setActiveTheme,
-        socket,
-        socketMethods,
+        sse,
+        sseListener,
+        sseDeafener,
         alert,
         createAlert,
         ...modalStates,

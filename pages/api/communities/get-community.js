@@ -1,4 +1,5 @@
 import { getDB } from "../../../util/db/mongodb";
+import axios from "axios";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 
@@ -14,12 +15,12 @@ function parseParams(params, data) {
     return result;
 }
 
-export default async function GetCommunity(params, io) {
+export default async function GetCommunity (request, response) {
     const { db } = await getDB();
-    params = parseParams([
+    let params = parseParams([
         "accountID",
         "communityID"
-    ], params);
+    ], request.query);
 
     try {
         ValidateGetCommunity(params);
@@ -81,10 +82,10 @@ export default async function GetCommunity(params, io) {
             data: userCcommunity,
             message: "Ccommunity fetched successfully."
         })
-        return responseData;
+        response.json(responseData);
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
-        return responseData;
+        response.json(responseData);
     }
 }

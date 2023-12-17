@@ -9,7 +9,7 @@ import APIClient from "../../../../services/APIClient";
 import SVGServer from "../../../../services/svg/svgServer";
 import Modals from '../../../components/modals';
 import useModalStates from '../../../hooks/useModalStates';
-import { useSocketContext } from '../../../../util/SocketProvider';
+import { useSSEContext } from '../../../../util/SocketProvider';
 import DateGenerator from '../../../../services/generators/DateGenerator';
 import DuoMasonryLayout from '../../../components/masonry/duo-masonry';
 import AppConfig from '../../../../util/config';
@@ -17,159 +17,160 @@ import CommunityHead from '../../../components/community-head';
 import useDataStates from '../../../hooks/useDataStates';
 
 export default function CommunityAbout() {
-  const router = useRouter()
-  const {modalStates, modalControl} = useModalStates()
-  const {socket, socketMethods} = useSocketContext()
-  const [activeUser, setActiveUser] = useState(CacheService.getData("EchoActiveUser"))
-  const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
-  const [communityData, setCommunityData] = useState(null)
-  const [alert, setAlert] = useState(null)
+    const router = useRouter()
+    const { modalStates, modalControl } = useModalStates()
+    const {sse, sseListener, sseDeafener } = useSSEContext()
+    const [activeUser, setActiveUser] = useState(CacheService.getData("EchoActiveUser"))
+    const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
+    const [communityData, setCommunityData] = useState(null)
+    const [alert, setAlert] = useState(null)
 
-  useEffect(() => {
-    const updateCommunityData = (data) => {
-      if (data.success) setCommunityData(data.data)
+    useEffect(() => {
+        const updateCommunityData = (data) => {
+            if (data.success) setCommunityData(data.data)
+        }
+        if (router.query.id) {
+            APIClient.get(APIClient.routes.getCommunity, {
+                accountID: activeUser.accountID,
+                communityID: router.query.id
+            }, updateCommunityData)
+        }
+    }, [router.query])
+
+    const createAlert = (type, message) => {
+        setAlert({ type, message })
+        setTimeout(() => setAlert(null), 5000)
     }
-    if (router.query.id) {
-      if (socket) socketMethods.socketRequest("GET_COMMUNITY", {
-        accountID: activeUser.accountID,
-        communityID: router.query.id
-      }, updateCommunityData)
+
+    const pageControl = {
+        title: communityData ? `${communityData.displayName}` : "Community",
+        community: communityData ? {
+            communityID: communityData.communityID,
+            communityName: communityData.displayName,
+            communityNodes: communityData.nodes,
+            communityNode: communityData.node
+        } : null,
+        router,
+        cookies: CacheService,
+        cache: CacheService,
+        activeUser,
+        setActiveUser,
+        activeTheme,
+        setActiveTheme,
+        sse,
+        sseListener,
+        sseDeafener,
+        alert,
+        createAlert,
+        ...modalStates,
+        ...modalControl,
     }
-  }, [router.query, socket])
 
-  const createAlert = (type, message) => {
-    setAlert({ type, message })
-    setTimeout(() => setAlert(null), 5000)
-  }
+    return (
+        <div className="page" style={{ backgroundColor: "var(--base)" }}>
+            <Head>
+                <title>Echo - {communityData ? communityData.displayName : "Community"}</title>
+                <meta name="description" content="A simple social media." />
+                <link rel="icon" href="/newLogoIcon.ico" />
+                <link rel="stylesheet" href={`/styles/themes/${activeTheme === "dark" ? 'classic-dark.css' : 'classic-light.css'}`} />
+            </Head>
 
-  const pageControl = {
-    title: communityData ? `${communityData.displayName}` : "Community",
-    community: communityData ? {
-        communityID: communityData.communityID,
-        communityName: communityData.displayName,
-        communityNodes: communityData.nodes,
-        communityNode: communityData.node
-    } : null,
-    router,
-    cookies: CacheService,
-    cache: CacheService,
-    activeUser,
-    setActiveUser,
-    activeTheme,
-    setActiveTheme,
-    socket,
-    socketMethods,
-    alert,
-    createAlert,
-    ...modalStates,
-    ...modalControl,
-  }
+            <div className="pageContent" style={{ backgroundColor: "var(--base)" }}>
+                <CommunityHead data={communityData} page={pageControl} title="about" />
 
-  return (
-    <div className="page" style={{backgroundColor: "var(--base)"}}>
-      <Head>
-        <title>Echo - {communityData ? communityData.displayName : "Community"}</title>
-        <meta name="description" content="A simple social media." />
-        <link rel="icon" href="/newLogoIcon.ico" />
-        <link rel="stylesheet" href={`/styles/themes/${activeTheme === "dark" ? 'classic-dark.css' : 'classic-light.css'}`} />
-      </Head>
+                <div className={styles.communityFriends}>
+                    <div className={styles.communityAboutPersonal}>
+                        <span className={styles.communityTimelineDataTitle}>Personal Data</span>
+                        <div className={styles.communityAboutPersonalData}>
+                            <span className={styles.communityAboutPersonalDataName}>Description</span>
+                            <span className={styles.communityAboutPersonalDataValue}>{communityData ? communityData.description : "Loading description..."}</span>
+                        </div>
 
-      <div className="pageContent" style={{backgroundColor: "var(--base)"}}>
-         <CommunityHead data={communityData} page={pageControl} title="about" />
+                        <div className={styles.communityAboutPersonalData}>
+                            <span className={styles.communityAboutPersonalDataName}>Name</span>
+                            <span className={styles.communityAboutPersonalDataValue}>{communityData ? communityData.displayName : "Community"}</span>
+                        </div>
 
-        <div className={styles.communityFriends}>
-            <div className={styles.communityAboutPersonal}>
-                <span className={styles.communityTimelineDataTitle}>Personal Data</span>
-                <div className={styles.communityAboutPersonalData}>
-                    <span className={styles.communityAboutPersonalDataName}>Description</span>
-                    <span className={styles.communityAboutPersonalDataValue}>{communityData ? communityData.description : "Loading description..."}</span>
-                </div>
+                        <div className={styles.communityAboutPersonalData}>
+                            <span className={styles.communityAboutPersonalDataName}>Privacy</span>
+                            <span className={styles.communityAboutPersonalDataValue} style={{ textTransform: "capitalize" }}>{communityData ? communityData.privacy : "Public"}</span>
+                        </div>
 
-                <div className={styles.communityAboutPersonalData}>
-                    <span className={styles.communityAboutPersonalDataName}>Name</span>
-                    <span className={styles.communityAboutPersonalDataValue}>{communityData ? communityData.displayName : "Community"}</span>
-                </div>
+                        <div className={styles.communityAboutPersonalData}>
+                            <span className={styles.communityAboutPersonalDataName}>Country</span>
+                            <span className={styles.communityAboutPersonalDataValue}>{communityData ? communityData.country : "None"}</span>
+                        </div>
 
-                <div className={styles.communityAboutPersonalData}>
-                    <span className={styles.communityAboutPersonalDataName}>Privacy</span>
-                    <span className={styles.communityAboutPersonalDataValue} style={{textTransform: "capitalize"}}>{communityData ? communityData.privacy : "Public"}</span>
-                </div>
+                        <div className={styles.communityAboutPersonalData}>
+                            <span className={styles.communityAboutPersonalDataName}>City</span>
+                            <span className={styles.communityAboutPersonalDataValue}>{communityData ? communityData.city : "None"}</span>
+                        </div>
 
-                <div className={styles.communityAboutPersonalData}>
-                    <span className={styles.communityAboutPersonalDataName}>Country</span>
-                    <span className={styles.communityAboutPersonalDataValue}>{communityData ? communityData.country : "None"}</span>
-                </div>
+                        <div className={styles.communityAboutPersonalData}>
+                            <span className={styles.communityAboutPersonalDataName}>Website</span>
+                            <span className={styles.communityAboutPersonalDataValue}>{communityData ? communityData.website : "None"}</span>
+                        </div>
 
-                <div className={styles.communityAboutPersonalData}>
-                    <span className={styles.communityAboutPersonalDataName}>City</span>
-                    <span className={styles.communityAboutPersonalDataValue}>{communityData ? communityData.city : "None"}</span>
-                </div>
+                        <div className={styles.communityAboutPersonalData}>
+                            <span className={styles.communityAboutPersonalDataName}>Date Created</span>
+                            <span className={styles.communityAboutPersonalDataValue}>{communityData ? DateGenerator.GenerateDateTime(communityData.dateCreated) : "03-05-2001"}</span>
+                        </div>
 
-                <div className={styles.communityAboutPersonalData}>
-                    <span className={styles.communityAboutPersonalDataName}>Website</span>
-                    <span className={styles.communityAboutPersonalDataValue}>{communityData ? communityData.website : "None"}</span>
-                </div>
-
-                <div className={styles.communityAboutPersonalData}>
-                    <span className={styles.communityAboutPersonalDataName}>Date Created</span>
-                    <span className={styles.communityAboutPersonalDataValue}>{communityData ? DateGenerator.GenerateDateTime(communityData.dateCreated) : "03-05-2001"}</span>
-                </div>
-
-                <div className={styles.communityAboutPersonalData}>
-                    <span className={styles.communityAboutPersonalDataName}>Status</span>
-                    <span className={styles.communityAboutPersonalDataValue} style={{textTransform: "capitalize"}}>{communityData ? communityData.communityStatus : "Active"}</span>
+                        <div className={styles.communityAboutPersonalData}>
+                            <span className={styles.communityAboutPersonalDataName}>Status</span>
+                            <span className={styles.communityAboutPersonalDataValue} style={{ textTransform: "capitalize" }}>{communityData ? communityData.communityStatus : "Active"}</span>
+                        </div>
+                    </div>
+                    <div className={styles.communityAboutNodes}>
+                        <span className={styles.communityTimelineDataTitle}>Nodes</span>
+                        <div style={{ padding: "0px 20px" }}>
+                            {
+                                communityData && communityData.nodes.length > 0 ?
+                                    communityData.nodes.map((node, index) =>
+                                        <span key={index} className={styles.communityAboutNode}>{node.emoji} {node.displayName}</span>
+                                    ) : null
+                            }
+                        </div>
+                    </div>
+                    <div className={styles.communityAboutSocials}>
+                        <span className={styles.communityTimelineDataTitle}>Socials</span>
+                        {
+                            communityData ?
+                                <span className={styles.communityAboutSocial} style={{ backgroundColor: "var(--primary)" }} onClick={() => router.push(`/communities/${communityData.communityID}`)}>
+                                    <span className={styles.communityAboutSocialIcon}><SVGServer.FeedIcon color="white" width="20px" height="20px" /></span>
+                                    Echo
+                                    <span className={styles.communityAboutSocialLink}>{`/community/${communityData.communityID}`}</span>
+                                </span> : null
+                        }
+                        {
+                            communityData && communityData.fSocial ?
+                                <span className={styles.communityAboutSocial} style={{ backgroundColor: "#1877F2" }} onClick={() => router.push(`https://${communityData.fSocial}`)}>
+                                    <span className={styles.communityAboutSocialIcon}><SVGServer.FacebookIcon color="white" width="20px" height="20px" /></span>
+                                    Facebook
+                                    <span className={styles.communityAboutSocialLink}>{communityData.fSocial}</span>
+                                </span> : null
+                        }
+                        {
+                            communityData && communityData.iSocial ?
+                                <span className={styles.communityAboutSocial} style={{ backgroundColor: "rgb(224, 35, 54)" }} onClick={() => router.push(`https://${communityData.iSocial}`)}>
+                                    <span className={styles.communityAboutSocialIcon}><SVGServer.InstagramIcon color="white" width="20px" height="20px" /></span>
+                                    Instagram
+                                    <span className={styles.communityAboutSocialLink}>{communityData.iSocial}</span>
+                                </span> : null
+                        }
+                        {
+                            communityData && communityData.tSocial ?
+                                <span className={styles.communityAboutSocial} style={{ backgroundColor: "dimgray" }} onClick={() => router.push(`https://${communityData.tSocial}`)}>
+                                    <span className={styles.communityAboutSocialIcon}><SVGServer.XIcon color="white" width="20px" height="20px" /></span>
+                                    X
+                                    <span className={styles.communityAboutSocialLink}>{communityData.tSocial}</span>
+                                </span> : null
+                        }
+                    </div>
                 </div>
             </div>
-            <div className={styles.communityAboutNodes}>
-                <span className={styles.communityTimelineDataTitle}>Nodes</span>
-                <div style={{padding: "0px 20px"}}>
-                {
-                    communityData && communityData.nodes.length > 0 ?
-                    communityData.nodes.map((node, index) => 
-                        <span key={index} className={styles.communityAboutNode}>{node.emoji} {node.displayName}</span>
-                    ) : null
-                }
-                </div>
-            </div>
-            <div className={styles.communityAboutSocials}>
-                <span className={styles.communityTimelineDataTitle}>Socials</span>
-                {
-                    communityData ?
-                    <span className={styles.communityAboutSocial} style={{backgroundColor: "var(--primary)"}} onClick={() => router.push(`/communities/${communityData.communityID}`)}>
-                        <span className={styles.communityAboutSocialIcon}><SVGServer.FeedIcon color="white" width="20px" height="20px" /></span>
-                        Echo
-                        <span className={styles.communityAboutSocialLink}>{`/community/${communityData.communityID}`}</span>
-                    </span> : null
-                }
-                {
-                    communityData && communityData.fSocial ?
-                    <span className={styles.communityAboutSocial} style={{backgroundColor: "#1877F2"}} onClick={() => router.push(`https://${communityData.fSocial}`)}>
-                        <span className={styles.communityAboutSocialIcon}><SVGServer.FacebookIcon color="white" width="20px" height="20px" /></span>
-                        Facebook
-                        <span className={styles.communityAboutSocialLink}>{communityData.fSocial}</span>
-                    </span> : null
-                }
-                {
-                    communityData && communityData.iSocial ?
-                    <span className={styles.communityAboutSocial} style={{backgroundColor: "rgb(224, 35, 54)"}} onClick={() => router.push(`https://${communityData.iSocial}`)}>
-                        <span className={styles.communityAboutSocialIcon}><SVGServer.InstagramIcon color="white" width="20px" height="20px" /></span>
-                        Instagram
-                        <span className={styles.communityAboutSocialLink}>{communityData.iSocial}</span>
-                    </span> : null
-                }
-                {
-                    communityData && communityData.tSocial ?
-                    <span className={styles.communityAboutSocial} style={{backgroundColor: "dimgray"}} onClick={() => router.push(`https://${communityData.tSocial}`)}>
-                        <span className={styles.communityAboutSocialIcon}><SVGServer.XIcon color="white" width="20px" height="20px" /></span>
-                        X
-                        <span className={styles.communityAboutSocialLink}>{communityData.tSocial}</span>
-                    </span> : null
-                }
-            </div>
+
+            <Modals page={pageControl} />
         </div>
-      </div>
-
-      <Modals page={pageControl} />
-    </div>
-  )
+    )
 }

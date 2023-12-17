@@ -9,7 +9,7 @@ import APIClient from "../../../../../services/APIClient";
 import SVGServer from "../../../../../services/svg/svgServer";
 import Modals from '../../../../components/modals';
 import useModalStates from '../../../../hooks/useModalStates';
-import { useSocketContext } from '../../../../../util/SocketProvider';
+import { useSSEContext } from '../../../../../util/SocketProvider';
 import DateGenerator from '../../../../../services/generators/DateGenerator';
 import DuoMasonryLayout from '../../../../components/masonry/duo-masonry';
 import { Form } from '../../../../components/form';
@@ -19,7 +19,7 @@ import useDataStates from '../../../../hooks/useDataStates';
 export default function CommunitySettings() {
     const router = useRouter()
     const {modalStates, modalControl} = useModalStates()
-    const {socket, socketMethods} = useSocketContext()
+    const { sse, sseListener, sseDeafener } = useSSEContext()
     const [activeUser, setActiveUser] = useState(CacheService.getData("EchoActiveUser"))
     const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
     const [communityData, setCommunityData] = useState(null)
@@ -36,13 +36,13 @@ export default function CommunitySettings() {
                 setUpdatedCommunityData(data.data)
             }
         }
-        if (router.query.id && socket) {
-            socketMethods.socketRequest("GET_COMMUNITY", {
+        if (router.query.id) {
+            APIClient.get(APIClient.routes.getCommunity, {
                 accountID: activeUser.accountID,
                 communityID: router.query.id
             }, updateCommunityData)
         }
-    }, [router.query, socket])
+    }, [router.query])
 
     const createAlert = (type, message) => {
         setAlert({ type, message })
@@ -64,8 +64,9 @@ export default function CommunitySettings() {
         setActiveUser,
         activeTheme,
         setActiveTheme,
-        socket,
-        socketMethods,
+        sse,
+        sseListener,
+        sseDeafener,
         alert,
         createAlert,
         ...modalStates,
@@ -73,8 +74,7 @@ export default function CommunitySettings() {
     }
 
     const handleSubmit = async () => {
-        if (!socket) return;
-        socketMethods.socketEmitter("UPDATE_COMMUNITY", {
+        APIClient.post(APIClient.routes.updateCommunity, {
             accountID: activeUser.accountID,
             communityID: communityData.communityID,
             ...updatedCommunityData

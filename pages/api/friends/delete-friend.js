@@ -1,4 +1,5 @@
 import { getDB } from "../../../util/db/mongodb";
+import axios from "axios";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import DeleteChat from "../messenger/delete-chat";
@@ -15,12 +16,12 @@ function parseParams(params, data) {
     return result;
 }
 
-export default async function DeleteFriend(params, io) {
+export default async function DeleteFriend(request, response) {
     const { db } = await getDB();
-    params = parseParams([
+    let params = parseParams([
         "accountID",
         "friendID"
-    ], params);
+    ], request.query);
 
     try {
         ValidateDeleteFriend(params)
@@ -38,16 +39,18 @@ export default async function DeleteFriend(params, io) {
             data: null,
             message: "Friend deleted successfully."
         })
-        
-        await DeleteChat({
-            accountID: params.accountID,
-            targetID: params.friendID
-        })
 
-        return responseData;
+        response.json(responseData);
+
+        response.once("finish", async () => {
+            await axios.post(request.headers.origin + "/api/chats/delete-chat", {
+                accountID: params.accountID,
+                targetID: params.friendID
+            })
+        })
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
-        return responseData;
+        response.json(responseData);
     }
 }

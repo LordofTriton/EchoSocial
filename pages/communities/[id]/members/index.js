@@ -9,7 +9,7 @@ import APIClient from "../../../../services/APIClient";
 import SVGServer from "../../../../services/svg/svgServer";
 import Modals from '../../../components/modals';
 import useModalStates from '../../../hooks/useModalStates';
-import { useSocketContext } from '../../../../util/SocketProvider';
+import { useSSEContext } from '../../../../util/SocketProvider';
 import DateGenerator from '../../../../services/generators/DateGenerator';
 import DuoMasonryLayout from '../../../components/masonry/duo-masonry';
 import QuadMasonryLayout from '../../../components/masonry/quad-masonry';
@@ -22,7 +22,7 @@ import Loader from '../../../components/loader';
 export default function CommunityMembers() {
   const router = useRouter()
   const { modalStates, modalControl } = useModalStates()
-  const { socket, socketMethods } = useSocketContext()
+  const { sse, sseListener, sseDeafener } = useSSEContext()
   const [activeUser, setActiveUser] = useState(CacheService.getData("EchoActiveUser"))
   const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
   const [communityData, setCommunityData] = useState(null)
@@ -42,12 +42,12 @@ export default function CommunityMembers() {
       if (data.success) setCommunityData(data.data)
     }
     if (router.query.id) {
-      if (socket) socketMethods.socketRequest("GET_COMMUNITY", {
+      APIClient.get(APIClient.routes.getCommunity, {
         accountID: activeUser.accountID,
         communityID: router.query.id
       }, updateCommunityData)
     }
-  }, [router.query, socket])
+  }, [router.query])
 
   useEffect(() => {
     const updateCommunityMembers = (data) => {
@@ -58,14 +58,14 @@ export default function CommunityMembers() {
       setMemberLoader(false)
     }
     if (communityData) {
-      if (socket) socketMethods.socketRequest("GET_MEMBERS", {
+      APIClient.get(APIClient.routes.getCommunityMembers, {
         accountID: activeUser.accountID,
         communityID: router.query.id,
         page: memberPage,
         pageSize: 10
       }, updateCommunityMembers)
     }
-  }, [communityData, memberPage, socket])
+  }, [communityData, memberPage])
 
   const createAlert = (type, message) => {
     setAlert({ type, message })
@@ -87,8 +87,9 @@ export default function CommunityMembers() {
     setActiveUser,
     activeTheme,
     setActiveTheme,
-    socket,
-    socketMethods,
+    sse,
+    sseListener,
+    sseDeafener,
     alert,
     createAlert,
     ...modalStates,
@@ -106,8 +107,7 @@ export default function CommunityMembers() {
   };
 
   const handleKick = async (accountID) => {
-    if (!socket) return;
-    socketMethods.socketEmitter("DELETE_MEMBER", {
+    APIClient.del(APIClient.routes.deleteCommunityMember, {
       accountID: activeUser.accountID,
       communityID: communityData.communityID,
       userID: accountID
@@ -117,8 +117,7 @@ export default function CommunityMembers() {
   }
 
   const handleBan = async (accountID) => {
-    if (!socket) return;
-    socketMethods.socketEmitter("BAN_MEMBER", {
+    APIClient.post(APIClient.routes.banCommunityMember, {
       accountID: activeUser.accountID,
       communityID: communityData.communityID,
       userID: accountID
@@ -128,8 +127,7 @@ export default function CommunityMembers() {
   }
 
   const handleMute = async (accountID) => {
-    if (!socket) return;
-    socketMethods.socketEmitter("UPDATE_MEMBER", {
+    APIClient.post(APIClient.routes.updateCommunityMember, {
       accountID: activeUser.accountID,
       communityID: communityData.communityID,
       userID: accountID,
@@ -140,8 +138,7 @@ export default function CommunityMembers() {
   }
 
   const handleAssignRole = async (accountID, role) => {
-    if (!socket) return;
-    socketMethods.socketEmitter("UPDATE_MEMBER", {
+    APIClient.post(APIClient.routes.updateCommunityMember, {
       accountID: activeUser.accountID,
       communityID: communityData.communityID,
       userID: accountID,

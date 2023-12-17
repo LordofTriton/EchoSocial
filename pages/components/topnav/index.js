@@ -15,26 +15,24 @@ export default function TopNav({ page }) {
     const [openAccountNav, setOpenAccountNav] = useState(false)
 
     useEffect(() => {
-        if (!page.socket) return;
+        if (!page.sse) return;
         const updateNotifications = (data) => { setUserNotifications((state) => [data, ...state]) }
-        page.socketMethods.socketListener("NEW_NOTIFICATION", updateNotifications)
-    }, [page.socket]);
+        page.sseListener("NEW_NOTIFICATION", updateNotifications)
+    }, [page.sse]);
 
     useEffect(() => {
-        if (page.socket) {
-            const updateNotifications = (data) => {
-                if (data.success) {
-                    Helpers.setPaginatedState(data.data, setUserNotifications, data.pagination, "notificationID")
-                    if (data.data.filter((notification) => notification.status === "unread").length > 0) page.setShowNotificationDot(true)
-                }
+        const updateNotifications = (data) => {
+            if (data.success) {
+                Helpers.setPaginatedState(data.data, setUserNotifications, data.pagination, "notificationID")
+                if (data.data.filter((notification) => notification.status === "unread").length > 0) page.setShowNotificationDot(true)
             }
-            page.socketMethods.socketRequest("GET_NOTIFICATIONS", {
-                accountID: page.activeUser.accountID,
-                page: 1,
-                pageSize: 10
-            }, updateNotifications)
         }
-    }, [page.socket])
+        APIClient.get(APIClient.routes.getNotifications, {
+            accountID: page.activeUser.accountID,
+            page: 1,
+            pageSize: 10
+        }, updateNotifications)
+    }, [])
 
     return (
         <>

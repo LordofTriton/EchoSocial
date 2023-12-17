@@ -1,4 +1,5 @@
 import { getDB } from "../../../util/db/mongodb";
+import axios from "axios";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import DeleteChat from "../messenger/delete-chat";
@@ -19,14 +20,14 @@ function parseParams(params, data) {
     return result;
 }
 
-export default async function DeleteHeart(params, io) {
+export default async function DeleteHeart(request, response) {
     const { db } = await getDB();
-    params = parseParams([
+    let params = parseParams([
         "accountID",
         "echoID",
         "commentID",
         "userID"
-    ], params);
+    ], request.query);
 
     try {
         ValidateDeleteHeart(params)
@@ -38,17 +39,19 @@ export default async function DeleteHeart(params, io) {
             message: "Heart deleted successfully."
         })
 
-        if (params.userID) {
-            await DeleteFriend({
-                accountID: params.accountID,
-                friendID: params.userID
-            })
-        }
+        response.json(responseData);
 
-        return responseData;
+        response.once("finish", async () => {
+            if (params.userID) {
+                await axios.post(request.headers.origin + "/api/friends/delete-friend", {
+                    accountID: params.accountID,
+                    friendID: params.userID
+                })
+            }
+        })
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
-        return responseData;
+        response.json(responseData);
     }
 }

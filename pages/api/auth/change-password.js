@@ -1,4 +1,5 @@
 import { getDB } from "../../../util/db/mongodb";
+import axios from "axios";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import CreateNotification from "../notifications/create-notification";
@@ -17,9 +18,9 @@ function parseParams(data) {
     return { accountID, echoID, content, repliedTo };
 }
 
-export default async function ChangePassword(params, io) {
+export default async function ChangePassword (request, response) {
     const { db } = await getDB();
-    params = {
+    const params = {
         accountID: request.body.accountID,
         oldPassword: request.body.oldPassword,
         newPassword: request.body.newPassword,
@@ -39,13 +40,13 @@ export default async function ChangePassword(params, io) {
             message: "Login successful."
         })
 
-        await CreateNotification({
+        await axios.post(request.headers.origin + "/api/notifications/create-notification", {
             accountID: userAccount.accountID,
             content: `Your password was changed.`,
             image: userAccount.profileImage.url,
             clickable: false,
             redirect: `/settings`
-        }, io)
+        })
 
         response.json(responseData)
     } catch (error) {

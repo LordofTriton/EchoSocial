@@ -1,4 +1,5 @@
 import { getDB } from "../../../util/db/mongodb";
+import axios from "axios";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import IDGenerator from "../../../services/generators/IDGenerator";
@@ -22,16 +23,16 @@ function parseParams(params, data) {
     return result;
 }
 
-export default async function CreateEcho(params, io) {
+export default async function CreateEcho(request, response) {
     const { db } = await getDB();
-    params = parseParams([
+    let params = parseParams([
         "accountID",
         "communityID",
         "audience",
         "nodes",
         "content",
         "shared"
-    ], params);
+    ], request.body);
 
     try {
         ValidateCreateEcho(params)
@@ -62,21 +63,26 @@ export default async function CreateEcho(params, io) {
             message: "Echo created successfully."
         })
 
-        await CreateHeart({
-            accountID: params.accountID,
-            echoID: echoData.echoID
-        })
+        response.json(responseData);
+        
+        response.once("finish", async () => {
+            await axios.post(request.headers.origin + "/api/hearts/create-heart", {
+                accountID: params.accountID,
+                echoID: echoData.echoID
+            })
 
-        return responseData;
+            await CreateEchoCallback(params, request)
+        })
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
-        return responseData;
+        response.json(responseData);
     }
 }
 
-export async function CreateEchoCallback(params, io) {
+export async function CreateEchoCallback(params, request) {
     const { db } = await getDB();
+
     if (params.communityID) {
         await db.collection("communities").updateOne({ communityID: params.communityID }, { $set: { lastUpdated: Date.now() } })
     }

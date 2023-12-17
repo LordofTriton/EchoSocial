@@ -1,4 +1,5 @@
 import { getDB } from "../../../util/db/mongodb";
+import axios from "axios";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import IDGenerator from "../../../services/generators/IDGenerator";
@@ -6,6 +7,7 @@ import CreateNotification from "../notifications/create-notification";
 import CreateHeart from "../hearts/create-heart";
 import UpdateChat from "./update-chat";
 import CreateChat from "./create-chat";
+import { SSEPush } from "../sse/SSEClient";
 
 function ValidateCreateMessage(data) {
     if (!data.accountID || !ParamValidator.isValidAccountID(data.accountID)) throw new Error("Missing or Invalid: accountID.")
@@ -25,14 +27,14 @@ function parseParams(params, data) {
     return result;
 }
 
-export default async function CreateMessage(params, io) {
+export default async function CreateMessage(request, response) {
     const { db } = await getDB();
-    params = parseParams([
+    let params = parseParams([
         "accountID",
         "chatID",
         "content",
         "repliedTo"
-    ], params);
+    ], request.body);
 
     try {
         ValidateCreateMessage(params)
@@ -68,43 +70,47 @@ export default async function CreateMessage(params, io) {
             profileImage: messageUser.profileImage
         }
 
-        io.to(chat.targetID).emit(`NEW_MESSAGE_${params.chatID}`, JSON.stringify(result))
+        SSEPush(chat.targetID, `NEW_MESSAGE_${params.chatID}`, result)
 
         const responseData = ResponseClient.DBModifySuccess({
             data: result,
             message: "Message created successfully."
         })
         
-        return responseData;
+        response.json(responseData);
+        
+        response.once("finish", async () => {
+            await CreateMessageCallback(params, request)
+        })
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
-        return responseData;
+        response.json(responseData);
     }
 }
 
-export async function CreateMessageCallback(params, io) {
+export async function CreateMessageCallback(params, request) {
     const { db } = await getDB();
     const userChat = (await db.collection("chats").findOne({ accountID: params.accountID, chatID: params.chatID }))
-    await UpdateChat({
+    await axios.post(request.headers.origin + "/api/chats/update-chat", {
         accountID: params.accountID,
         chatID: params.chatID,
         latestMessage: params.content,
         lastUpdated: Date.now()
-    }, io)
+    })
     const targetChat = (await db.collection("chats").findOne({ accountID: userChat.targetID, chatID: params.chatID }))
     if (!targetChat) {
-        await CreateChat({
+        await axios.post(request.headers.origin + "/api/chats/create-chat", {
             accountID: userChat.targetID,
             targetID: params.accountID,
             latestMessage: params.content
-        }, io)
+        })
     } else {
-        await UpdateChat({
+        await axios.post(request.headers.origin + "/api/chats/update-chats", {
             accountID: targetChat.accountID,
             chatID: params.chatID,
             latestMessage: params.content,
             lastUpdated: Date.now()
-        }, io)
+        })
     }
 }

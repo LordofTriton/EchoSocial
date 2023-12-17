@@ -53,32 +53,30 @@ export default function RightNav({ page }) {
     const [userFriends, setUserFriends] = useState([])
 
     useEffect(() => {
-        if (page.socket) {
-            const updateUserFriends = (data) => {
-                if (data.success) {
-                    setUserFriends(data.data);
-                }
+        const updateUserFriends = (data) => {
+            if (data.success) {
+                setUserFriends(data.data);
             }
-            if (page.socket) page.socketMethods.socketRequest("GET_FRIENDS", { 
-                accountID: page.activeUser.accountID, 
-                userID: page.activeUser.accountID,
-                page: 1,
-                pageSize: 10
-            }, updateUserFriends)
         }
-    }, [page.socket])
+        APIClient.get(APIClient.routes.getFriends, { 
+            accountID: page.activeUser.accountID, 
+            userID: page.activeUser.accountID,
+            page: 1,
+            pageSize: 10
+        }, updateUserFriends)
+    }, [])
 
     useEffect(() => {
-        if (page.socket) {
+        if (page.sse) {
             const updateFriends = (data) => {
                 setUserFriends((state) => state.concat(data))
             }
-            page.socketMethods.socketListener(`NEW_FRIEND`, updateFriends)
+            page.sseListener(`NEW_FRIEND`, updateFriends)
         }
-    }, [page.socket])
+    }, [page.sse])
 
     useEffect(() => {
-        if (page.socket) {
+        if (page.sse) {
             const updateChat = (data) => {
                 setUserFriends((state) => {
                     const update = state.map((friend) => {
@@ -90,9 +88,9 @@ export default function RightNav({ page }) {
                     return update;
                 })
             }
-            page.socketMethods.socketListener(`UPDATED_CHAT_LIST`, updateChat)
+            page.sseListener(`UPDATED_CHAT_LIST`, updateChat)
         }
-    }, [page.socket])
+    }, [page.sse])
 
     const getChat = (friend) => {
         return {

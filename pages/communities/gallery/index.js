@@ -9,7 +9,7 @@ import Modals from "../../components/modals";
 import TriMasonryLayout from "../../components/masonry/tri-masonry";
 import CommunityThumb from "../../components/community-thumb";
 import useModalStates from "../../hooks/useModalStates";
-import { useSocketContext } from "../../../util/SocketProvider";
+import { useSSEContext } from "../../../util/SocketProvider";
 import useDataStates from "../../hooks/useDataStates";
 import Helpers from "../../../util/Helpers";
 
@@ -22,7 +22,7 @@ export default function CommunitiesFeed() {
     const [communities, setCommunities] = useState([])
     const [searchedCommunities, setSearchedCommunities] = useState([])
     const [searchQuery, setSearchQuery] = useState("")
-    const {socket, socketMethods} = useSocketContext()
+    const { sse, sseListener, sseDeafener } = useSSEContext()
     const [communitiesPage, setCommunitiesPage] = useState(1)
     const [pagination, setPagination] = useState({
       page: 1,
@@ -34,29 +34,27 @@ export default function CommunitiesFeed() {
 
     const fetchCommunities = () => {
         setCommunityLoader(true)
-        if (socket) {
-            const updateCommunities = (data) => {
-                if (data.success) {
-                    if (data.data.length > 0) Helpers.setPaginatedState(data.data, searchQuery.length > 0 ? setSearchedCommunities : setCommunities, data.pagination, "communityID")
-                    else searchQuery.length > 0 ? searchedCommunities([]) : setCommunities([])
-                    setPagination(data.pagination)
-                }
-                setCommunityLoader(false)
+        const updateCommunities = (data) => {
+            if (data.success) {
+                if (data.data.length > 0) Helpers.setPaginatedState(data.data, searchQuery.length > 0 ? setSearchedCommunities : setCommunities, data.pagination, "communityID")
+                else searchQuery.length > 0 ? searchedCommunities([]) : setCommunities([])
+                setPagination(data.pagination)
             }
-            socketMethods.socketRequest("GET_COMMUNITIES", {
-                accountID: activeUser.accountID,
-                userID: activeUser.accountID,
-                member: true,
-                page: 1,
-                pageSize: communitiesPage,
-                filter: searchQuery.length ? searchQuery : null
-            }, updateCommunities)
+            setCommunityLoader(false)
         }
+        APIClient.get(APIClient.routes.getCommunities, {
+            accountID: activeUser.accountID,
+            userID: activeUser.accountID,
+            member: true,
+            page: 1,
+            pageSize: communitiesPage,
+            filter: searchQuery.length ? searchQuery : null
+        }, updateCommunities)
     }
     
     useEffect(() => {
         fetchCommunities()
-    }, [communitiesPage, socket])
+    }, [communitiesPage])
 
     useEffect(() => {
         if (searchQuery.length < 3 || communityLoader) return;
@@ -79,8 +77,9 @@ export default function CommunitiesFeed() {
         setActiveUser,
         activeTheme,
         setActiveTheme,
-        socket,
-        socketMethods,
+        sse,
+        sseListener,
+        sseDeafener,
         alert,
         createAlert,
         ...modalStates,
