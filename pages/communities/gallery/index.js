@@ -129,7 +129,7 @@ export default function CommunitiesFeed() {
                             ) : null
                         } />
                         :
-                        !communityLoader && searchQuery.length < 1 ? <span className={styles.communityNull}>You haven't joined any communities.</span> : null
+                        !communityLoader && searchQuery.length < 1 ? <span className={styles.communityNull}>{`You haven't joined any communities.`}</span> : null
                     }
                     {
                         searchedCommunities.length > 0 && searchQuery.length > 0 ?

@@ -126,7 +126,7 @@ export default function PeopleFriends() {
                         people.map((person, index) => 
                             <UserThumb data={person} page={pageControl} key={index} />
                         )
-                    } /> : !peopleLoader && searchQuery.length < 1 ? <span className={styles.peopleNull}>You don't have any friends yet.</span> : null
+                    } /> : !peopleLoader && searchQuery.length < 1 ? <span className={styles.peopleNull}>{`You don't have any friends yet.`}</span> : null
                 }
                 {
                     activeUser && searchedPeople.length > 0 && searchQuery.length > 1 ? 
@@ -134,7 +134,7 @@ export default function PeopleFriends() {
                         searchedPeople.map((person, index) => 
                             <UserThumb data={person} page={pageControl} key={index} />
                         )
-                    } /> : !peopleLoader && searchQuery.length > 1 ? <span className={styles.peopleNull}>Sorry, we couldn't find any of your friends that matches your search query.</span> : null
+                    } /> : !peopleLoader && searchQuery.length > 1 ? <span className={styles.peopleNull}>{`Sorry, we couldn't find any of your friends that matches your search query.`}</span> : null
                 }
                 { peopleLoader ? 
                     <div className="loader" style={{

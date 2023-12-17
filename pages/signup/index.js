@@ -95,7 +95,7 @@ export default function Signup() {
                             {signupDetails.password && signupDetails.password.trim().length < 6 ? <span className={styles.formErrorMessage}>Password must be at least 6 characters.</span> : null}
 
                             <input type="password" className={styles.signupFormField} placeholder="Confirm Password (same as above)" value={signupDetails.confirmPassword} onChange={(e) => setSignupDetails({...signupDetails, confirmPassword: e.target.value.trim()})} style={{backgroundImage: `url(/images/icons/password.png)`, float: "right"}} required/>
-                            {signupDetails.confirmPassword && signupDetails.password !== signupDetails.confirmPassword ? <span className={styles.formErrorMessage}>Passwords don't match.</span> : null}
+                            {signupDetails.confirmPassword && signupDetails.password !== signupDetails.confirmPassword ? <span className={styles.formErrorMessage}>{`Passwords don't match.`}</span> : null}
 
                             <button className={styles.signupFormSubmit} style={{opacity: isValidData() ? "1" : "0.5"}}>{ 
                                 signupLoader ? <center><div className="loader" style={{width: "30px", height: "30px"}}></div></center> : "SIGN UP" 

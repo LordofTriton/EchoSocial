@@ -128,7 +128,7 @@ export default function PeopleStrangers() {
                         people.map((person, index) => 
                             <UserThumb data={person} page={pageControl} key={index} />
                         )
-                    } /> : !peopleLoader && searchQuery.length < 1 ? <span className={styles.peopleNull}>Sorry, we couldn't find anyone that matches your nodes. Consider adding more nodes.</span> : null
+                    } /> : !peopleLoader && searchQuery.length < 1 ? <span className={styles.peopleNull}>{`Sorry, we couldn't find anyone that matches your nodes. Consider adding more nodes.`}</span> : null
                 }
                 {
                     activeUser && searchedPeople.length > 0 && searchQuery.length > 1 ? 
@@ -136,7 +136,7 @@ export default function PeopleStrangers() {
                         searchedPeople.map((person, index) => 
                             <UserThumb data={person} page={pageControl} key={index} />
                         )
-                    } /> : !peopleLoader && searchQuery.length > 1 ? <span className={styles.peopleNull}>Sorry, we couldn't find anyone that matches your search query.</span> : null
+                    } /> : !peopleLoader && searchQuery.length > 1 ? <span className={styles.peopleNull}>{`Sorry, we couldn't find anyone that matches your search query.`}</span> : null
                 }
                 { peopleLoader ? 
                     <div className="loader" style={{
