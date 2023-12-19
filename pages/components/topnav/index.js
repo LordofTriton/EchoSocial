@@ -17,7 +17,7 @@ export default function TopNav({ page }) {
     useEffect(() => {
         if (!page.sse) return;
         const updateNotifications = (data) => { setUserNotifications((state) => [data, ...state]) }
-        page.sseListener("NEW_NOTIFICATION", updateNotifications)
+        page.sseListener("NEW_NOTIFICATION", updateNotifications, page.activeUser.accountID)
     }, [page.sse]);
 
     useEffect(() => {

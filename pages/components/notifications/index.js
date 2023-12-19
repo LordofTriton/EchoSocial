@@ -20,7 +20,7 @@ export default function Notifications({toggle, control, page}) {
     useEffect(() => {
         if (!page.sse) return;
         const updateNotifications = (data) => { setNotifications((state) => [data, ...state]) }
-        page.sseListener("NEW_NOTIFICATION", updateNotifications)
+        page.sseListener("NEW_NOTIFICATION", updateNotifications, page.activeUser.accountID, null)
     }, [page.sse]);
     
     useEffect(() => {

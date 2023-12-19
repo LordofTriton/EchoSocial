@@ -1,46 +1,32 @@
-import { SSEAddClient } from "./SSEClient";
+import { createSession, createChannel } from "better-sse";
 
-let clients = []
+let sseClients = []
 
-export default (req, res) => {
+export default async (req, res) => {
+    res.setHeader("Cache-Control", "no-cache, no-transform");
     res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
+    res.setHeader('Content-Encoding', 'none')
 
-    const clientData = { accountID: req.query.accountID, sse: res }
+    const client = sseClients.find((client) => client.accountID === targetID);
+    if (!client) {
+        sseClients.push({accountID: req.query.accountID, sse: res});
+        
+        console.log(`SSE: User ${req.query.accountID} connected!`)
 
-    clients.push(clientData);
-
-    res.on('close', () => {
-        clients = clients.filter((obj) => obj.accountID !== req.query.accountID);
-        console.log(`SSE: Client ${req.query.accountID} disconnected.`);
-    });
-
-    res.write("SSE Connected.");
+        SSEPush("SSE: User connected.", req.query.accountID);
+    } else SSEPush("SSE: User already connected.", req.query.accountID);
 };
 
-export function SSEBroadcast(header, data) {
-    const message = {
-        type: "broadcast",
-        header,
-        to: null,
+export function SSEPush(data, targetID) {
+    const payload = {
+        targetID,
         data
     }
 
-    clients.forEach((client) => {
-        client.sse.write(JSON.stringify(message));
-    });
-};
-
-export function SSEPush(accountID, header, data) {
-    console.log(clients)
-    const message = {
-        type: "push",
-        header,
-        to: accountID,
-        data 
-    }
-
-    const client = clients.find((client) => client.accountID === accountID)
-    if (client) client.sse.write(JSON.stringify(message))
+    console.log("ClientCount: ", sseClients.length)
+    console.log("Payload: ", payload)
+    
+    const client = sseClients.find((client) => client.accountID === targetID)
+    if (client) client.sse.write(JSON.stringify(payload))
 }

@@ -36,12 +36,12 @@ const useSSE = () => {
         eventSource = null;
     };
     
-    const sseListener = (header, callback) => {
+    const sseListener = (header, callback, to, room) => {
         if (!eventSource) return;
         eventSource.addEventListener("message", (event) => {
-            console.log("Event: ", event);
-            const data = JSON.parse(event.data);
-            if (data.header && data.header === header) callback(JSON.parse(data))
+            console.log(event)
+            const payload = JSON.parse(event.data);
+            if ((payload.to && to && payload.to === to) || (payload.room && room && payload.room === room)) callback(payload.data)
         })
     }
 
@@ -67,7 +67,7 @@ const useSSE = () => {
     }, []);
 
     return { 
-        sse,
+        sse: sse ? sse : null,
         sseListener,
         sseDeafener,
         connectSSE,

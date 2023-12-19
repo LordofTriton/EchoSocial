@@ -4,6 +4,7 @@ import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import DeleteChat from "../messenger/delete-chat";
 import DeleteFriend from "../friends/delete-friend";
+import { SSEPush } from "../../../services/SSEChannel";
 
 function ValidateDeleteHeart(data) {
     if (!data.accountID || !ParamValidator.isValidAccountID(data.accountID)) throw new Error("Missing or Invalid: accountID.")
@@ -15,6 +16,7 @@ function ValidateDeleteHeart(data) {
 function parseParams(params, data) {
     const result = {}
     for (let param of params) {
+        if (data[param] === 'null') return;
         if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
     }
     return result;
@@ -47,6 +49,8 @@ export default async function DeleteHeart(request, response) {
                     accountID: params.accountID,
                     friendID: params.userID
                 })
+
+                SSEPush("notificationData", "NEW_NOTIFICATION", params.accountID, null)
             }
         })
     } catch (error) {

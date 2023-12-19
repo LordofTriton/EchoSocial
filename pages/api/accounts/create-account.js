@@ -24,6 +24,7 @@ function ValidateCreateAccount(data) {
 function parseParams(params, data) {
     const result = {}
     for (let param of params) {
+        if (data[param] === 'null') return;
         if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
     }
     return result;

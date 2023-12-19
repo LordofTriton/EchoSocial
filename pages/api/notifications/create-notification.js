@@ -15,6 +15,7 @@ function ValidateCreateNotification(data) {
 function parseParams(params, data) {
     const result = {}
     for (let param of params) {
+        if (data[param] === 'null') return;
         if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
     }
     return result;
@@ -47,7 +48,7 @@ export default async function CreateNotification(request, response) {
         const createNotificationResponse = await db.collection("notifications").insertOne(notificationData)
         if (createNotificationResponse.errors) throw new Error("An error occured when creating notification.");
 
-        SSEPush(params.accountID, "NEW_NOTIFICATION", notificationData)
+        SSEPush(JSON.stringify(notificationData), params.accountID)
 
         const responseData = ResponseClient.DBModifySuccess({
             data: createNotificationResponse,
