@@ -18,10 +18,11 @@ export default function Notifications({toggle, control, page}) {
     })
 
     useEffect(() => {
-        if (!page.sse) return;
-        const updateNotifications = (data) => { setNotifications((state) => [data, ...state]) }
-        page.sseListener("NEW_NOTIFICATION", updateNotifications, page.activeUser.accountID, null)
-    }, [page.sse]);
+        const channel = PusherClient.subscribe(page.activeUser.accountID)
+        channel.bind('my-event', function(data) {
+            setNotifications((state) => [data, ...state])
+        });
+    }, []);
     
     useEffect(() => {
         if (notifications.filter((notification) => notification.status === "unread").length > 0) page.setShowNotificationDot(true)

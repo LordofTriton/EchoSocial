@@ -3,7 +3,7 @@ import axios from "axios";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import IDGenerator from "../../../services/generators/IDGenerator";
-import { SSEPush } from "../sse";
+import PusherServer from "../../../services/PusherServer";
 
 function ValidateCreateNotification(data) {
     if (!data.accountID || !ParamValidator.isValidAccountID(data.accountID)) throw new Error("Missing or Invalid: accountID.")
@@ -48,7 +48,7 @@ export default async function CreateNotification(request, response) {
         const createNotificationResponse = await db.collection("notifications").insertOne(notificationData)
         if (createNotificationResponse.errors) throw new Error("An error occured when creating notification.");
 
-        SSEPush(JSON.stringify(notificationData), params.accountID)
+        PusherServer.trigger(params.accountID, "NEW_NOTIFICATION", notificationData)
 
         const responseData = ResponseClient.DBModifySuccess({
             data: createNotificationResponse,
