@@ -6,6 +6,7 @@ import IDGenerator from "../../../services/generators/IDGenerator";
 import CreateNotification from "../notifications/create-notification";
 import CreateHeart from "../hearts/create-heart";
 import { SSEBroadcast } from "../sse/SSEClient";
+import PusherServer from "../../../services/PusherServer";
 
 function ValidateCreateComment(data) {
     if (!data.accountID || !ParamValidator.isValidAccountID(data.accountID)) throw new Error("Missing or Invalid: accountID.")
@@ -62,7 +63,7 @@ export default async function CreateComment (request, response) {
             profileImage: commentUser.profileImage
         }
 
-        SSEBroadcast(`NEW_COMMENT_${params.echoID}`, result)
+        PusherServer.trigger(params.echoID, `NEW_COMMENT_${params.echoID}`, result)
 
         const responseData = ResponseClient.DBModifySuccess({
             data: result,

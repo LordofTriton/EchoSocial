@@ -4,6 +4,7 @@ import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import IDGenerator from "../../../services/generators/IDGenerator";
 import { SSEPush } from "../sse/SSEClient";
+import PusherServer from "../../../services/PusherServer";
 
 function ValidateCreateChat(data) {
     if (!data.accountID || !ParamValidator.isValidAccountID(data.accountID)) throw new Error("Missing or Invalid: accountID.")
@@ -79,7 +80,7 @@ export default async function CreateChat(request, response) {
             userFriend: userFriend ? true : false
         }
 
-        SSEPush(params.accountID, `UPDATED_CHAT`, finalChatData)
+        PusherServer.trigger(params.accountID, `UPDATED_CHAT`, finalChatData)
 
         const responseData = ResponseClient.DBModifySuccess({
             data: createdChat,

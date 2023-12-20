@@ -23,7 +23,7 @@ export default function FeedSettings() {
     })
     const [alert, setAlert] = useState(null)
     const {modalStates, modalControl} = useModalStates()
-    const { sse, sseListener, sseDeafener } = useSSEContext()
+    
     const [showAccountDrop, setShowAccountDrop] = useState(false)
 
     const createAlert = (type, message) => {
@@ -61,9 +61,6 @@ export default function FeedSettings() {
         setActiveUser,
         activeTheme,
         setActiveTheme,
-        sse,
-        sseListener,
-        sseDeafener,
         alert,
         createAlert,
         ...modalStates,

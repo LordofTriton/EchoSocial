@@ -18,7 +18,7 @@ import useDataStates from '../../../hooks/useDataStates';
 export default function UserAbout() {
     const router = useRouter()
     const {modalStates, modalControl} = useModalStates()
-    const { sse, sseListener, sseDeafener } = useSSEContext()
+    
     const [activeUser, setActiveUser] = useState(CacheService.getData("EchoActiveUser"))
     const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
     const [userData, setUserData] = useState(null)
@@ -52,9 +52,6 @@ export default function UserAbout() {
         setActiveUser,
         activeTheme,
         setActiveTheme,
-        sse,
-        sseListener,
-        sseDeafener,
         alert,
         createAlert,
         ...modalStates,

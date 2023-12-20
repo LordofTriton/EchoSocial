@@ -25,7 +25,7 @@ export default function PreferencesSettings() {
     const [alert, setAlert] = useState(null)
     const {modalStates, modalControl} = useModalStates()
     const [showAccountDrop, setShowAccountDrop] = useState(true)
-    const { sse, sseListener, sseDeafener } = useSSEContext()
+    
 
     const createAlert = (type, message) => {
         setAlert({ type, message })
@@ -74,9 +74,6 @@ export default function PreferencesSettings() {
         setActiveUser,
         activeTheme,
         setActiveTheme,
-        sse,
-        sseListener,
-        sseDeafener,
         alert,
         createAlert,
         ...modalStates,

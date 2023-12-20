@@ -21,7 +21,6 @@ export default function Home() {
   const {modalStates, modalControl} = useModalStates()
   const [echoFeed, setEchoFeed] = useState([])
   const [echoFeedPage, setEchoFeedPage] = useState(1)
-  const {sse, sseListener, sseDeafener } = useSSEContext()
   const [pagination, setPagination] = useState({
     page: 1,
     pageSize: 10,
@@ -60,9 +59,6 @@ export default function Home() {
     setActiveUser,
     activeTheme,
     setActiveTheme,
-    sse,
-    sseListener,
-    sseDeafener,
     alert,
     createAlert,
     ...modalStates,

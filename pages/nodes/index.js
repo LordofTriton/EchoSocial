@@ -22,7 +22,7 @@ export default function Nodes() {
     const [nodeList, setNodeList] = useState([])
     const [nodeFilter, setNodeFilter] = useState(null)
     const [alert, setAlert] = useState(null)
-    const { sse, sseListener, sseDeafener } = useSSEContext()
+    
 
     useEffect(() => {
         const getNodes = (data) => data.success ? setNodeList(data.data) : null;

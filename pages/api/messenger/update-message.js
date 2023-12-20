@@ -4,6 +4,7 @@ import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import UpdateChat from "./update-chat";
 import { SSEPush } from "../sse/SSEClient";
+import PusherServer from "../../../services/PusherServer";
 
 function ValidateUpdateMessage(data) {
     if (!data.accountID || !ParamValidator.isValidAccountID(data.accountID)) throw new Error("Missing or Invalid: accountID")
@@ -60,8 +61,8 @@ export default async function UpdateMessage(request, response) {
                 lastUpdated: Date.now()
             })
 
-            SSEPush(chatData.accountID, `UPDATED_MESSAGE_${messageData.chatID}`, messageData)
-            SSEPush(chatData.targetID, `UPDATED_MESSAGE_${messageData.chatID}`, messageData)
+            PusherServer.trigger(chatData.accountID, `UPDATED_MESSAGE_${messageData.chatID}`, messageData)
+            PusherServer.trigger(chatData.targetID, `UPDATED_MESSAGE_${messageData.chatID}`, messageData)
         }
 
         response.json(responseData);

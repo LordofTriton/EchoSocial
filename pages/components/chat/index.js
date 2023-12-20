@@ -5,6 +5,7 @@ import DateGenerator from "../../../services/generators/DateGenerator";
 import SVGServer from "../../../services/svg/svgServer";
 import APIClient from "../../../services/APIClient";
 import Helpers from "../../../util/Helpers";
+import PusherClient from "../../../services/PusherClient";
 
 function Message({ chatData, messageData, page, key, index, methods }) {
 
@@ -130,11 +131,6 @@ export default function Chat({ toggle, data, page }) {
 
     useEffect(() => {
         if (data) {
-            if (chatData && page.sse) {
-                page.sseDeafener(`NEW_MESSAGE_${data.chatID}`, updateMessages)
-                page.sseDeafener(`UPDATED_MESSAGE_${data.chatID}`, updateMessage)
-                page.sseDeafener(`UPDATED_CHAT_${data.chatID}`, updateChat)
-            }
             setChatData(data)
             APIClient.post(APIClient.routes.updateChat, {
                 accountID: page.activeUser.accountID,
@@ -151,16 +147,28 @@ export default function Chat({ toggle, data, page }) {
     }, [data])
 
     useEffect(() => {
-        if (chatData && page.sse) page.sseListener(`UPDATED_CHAT_${chatData.chatID}`, updateChat)
-    }, [chatData, page.sse])
+        if (!chatData) return;
+        const channel = PusherClient.subscribe(page.activeUser.accountID)
+        channel.bind(`UPDATED_CHAT_${chatData.chatID}`, function(data) {
+            updateChat(data)
+        });
+    }, [chatData])
 
     useEffect(() => {
-        if (chatData && page.sse) page.sseListener(`UPDATED_MESSAGE_${chatData.chatID}`, updateMessage)
-    }, [chatData, page.sse])
+        if (!chatData) return;
+        const channel = PusherClient.subscribe(page.activeUser.accountID)
+        channel.bind(`UPDATED_MESSAGE_${chatData.chatID}`, function(data) {
+            updateMessage(data)
+        });
+    }, [chatData])
 
     useEffect(() => {
-        if (chatData && page.sse) page.sseListener(`NEW_MESSAGE_${chatData.chatID}`, updateMessages)
-    }, [chatData, page.sse])
+        if (!chatData) return;
+        const channel = PusherClient.subscribe(page.activeUser.accountID)
+        channel.bind(`NEW_MESSAGE_${chatData.chatID}`, function(data) {
+            updateMessage(data)
+        });
+    }, [chatData])
 
     useEffect(() => {
         if (!data) return;

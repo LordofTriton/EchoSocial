@@ -21,7 +21,7 @@ export default function BlacklistSettings() {
     const [alert, setAlert] = useState(null)
     const {modalStates, modalControl} = useModalStates()
     const [showAccountDrop, setShowAccountDrop] = useState(false)
-    const { sse, sseListener, sseDeafener } = useSSEContext()
+    
     const [blacklistLoader, setBlacklistLoader] = useState(true)
     const [blacklistPage, setBlacklistPage] = useState(1)
     const [pagination, setPagination] = useState({
@@ -73,9 +73,6 @@ export default function BlacklistSettings() {
         setActiveUser,
         activeTheme,
         setActiveTheme,
-        sse,
-        sseListener,
-        sseDeafener,
         alert,
         createAlert,
         ...modalStates,

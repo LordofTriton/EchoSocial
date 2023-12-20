@@ -40,7 +40,6 @@ export default function CommunitySettings() {
   })
   const [communityApplications, setCommunityApplications] = useState([])
   const [alert, setAlert] = useState(null)
-  const { sse, sseListener, sseDeafener } = useSSEContext()
   const [settingsPage, setSettingsPage] = useState("general")
 
   useEffect(() => {
@@ -78,9 +77,6 @@ export default function CommunitySettings() {
     setActiveUser,
     activeTheme,
     setActiveTheme,
-    sse,
-    sseListener,
-    sseDeafener,
     alert,
     createAlert,
     ...modalStates,

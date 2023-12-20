@@ -1,7 +1,7 @@
 import Pusher from "pusher-js"
 
-const PusherClient = new Pusher(process.env.PUSHER_KEY, {
-    cluster: process.env.PUSHER_CLUSTER,
+const PusherClient = new Pusher("50f5658f71430c02353d", {
+    cluster: "eu",
     forceTLS: true
 });
 

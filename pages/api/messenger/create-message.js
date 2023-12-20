@@ -8,6 +8,7 @@ import CreateHeart from "../hearts/create-heart";
 import UpdateChat from "./update-chat";
 import CreateChat from "./create-chat";
 import { SSEPush } from "../sse/SSEClient";
+import PusherServer from "../../../services/PusherServer";
 
 function ValidateCreateMessage(data) {
     if (!data.accountID || !ParamValidator.isValidAccountID(data.accountID)) throw new Error("Missing or Invalid: accountID.")
@@ -71,7 +72,7 @@ export default async function CreateMessage(request, response) {
             profileImage: messageUser.profileImage
         }
 
-        SSEPush(chat.targetID, `NEW_MESSAGE_${params.chatID}`, result)
+        PusherServer.trigger(chat.targetID, `NEW_MESSAGE_${params.chatID}`, result)
 
         const responseData = ResponseClient.DBModifySuccess({
             data: result,

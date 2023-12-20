@@ -7,6 +7,7 @@ import CreateNotification from "../notifications/create-notification";
 import CreateHeart from "../hearts/create-heart";
 import CreateChat from "../messenger/create-chat";
 import { SSEPush } from "../sse/SSEClient";
+import PusherServer from "../../../services/PusherServer";
 
 function ValidateCreateFriend(data) {
     if (!data.accountID || !ParamValidator.isValidAccountID(data.accountID)) throw new Error("Missing or Invalid: accountID.")
@@ -95,7 +96,7 @@ export async function CreateFriendCallback(params, request) {
         targetID: params.accountID
     })).data;
 
-    SSEPush(params.accountID, "NEW_FRIEND", {
+    PusherServer.trigger(params.accountID, `NEW_FRIEND`, {
         accountID: friend.accountID,
         firstName: friend.firstName,
         lastName: friend.lastName,
@@ -108,7 +109,7 @@ export async function CreateFriendCallback(params, request) {
         userFriend: true
     })
 
-    SSEPush(params.friendID, "NEW_FRIEND", {
+    PusherServer.trigger(params.friendID, `NEW_FRIEND`, {
         accountID: userAccount.accountID,
         firstName: userAccount.firstName,
         lastName: userAccount.lastName,

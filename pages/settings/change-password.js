@@ -25,7 +25,7 @@ export default function ChangePasswordSettings() {
     const [alert, setAlert] = useState(null)
     const {modalStates, modalControl} = useModalStates()
     const [showAccountDrop, setShowAccountDrop] = useState(true)
-    const { sse, sseListener, sseDeafener } = useSSEContext()
+    
     const [loading, setLoading] = useState(false)
 
     const createAlert = (type, message) => {
@@ -50,9 +50,6 @@ export default function ChangePasswordSettings() {
         setActiveUser,
         activeTheme,
         setActiveTheme,
-        sse,
-        sseListener,
-        sseDeafener,
         alert,
         createAlert,
         ...modalStates,

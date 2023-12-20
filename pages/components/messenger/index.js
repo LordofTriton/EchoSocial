@@ -5,6 +5,7 @@ import DateGenerator from "../../../services/generators/DateGenerator";
 import SVGServer from "../../../services/svg/svgServer";
 import Helpers from "../../../util/Helpers";
 import APIClient from "../../../services/APIClient";
+import PusherClient from "../../../services/PusherClient";
 
 export default function Messenger({ toggle, control, page }) {
     const [userChats, setUserChats] = useState([])
@@ -20,13 +21,15 @@ export default function Messenger({ toggle, control, page }) {
     })
 
     useEffect(() => {
-        if (page.sse) {
-            const updateChat = (data) => {
-                setUserChats((state) => [data, ...(state.filter((chat) => chat.chatID !== data.chatID))])
-            }
-            page.sseListener(`UPDATED_CHAT_LIST`, updateChat)
+        const updateChat = (data) => {
+            setUserChats((state) => [data, ...(state.filter((chat) => chat.chatID !== data.chatID))])
         }
-    }, [page.sse])
+        
+        const channel = PusherClient.subscribe(page.activeUser.accountID)
+        channel.bind(`UPDATED_CHAT_LIST`, function(data) {
+            updateChat(data)
+        });
+    }, [])
 
     useEffect(() => {
         const updateChats = (data) => {

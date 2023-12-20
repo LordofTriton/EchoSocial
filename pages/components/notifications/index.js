@@ -5,6 +5,7 @@ import APIClient from "../../../services/APIClient";
 import SVGServer from "../../../services/svg/svgServer";
 import DateGenerator from "../../../services/generators/DateGenerator";
 import Helpers from "../../../util/Helpers";
+import PusherClient from "../../../services/PusherClient";
 
 export default function Notifications({toggle, control, page}) {
     const [notifications, setNotifications] = useState([])
@@ -22,6 +23,10 @@ export default function Notifications({toggle, control, page}) {
         channel.bind('NEW_NOTIFICATION', function(data) {
             setNotifications((state) => [data, ...state])
         });
+
+        return () => {
+            channel.unsubscribe(page.activeUser.accountID);
+        };
     }, []);
     
     useEffect(() => {

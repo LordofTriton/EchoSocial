@@ -22,7 +22,7 @@ export default function CommunitiesFeed() {
     const [communities, setCommunities] = useState([])
     const [searchedCommunities, setSearchedCommunities] = useState([])
     const [searchQuery, setSearchQuery] = useState("")
-    const { sse, sseListener, sseDeafener } = useSSEContext()
+    
     const [communitiesPage, setCommunitiesPage] = useState(1)
     const [pagination, setPagination] = useState({
       page: 1,
@@ -77,9 +77,6 @@ export default function CommunitiesFeed() {
         setActiveUser,
         activeTheme,
         setActiveTheme,
-        sse,
-        sseListener,
-        sseDeafener,
         alert,
         createAlert,
         ...modalStates,

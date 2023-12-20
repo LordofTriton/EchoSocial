@@ -29,7 +29,7 @@ export default function NotificationsSettings() {
     const [alert, setAlert] = useState(null)
     const {modalStates, modalControl} = useModalStates()
     const [showAccountDrop, setShowAccountDrop] = useState(false)
-    const { sse, sseListener, sseDeafener } = useSSEContext()
+    
 
     const createAlert = (type, message) => {
         setAlert({ type, message })
@@ -66,9 +66,6 @@ export default function NotificationsSettings() {
         setActiveUser,
         activeTheme,
         setActiveTheme,
-        sse,
-        sseListener,
-        sseDeafener,
         alert,
         createAlert,
         ...modalStates,

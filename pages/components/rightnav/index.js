@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react";
 import APIClient from "../../../services/APIClient";
+import PusherClient from "../../../services/PusherClient";
 import SVGServer from "../../../services/svg/svgServer";
 import Helpers from "../../../util/Helpers";
 import styles from "./rightnav.module.css"
@@ -67,30 +68,34 @@ export default function RightNav({ page }) {
     }, [])
 
     useEffect(() => {
-        if (page.sse) {
-            const updateFriends = (data) => {
-                setUserFriends((state) => state.concat(data))
-            }
-            page.sseListener(`NEW_FRIEND`, updateFriends)
+        const updateFriends = (data) => {
+            setUserFriends((state) => state.concat(data))
         }
-    }, [page.sse])
+        
+        const channel = PusherClient.subscribe(page.activeUser.accountID)
+        channel.bind(`NEW_FRIEND`, function(data) {
+            updateFriends(data)
+        });
+    }, [])
 
     useEffect(() => {
-        if (page.sse) {
-            const updateChat = (data) => {
-                setUserFriends((state) => {
-                    const update = state.map((friend) => {
-                        if (!friend.userChat) return;
-                        if (page.activeChat && friend.userChat.chatID === page.activeChat.chatID) return {...friend, userChat: { ...friend.userChat, unread: 0 }};
-                        if (friend.accountID === data.target.accountID) return {...friend, userChat: data}
-                        else return friend;
-                    })
-                    return update;
+        const updateChat = (data) => {
+            setUserFriends((state) => {
+                const update = state.map((friend) => {
+                    if (!friend.userChat) return;
+                    if (page.activeChat && friend.userChat.chatID === page.activeChat.chatID) return {...friend, userChat: { ...friend.userChat, unread: 0 }};
+                    if (friend.accountID === data.target.accountID) return {...friend, userChat: data}
+                    else return friend;
                 })
-            }
-            page.sseListener(`UPDATED_CHAT_LIST`, updateChat)
+                return update;
+            })
         }
-    }, [page.sse])
+        
+        const channel = PusherClient.subscribe(page.activeUser.accountID)
+        channel.bind(`UPDATED_CHAT_LIST`, function(data) {
+            updateChat(data)
+        });
+    }, [])
 
     const getChat = (friend) => {
         return {

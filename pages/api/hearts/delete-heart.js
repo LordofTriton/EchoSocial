@@ -49,8 +49,6 @@ export default async function DeleteHeart(request, response) {
                     accountID: params.accountID,
                     friendID: params.userID
                 })
-
-                SSEPush("notificationData", "NEW_NOTIFICATION", params.accountID, null)
             }
         })
     } catch (error) {

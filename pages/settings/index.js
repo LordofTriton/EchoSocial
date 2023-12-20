@@ -39,7 +39,7 @@ export default function ProfileSettings() {
     const [alert, setAlert] = useState(null)
     const {modalStates, modalControl} = useModalStates()
     const [showAccountDrop, setShowAccountDrop] = useState(true)
-    const { sse, sseListener, sseDeafener } = useSSEContext()
+    
 
     const createAlert = (type, message) => {
         setAlert({ type, message })
@@ -79,9 +79,6 @@ export default function ProfileSettings() {
         setActiveUser,
         activeTheme,
         setActiveTheme,
-        sse,
-        sseListener,
-        sseDeafener,
         alert,
         createAlert,
         ...modalStates,

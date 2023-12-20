@@ -23,7 +23,6 @@ export default function CommunitiesFeed() {
     const [searchQuery, setSearchQuery] = useState("")
     const [echoFeed, setEchoFeed] = useState([])
     const [feedPage, setFeedPage] = useState(1)
-    const {sse, sseListener, sseDeafener } = useSSEContext()
     const [pagination, setPagination] = useState({
       page: 1,
       pageSize: 10,
@@ -67,9 +66,6 @@ export default function CommunitiesFeed() {
         setActiveUser,
         activeTheme,
         setActiveTheme,
-        sse,
-        sseListener,
-        sseDeafener,
         alert,
         createAlert,
         ...modalStates,

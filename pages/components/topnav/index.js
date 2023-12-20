@@ -8,7 +8,6 @@ import AccountNav from "../accountnav";
 import Search from "../search";
 import Helpers from "../../../util/Helpers";
 import PusherClient from "../../../services/PusherClient";
-import Pusher from "pusher-js"
 
 export default function TopNav({ page }) {
     const [userNotifications, setUserNotifications] = useState([])
@@ -18,7 +17,7 @@ export default function TopNav({ page }) {
 
     useEffect(() => {
         const channel = PusherClient.subscribe(page.activeUser.accountID)
-        channel.bind('my-event', function(data) {
+        channel.bind('NEW_NOTIFICATION', function(data) {
             setUserNotifications((state) => [data, ...state])
         });
     }, []);

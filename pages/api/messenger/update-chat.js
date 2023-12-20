@@ -3,6 +3,7 @@ import axios from "axios";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import { SSEPush } from "../sse/SSEClient";
+import PusherServer from "../../../services/PusherServer";
 
 function ValidateUpdateChat(data) {
     if (!data.chatID || !ParamValidator.isValidObjectID(data.chatID)) throw new Error("Missing or Invalid: chatID")
@@ -67,8 +68,8 @@ export default async function UpdateChat(request, response) {
             userFriend: userFriend ? true : false
         }
 
-        SSEPush(origin.accountID, `UPDATED_CHAT_${updatedChat.chatID}`, finalChatData)
-        SSEPush(origin.accountID, `UPDATED_CHAT_LIST`, finalChatData)
+        PusherServer.trigger(origin.accountID, `UPDATED_CHAT_${updatedChat.chatID}`, finalChatData)
+        PusherServer.trigger(origin.accountID, `UPDATED_CHAT_LIST`, finalChatData)
 
         response.json(responseData);
     } catch (error) {

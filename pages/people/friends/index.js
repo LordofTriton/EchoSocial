@@ -25,7 +25,7 @@ export default function PeopleFriends() {
     const [searchedPeople, setSearchedPeople] = useState([])
     const [searchQuery, setSearchQuery] = useState("")
     const [peoplePage, setPeoplePage] = useState(1)
-    const { sse, sseListener, sseDeafener } = useSSEContext()
+    
     const [pagination, setPagination] = useState({
       page: 1,
       pageSize: 10,
@@ -79,9 +79,6 @@ export default function PeopleFriends() {
         setActiveUser,
         activeTheme,
         setActiveTheme,
-        sse,
-        sseListener,
-        sseDeafener,
         alert,
         createAlert,
         ...modalStates,

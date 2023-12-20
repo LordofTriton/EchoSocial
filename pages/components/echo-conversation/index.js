@@ -7,6 +7,7 @@ import EchoComment from "../echo-comment";
 import APIClient from "../../../services/APIClient";
 import { Form } from "../form";
 import Helpers from "../../../util/Helpers";
+import PusherClient from "../../../services/PusherClient";
 
 export default function EchoConversation({ data, control, page }) {
     const [echoData, setEchoData] = useState(data)
@@ -28,12 +29,18 @@ export default function EchoConversation({ data, control, page }) {
     useEffect(() => {
         if (page.sse) {
             const updateComments = (data) => setEchoComments((state) => state.concat(data))
-            if (data) page.sseListener(`NEW_COMMENT_${data.echoID}`, updateComments)
-            else page.sseDeafener(`NEW_COMMENT_${data.echoID}`)
+            
+            const channel = PusherClient.subscribe(data.echoID)
+            if (data) channel.bind(`NEW_COMMENT_${data.echoID}`, function(data) {
+                updateComments(data)
+            });
+            else channel.unbind(`NEW_COMMENT_${data.echoID}`, function(data) {
+                updateComments(data)
+            });
         }
         setEchoData(data)
         if (data) setCommentLoader(true)
-    }, [data, page.sse])
+    }, [data])
 
     useEffect(() => {
         if (!data) {

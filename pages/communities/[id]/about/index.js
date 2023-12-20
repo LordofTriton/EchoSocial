@@ -9,7 +9,6 @@ import APIClient from "../../../../services/APIClient";
 import SVGServer from "../../../../services/svg/svgServer";
 import Modals from '../../../components/modals';
 import useModalStates from '../../../hooks/useModalStates';
-import { useSSEContext } from '../../../../util/SocketProvider';
 import DateGenerator from '../../../../services/generators/DateGenerator';
 import DuoMasonryLayout from '../../../components/masonry/duo-masonry';
 import AppConfig from '../../../../util/config';
@@ -19,7 +18,6 @@ import useDataStates from '../../../hooks/useDataStates';
 export default function CommunityAbout() {
     const router = useRouter()
     const { modalStates, modalControl } = useModalStates()
-    const {sse, sseListener, sseDeafener } = useSSEContext()
     const [activeUser, setActiveUser] = useState(CacheService.getData("EchoActiveUser"))
     const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
     const [communityData, setCommunityData] = useState(null)
@@ -57,9 +55,6 @@ export default function CommunityAbout() {
         setActiveUser,
         activeTheme,
         setActiveTheme,
-        sse,
-        sseListener,
-        sseDeafener,
         alert,
         createAlert,
         ...modalStates,

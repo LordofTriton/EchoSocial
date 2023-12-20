@@ -29,7 +29,6 @@ function VideoMedia({ source, callback }) {
 export default function CommunityMedia() {
   const router = useRouter()
   const {modalStates, modalControl} = useModalStates()
-  const {sse, sseListener, sseDeafener } = useSSEContext()
   const [activeUser, setActiveUser] = useState(CacheService.getData("EchoActiveUser"))
   const [activeTheme, setActiveTheme] = useState(localStorage.getItem("EchoTheme") || "dark")
   const [communityData, setCommunityData] = useState(null)
@@ -95,9 +94,6 @@ export default function CommunityMedia() {
     setActiveUser,
     activeTheme,
     setActiveTheme,
-    sse,
-    sseListener,
-    sseDeafener,
     alert,
     createAlert,
     ...modalStates,
