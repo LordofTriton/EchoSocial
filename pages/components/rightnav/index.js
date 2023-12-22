@@ -121,7 +121,7 @@ export default function RightNav({ page }) {
             <div className={styles.rightnavChatBox}>
                 {
                     userFriends.length > 0 ?
-                    userFriends.slice(0, 6).map((friend, index) => 
+                    userFriends.slice(0, 7).map((friend, index) => 
                         <Friend data={friend} page={page} key={index} />
                     ) : null
                 }
