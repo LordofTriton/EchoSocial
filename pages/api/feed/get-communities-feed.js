@@ -41,7 +41,7 @@ export default async function CommunitiesFeed(request, response) {
                 { accountID: { $nin: blacklist.filter((blck) => blck.blockee === params.accountID).map((obj) => obj.blocker) } }
             ]
         }
-        if (params.filter) filters.$or = [{ "content.text": { $regex: params.filter, $options: 'i' } }]
+        if (params.filter && params.filter !== 'null') filters.$or = [{ "content.text": { $regex: params.filter, $options: 'i' } }]
 
         const pagination = {
             page: parseInt(params.page),

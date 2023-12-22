@@ -47,7 +47,7 @@ export default async function GetCommunities (request, response) {
             filters.$and.push({ communityID: { $nin: communities.map((obj) => obj.communityID) } })
         }
         
-        if (params.filter) filters.$and.push({ name: { $regex: String(params.filter).toLowerCase().replace(/\s/g, "").trim(), $options: 'i' } })
+        if (params.filter && params !== 'null') filters.$and.push({ name: { $regex: String(params.filter).toLowerCase().replace(/\s/g, "").trim(), $options: 'i' } })
 
         const pagination = {
             page: parseInt(params.page),
