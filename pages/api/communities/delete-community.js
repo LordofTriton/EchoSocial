@@ -34,10 +34,7 @@ export default async function DeleteCommunity (request, response) {
 
         const deleteCommunityResponse = await db.collection("communities").deleteOne({ communityID: params.communityID })
 
-        await axios.post(request.headers.origin + "/api/nodes/delete-node", {
-            accountID: params.accountID,
-            nodeID: community.node.nodeID
-        })
+        await axios.delete(request.headers.origin + `/api/nodes/delete-node?accountID=${params.accountID}&nodeID=${community.node.nodeID}`)
 
         const responseData = ResponseClient.DBModifySuccess({
             data: deleteCommunityResponse,

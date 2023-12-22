@@ -28,7 +28,7 @@ export default function SideNav({toggle, control, page}) {
             <span className={styles.sidenavClose} onClick={() => control(false)}><SVGServer.CloseIcon color="var(--accent)" width="50px" height="50px" /></span>
 
             <div className={styles.sidenavButtons}>
-            <div className={styles.sidenavButton} onClick={() => page.router.push(`/user/${page.activeUser.accountID}`)}>
+            <div className={styles.sidenavButton} onClick={() => page.router.push(`/user/${page.activeUser?.accountID}`)}>
                 <span className={styles.sidenavButtonMirage}><SVGServer.ProfileIcon color="var(--alt)" width="100px" height="100px" /></span>
                 <span className={styles.sidenavButtonIcon}><SVGServer.ProfileIcon color="var(--secondary)" width="30px" height="30px" /></span>
                 <span className={styles.sidenavButtonText}>Profile</span>

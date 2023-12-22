@@ -63,7 +63,7 @@ export default function RightNav({ page }) {
             accountID: page.activeUser.accountID, 
             userID: page.activeUser.accountID,
             page: 1,
-            pageSize: 10
+            pageSize: 7
         }, updateUserFriends)
     }, [])
 
@@ -121,7 +121,7 @@ export default function RightNav({ page }) {
             <div className={styles.rightnavChatBox}>
                 {
                     userFriends.length > 0 ?
-                    userFriends.slice(0, 11).map((friend, index) => 
+                    userFriends.slice(0, 6).map((friend, index) => 
                         <Friend data={friend} page={page} key={index} />
                     ) : null
                 }

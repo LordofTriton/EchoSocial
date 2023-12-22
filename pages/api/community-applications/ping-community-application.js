@@ -40,11 +40,7 @@ export default async function PingCommunityApplications (request, response) {
         const application = await db.collection("applications").findOne({ applicationID: params.applicationID })
         const community = await db.collection("communities").findOne({ communityID: params.communityID });
 
-        
-        await axios.post(request.headers.origin + "/api/community-applications/delete-community-application", {
-            accountID: application.accountID,
-            applicationID: params.applicationID
-        })
+        await axios.delete(request.headers.origin + `/api/community-applications/delete-community-application?accountID=${application.accountID}&applicationID=${params.applicationID}`)
 
         if (params.approve) {
             await axios.post(request.headers.origin + "/api/community-members/create-community-member", {

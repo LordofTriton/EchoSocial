@@ -94,7 +94,7 @@ export default async function CreateMessage(request, response) {
 export async function CreateMessageCallback(params, request) {
     const { db } = await getDB();
     const userChat = (await db.collection("chats").findOne({ accountID: params.accountID, chatID: params.chatID }))
-    await axios.post(request.headers.origin + "/api/chats/update-chat", {
+    await axios.post(request.headers.origin + "/api/messenger/update-chat", {
         accountID: params.accountID,
         chatID: params.chatID,
         latestMessage: params.content,
@@ -102,13 +102,13 @@ export async function CreateMessageCallback(params, request) {
     })
     const targetChat = (await db.collection("chats").findOne({ accountID: userChat.targetID, chatID: params.chatID }))
     if (!targetChat) {
-        await axios.post(request.headers.origin + "/api/chats/create-chat", {
+        await axios.post(request.headers.origin + "/api/messenger/create-chat", {
             accountID: userChat.targetID,
             targetID: params.accountID,
             latestMessage: params.content
         })
     } else {
-        await axios.post(request.headers.origin + "/api/chats/update-chats", {
+        await axios.post(request.headers.origin + "/api/messenger/update-chat", {
             accountID: targetChat.accountID,
             chatID: params.chatID,
             latestMessage: params.content,

@@ -48,15 +48,15 @@ export default function TopNav({ page }) {
                     </form>
                 </div>
                 <div className={styles.topnavAccount} onMouseEnter={() => setOpenAccountNav(true)} onMouseLeave={() => setOpenAccountNav(false)} onClick={() => page.setShowSidenav(true)}>
-                    <div className={styles.topnavProfileImage} style={{ backgroundImage: page.activeUser.profileImage.url ? `url(${page.activeUser.profileImage.url})` : `url(/images/userProfile.png)` }}>
+                    <div className={styles.topnavProfileImage} style={{ backgroundImage: page.activeUser?.profileImage.url ? `url(${page.activeUser?.profileImage.url})` : `url(/images/userProfile.png)` }}>
                         <div className={styles.topnavProfileImageActive}></div>
                     </div>
                     <div className={styles.topnavAccountData}>
                         <span className={styles.topnavAccountName}>{
-                            page.activeUser?.firstName && page.activeUser?.lastName ? `${page.activeUser.firstName} ${page.activeUser.lastName}` : ""
+                            page.activeUser?.firstName && page.activeUser?.lastName ? `${page.activeUser?.firstName} ${page.activeUser?.lastName}` : ""
                         }</span>
                         <span className={styles.topnavAccountNickName}>{
-                            page.activeUser?.nickname ? page.activeUser.nickname : "Astronaut"
+                            page.activeUser?.nickname ? page.activeUser?.nickname : "Astronaut"
                         }</span>
                     </div>
                 </div>

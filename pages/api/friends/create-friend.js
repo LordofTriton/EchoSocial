@@ -87,11 +87,11 @@ export async function CreateFriendCallback(params, request) {
         clickable: true,
         redirect: `/user/${userAccount.accountID}`
     })
-    const userChat = (await axios.post(request.headers.origin + "/api/chats/create-chat", {
+    const userChat = (await axios.post(request.headers.origin + "/api/messenger/create-chat", {
         accountID: params.accountID,
         targetID: friend.accountID
     })).data;
-    const friendChat = (await axios.post(request.headers.origin + "/api/chats/create-chat", {
+    const friendChat = (await axios.post(request.headers.origin + "/api/messenger/create-chat", {
         accountID: friend.accountID,
         targetID: params.accountID
     })).data;

@@ -42,7 +42,7 @@ export default async function UpdateMessage(request, response) {
         if (params.deleted) {
             const messageData = await db.collection("messages").findOne({ messageID: params.messageID })
             const chatData = await db.collection("chats").findOne({ accountID: params.accountID, chatID: messageData.chatID })
-            await axios.post(request.headers.origin + "/api/chats/update-chats", {
+            await axios.post(request.headers.origin + "/api/messenger/update-chat", {
                 accountID: params.accountID,
                 chatID: messageData.chatID,
                 latestMessage: {
@@ -51,7 +51,7 @@ export default async function UpdateMessage(request, response) {
                 },
                 lastUpdated: Date.now()
             })
-            await axios.post(request.headers.origin + "/api/chats/update-chats", {
+            await axios.post(request.headers.origin + "/api/messenger/update-chat", {
                 accountID: chatData.targetID,
                 chatID: messageData.chatID,
                 latestMessage: {

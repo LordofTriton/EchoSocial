@@ -30,7 +30,7 @@ export default function AccountNav({toggle, control, page}) {
                 My Account
                 <span className={styles.accountNavClose}><SVGServer.CloseIcon color="var(--accent)" width="30px" height="30px" /></span>
             </span>
-            <div className={styles.accountNavButton} onClick={() => page.router.push(`/user/${page.activeUser.accountID}`)}>
+            <div className={styles.accountNavButton} onClick={() => page.router.push(`/user/${page.activeUser?.accountID}`)}>
                 <span className={styles.accountNavButtonIcon}><SVGServer.ProfileIcon color="var(--secondary)" width="30px" height="30px" /></span>
                 <span className={styles.accountNavButtonText}>Profile</span>
             </div>

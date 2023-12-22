@@ -36,7 +36,7 @@ export default function BottomNav({ page }) {
                 <span className={styles.bottomNavButtonName}>Messages</span>
             </div>
             <div className={styles.bottomNavButton}>
-                <span className={styles.bottomNavButtonIcon} onClick={() => page.router.push(`/user/${page.activeUser.accountID}`)}>
+                <span className={styles.bottomNavButtonIcon} onClick={() => page.router.push(`/user/${page.activeUser?.accountID}`)}>
                     <SVGServer.ProfileIcon color="var(--primary)" width="100%" height="100%" />
                 </span>
                 <span className={styles.bottomNavButtonName}>Me</span>

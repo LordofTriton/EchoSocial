@@ -184,9 +184,9 @@ export default function EchoCreator({toggle, control, page}) {
                 style={{width: "100%", float: "left", marginBottom: "20px", backgroundColor: "var(--surface)"}} 
                 value={echoText} 
                 onChange={(e) => setEchoText(e.target.value)}
-                placeholder={`What's on your mind, ${page.activeUser.firstName}?`}
+                placeholder={`What's on your mind, ${page.activeUser?.firstName ?? ""}?`}
             />
-            {/* <textarea className={styles.echoCreatorText} placeholder={`What's on your mind, ${page.activeUser.firstName}?`} value={echoText} onChange={(e) => setEchoText(e.target.value)}></textarea> */}
+            {/* <textarea className={styles.echoCreatorText} placeholder={`What's on your mind, ${page.activeUser?.firstName}?`} value={echoText} onChange={(e) => setEchoText(e.target.value)}></textarea> */}
             
             {
                 (echoMedia && echoMedia.length > 0) || (oldEchoMedia && oldEchoMedia.length > 0) ?

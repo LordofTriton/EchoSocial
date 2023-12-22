@@ -47,11 +47,7 @@ export default async function BanCommunityMember (request, response) {
         response.json(responseData);
 
         response.once("finish", async () => {
-            await axios.post(request.headers.origin + "/api/community-members/delete-community-member", {
-                accountID: params.accountID,
-                userID: params.userID,
-                communityID: params.communityID
-            })
+            await axios.delete(request.headers.origin + `/api/community-members/delete-community-member?accountID=${params.accountID}&userID=${params.userID}&communityID=${params.communityID}`)
             await axios.post(request.headers.origin + "/api/blacklists/create-blacklist", {
                 accountID: params.accountID,
                 blocker: params.communityID,

@@ -8,7 +8,7 @@ import Helpers from '../util/Helpers';
 import DateGenerator from '../services/generators/DateGenerator';
 import ScrollTop from './hooks/useScrollTop';
 
-const authLess = ["/login", "/signup", "/password-reset"]
+const publicRoutes = ["/login", "/signup", "/password-reset"]
 
 export default function MyApp({ Component, pageProps }) {
   const router = useRouter()
@@ -23,11 +23,11 @@ export default function MyApp({ Component, pageProps }) {
     if (typeof window !== undefined) {
       const user = CacheService.getData("EchoActiveUser")
       if (!user) {
-        if (!authLess.includes(router.route)) router.push("/login");
+        if (!publicRoutes.includes(router.route)) router.push("/login");
       }
       else {
         if (DateGenerator.hoursBetween(Date.now(), user.lastLogin) > 24) router.push("/login")
-        if (user.nodes && user.nodes.length < 3 && !authLess.includes(router.route)) router.push("/nodes")
+        if (user.nodes && user.nodes.length < 3 && !publicRoutes.includes(router.route)) router.push("/nodes")
         setActiveUser(user)
       }
     }
@@ -50,7 +50,7 @@ export default function MyApp({ Component, pageProps }) {
               <Component {...pageProps} /> 
             </SSEProvider>
           : 
-            <Component {...pageProps} />
+            publicRoutes.includes(router.route) ? <Component {...pageProps} /> : null
         }
       </div> 
     );
