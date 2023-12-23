@@ -18,15 +18,7 @@ function parseParams(params, data) {
 
 export default async function GetCommunities (request, response) {
     const { db } = await getDB();
-    let params = parseParams([
-        "accountID",
-        "userID",
-        "member", 
-        "search",
-        "page", 
-        "pageSize",
-        "filter"
-    ], request.query);
+    let params = request.query;
 
     try {
         ValidateGetCommunities(params);
@@ -41,13 +33,13 @@ export default async function GetCommunities (request, response) {
         }
         if (params.userID !== params.accountID) filters.$and.push({ nodes: { $elemMatch: { nodeID: { $in: userAccount.nodes.map((node) => node.nodeID) } } } })
 
-        if (params.member === 'true') filters.$and.push({ communityID: { $in: communities.map((obj) => obj.communityID) } })
-        if (params.member === 'false') {
+        if (params.member === true) filters.$and.push({ communityID: { $in: communities.map((obj) => obj.communityID) } })
+        if (params.member === false) {
             if (params.userID === params.accountID) filters.$and.push({ nodes: { $elemMatch: { nodeID: { $in: userAccount.nodes.map((node) => node.nodeID) } } } })
             filters.$and.push({ communityID: { $nin: communities.map((obj) => obj.communityID) } })
         }
         
-        if (params.filter && params !== 'null') filters.$and.push({ name: { $regex: String(params.filter).toLowerCase().replace(/\s/g, "").trim(), $options: 'i' } })
+        if (params.filter) filters.$and.push({ name: { $regex: String(params.filter).toLowerCase().replace(/\s/g, "").trim(), $options: 'i' } })
 
         const pagination = {
             page: parseInt(params.page),
