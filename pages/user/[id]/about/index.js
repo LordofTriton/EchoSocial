@@ -132,8 +132,8 @@ export default function UserAbout() {
                         <span className={styles.userTimelineDataTitle}>Nodes</span>
                         <div style={{padding: "0px 20px"}}>
                         {
-                            activeUser && activeUser.nodes.length > 1 ?
-                            activeUser.nodes.map((node, index) => 
+                            userData && userData.nodes.length > 1 ?
+                            userData.nodes.map((node, index) => 
                                 <span key={index} className={styles.userAboutNode}>{node.emoji} {node.displayName}</span>
                             ) : null
                         }
