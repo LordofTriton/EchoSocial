@@ -135,7 +135,7 @@ export default function UserAbout() {
                             userData && userData.nodes.length > 1 ?
                             userData.nodes.map((node, index) => 
                                 <span key={index} className={styles.userAboutNode}>{node.emoji} {node.displayName}</span>
-                            ) : null
+                            ) : <span style={{color: "var(--primary)", display: "block", padding: "20px"}}>{activeUser.accountID === userData.accountID ? "You have" : "This user has"} no nodes.</span>
                         }
                         </div>
                     </div>
