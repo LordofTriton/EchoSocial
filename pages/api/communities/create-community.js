@@ -16,18 +16,9 @@ function ValidateCreateCommunity(data) {
     if (!data.privacy || !ParamValidator.isValidCommunityPrivacy(data.privacy)) throw new Error("Missing or Invalid: privacy")
 }
 
-function parseParams(params, data) {
-    const result = {}
-    for (let param of params) {
-        if (data[param] === 'null') return;
-        if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
-    }
-    return result;
-}
-
 export default async function CreateCommunity (request, response) {
     const { db } = await getDB();
-    let params = parseParams([
+    let params = ParamValidator.parseParams([
         "accountID",
         "name",
         "description",
@@ -41,7 +32,7 @@ export default async function CreateCommunity (request, response) {
         let newCommunity = await db.collection("communities").findOne({ name: String(params.name).toLowerCase().replace(/\s/g, "").trim() })
         if (newCommunity) throw new Error("A community with this name already exists.")
 
-        const nodeData = (await axios.post(request.headers.origin + "/api/nodes/create-node", {
+        const nodeData = (await axios.post(reqOrigin + "/api/nodes/create-node", {
             accountID: params.accountID,
             name: params.name,
             emoji: "⚜"
@@ -86,7 +77,7 @@ export default async function CreateCommunity (request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await CreateCommunityCallback(params, request)
+            await CreateCommunityCallback(params, request.headers.origin)
         })
     } catch (error) {
         console.log(error)
@@ -105,7 +96,7 @@ export async function CreateCommunityCallback(params, io, communityData) {
         muted: false,
         status: "active"
     })
-    await axios.post(request.headers.origin + "/api/notifications/create-notification", {
+    await axios.post(reqOrigin + "/api/notifications/create-notification", {
         accountID: params.accountID,
         content: `You created a new community! Send an echo to spread the word.`,
         image: `/images/communityProfile.png`,

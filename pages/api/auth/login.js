@@ -9,18 +9,9 @@ function ValidateLogin(data) {
     if (!data.password || data.password.length < 8) throw new Error("Missing or invalid password!")
 }
 
-function parseParams(params, data) {
-    const result = {}
-    for (let param of params) {
-        if (data[param] === 'null') return;
-        if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
-    }
-    return result;
-}
-
 export default async function Login (request, response) {
     const { db } = await getDB();
-    let params = parseParams([
+    let params = ParamValidator.parseParams([
         "email",
         "password"
     ], request.body);

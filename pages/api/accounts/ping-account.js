@@ -14,18 +14,9 @@ function ValidatePingAccount(data) {
     if (data.unfollow && (data.unfollow === data.accountID)) throw new Error("You can't unfollow yourself :)")
 }
 
-function parseParams(params, data) {
-    const result = {}
-    for (let param of params) {
-        if (data[param] === 'null') return;
-        if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
-    }
-    return result;
-}
-
 export default async function PingAccounts (request, response) {
     const { db } = await getDB();
-    let params = parseParams([
+    let params = ParamValidator.parseParams([
         "accountID",
         "follow",
         "unfollow"
@@ -50,7 +41,7 @@ export default async function PingAccounts (request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await PingAccountCallback(params, request)
+            await PingAccountCallback(params, request.headers.origin)
         })
     } catch (error) {
         console.log(error)
@@ -59,13 +50,13 @@ export default async function PingAccounts (request, response) {
     }
 }
 
-export async function PingAccountCallback(params, request) {
+export async function PingAccountCallback(params, reqOrigin) {
     const { db } = await getDB();
     const userAccount = await db.collection("accounts").findOne({ accountID: params.accountID })
     if (params.follow) {
         await db.collection("accounts").updateOne({ accountID: params.follow }, { $push: { followers: params.accountID } })
 
-        await axios.post(request.headers.origin + "/api/notifications/create-notification", {
+        await axios.post(reqOrigin + "/api/notifications/create-notification", {
             accountID: params.follow,
             content: `${userAccount.firstName} ${userAccount.lastName} followed you! Click here to view their profile.`,
             image: userAccount.profileImage.url,
@@ -76,14 +67,14 @@ export async function PingAccountCallback(params, request) {
         const follower = await db.collection("accounts").findOne({ accountID: params.accountID })
         const followee = await db.collection("accounts").findOne({ accountID: params.follow })
         if (follower.followers.includes(params.follow) && followee.followers.includes(params.accountID)) {
-            await axios.post(request.headers.origin + "/api/notifications/create-notification", {
+            await axios.post(reqOrigin + "/api/notifications/create-notification", {
                 accountID: follower.accountID,
                 content: `You are now friends with ${followee.firstName} ${followee.lastName}.`,
                 image: followee.profileImage.url,
                 clickable: true,
                 redirect: `/user/${followee.accountID}`
             })
-            await axios.post(request.headers.origin + "/api/notifications/create-notification", {
+            await axios.post(reqOrigin + "/api/notifications/create-notification", {
                 accountID: followee.accountID,
                 content: `${follower.firstName} ${follower.lastName} followed you! You are now friends. Click to view their profile.`,
                 image: follower.profileImage.url,

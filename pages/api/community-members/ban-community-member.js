@@ -13,18 +13,9 @@ function ValidateBlacklistMember(data) {
     if (!data.userID || !ParamValidator.isValidObjectID(data.userID)) throw new Error("Missing or Invalid: userID.")
 }
 
-function parseParams(params, data) {
-    const result = {}
-    for (let param of params) {
-        if (data[param] === 'null') return;
-        if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
-    }
-    return result;
-}
-
 export default async function BanCommunityMember (request, response) {
     const { db } = await getDB();
-    let params = parseParams([
+    let params = ParamValidator.parseParams([
         "accountID",
         "communityID",
         "userID"
@@ -47,14 +38,14 @@ export default async function BanCommunityMember (request, response) {
         response.json(responseData);
 
         response.once("finish", async () => {
-            await axios.delete(request.headers.origin + `/api/community-members/delete-community-member?accountID=${params.accountID}&userID=${params.userID}&communityID=${params.communityID}`)
-            await axios.post(request.headers.origin + "/api/blacklists/create-blacklist", {
+            await axios.delete(reqOrigin + `/api/community-members/delete-community-member?accountID=${params.accountID}&userID=${params.userID}&communityID=${params.communityID}`)
+            await axios.post(reqOrigin + "/api/blacklists/create-blacklist", {
                 accountID: params.accountID,
                 blocker: params.communityID,
                 blockee: params.userID,
                 blockeeType: "user"
             })
-            await axios.post(request.headers.origin + "/api/notifications/create-notification", {
+            await axios.post(reqOrigin + "/api/notifications/create-notification", {
                 accountID: params.userID,
                 content: `You have been kicked and banned from the ${community.displayName} community.`,
                 image: community.profileImage.url,

@@ -8,24 +8,14 @@ function ValidateDeleteFriend(data) {
     if (!data.friendID || !ParamValidator.isValidObjectID(data.friendID)) throw new Error("Missing or Invalid: friendID")
 }
 
-function parseParams(params, data) {
-    const result = {}
-    for (let param of params) {
-        if (data[param] === 'null') return;
-        if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
-    }
-    return result;
-}
-
 export default async function DeleteFriend(request, response) {
     const { db } = await getDB();
-    let params = parseParams([
+    let params = ParamValidator.parseParams([
         "accountID",
         "friendID"
     ], request.query);
 
     try {
-        console.log(params)
         ValidateDeleteFriend(params)
 
         await db.collection("friends").deleteOne({
@@ -45,7 +35,7 @@ export default async function DeleteFriend(request, response) {
         response.json(responseData);
 
         response.once("finish", async () => {
-            await axios.delete(request.headers.origin + `/api/messenger/delete-chat?accountID=${params.accountID}&targetID=${params.friendID}`)
+            await axios.delete(reqOrigin + `/api/messenger/delete-chat?accountID=${params.accountID}&targetID=${params.friendID}`)
         })
     } catch (error) {
         console.log(error)

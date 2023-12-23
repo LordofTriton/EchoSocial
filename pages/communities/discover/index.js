@@ -46,8 +46,8 @@ export default function CommunitiesFeed() {
             accountID: activeUser.accountID,
             userID: activeUser.accountID,
             member: false,
-            page: 1,
-            pageSize: communitiesPage,
+            page: communitiesPage,
+            pageSize: 10,
             filter: searchQuery.length ? searchQuery : null
         }, updateCommunities)
     }

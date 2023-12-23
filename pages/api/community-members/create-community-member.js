@@ -12,18 +12,9 @@ function ValidateCreateMember(data) {
     if (!data.communityID || !ParamValidator.isValidObjectID(data.communityID)) throw new Error("Missing or Invalid: communityID.")
 }
 
-function parseParams(params, data) {
-    const result = {}
-    for (let param of params) {
-        if (data[param] === 'null') return;
-        if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
-    }
-    return result;
-}
-
 export default async function CreateCommunityMember (request, response) {
     const { db } = await getDB();
-    let params = parseParams([
+    let params = ParamValidator.parseParams([
         "accountID",
         "communityID"
     ], request.body);
@@ -59,7 +50,7 @@ export default async function CreateCommunityMember (request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await CreateMemberCallback(params, request)
+            await CreateMemberCallback(params, request.headers.origin)
         })
     } catch (error) {
         console.log(error)
@@ -68,11 +59,11 @@ export default async function CreateCommunityMember (request, response) {
     }
 }
 
-export async function CreateMemberCallback(params, request) {
+export async function CreateMemberCallback(params, reqOrigin) {
     const { db } = await getDB();
     const user = await db.collection("accounts").findOne({ accountID: params.accountID });
     const community = await db.collection("communities").findOne({ communityID: params.communityID });
-    await axios.post(request.headers.origin + "/api/notifications/create-notification", {
+    await axios.post(reqOrigin + "/api/notifications/create-notification", {
         accountID: user.accountID,
         content: `You joined a new community: ${community.displayName}. Click to view.`,
         image: community.profileImage.url,

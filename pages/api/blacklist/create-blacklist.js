@@ -13,18 +13,9 @@ function ValidateCreateBlacklist(data) {
     if (data.blockee && !ParamValidator.isValidObjectID(data.blockee)) throw new Error("Invalid: blockee.")
 }
 
-function parseParams(params, data) {
-    const result = {}
-    for (let param of params) {
-        if (data[param] === 'null') return;
-        if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
-    }
-    return result;
-}
-
 export default async function CreateBlacklist (request, response) {
     const { db } = await getDB();
-    let params = parseParams([
+    let params = ParamValidator.parseParams([
         "accountID",
         "blocker",
         "blockee",
@@ -59,7 +50,7 @@ export default async function CreateBlacklist (request, response) {
         response.json(responseData);
 
         response.once("finish", async () => {
-            await axios.delete(request.headers.origin + `/api/hearts/delete-heart?accountID=${params.blocker}&userID=${params.blockee}`)
+            await axios.delete(reqOrigin + `/api/hearts/delete-heart?accountID=${params.blocker}&userID=${params.blockee}`)
         })
     } catch (error) {
         console.log(error)

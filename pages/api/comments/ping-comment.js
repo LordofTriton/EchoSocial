@@ -10,18 +10,9 @@ function ValidatePingComment(data) {
     if (Object.keys(data).length > 2) throw new Error("Invalid number of operations.")
 }
 
-function parseParams(params, data) {
-    const result = {}
-    for (let param of params) {
-        if (data[param] === 'null') return;
-        if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
-    }
-    return result;
-}
-
 export default async function PingComment (request, response) {
     const { db } = await getDB();
-    let params = parseParams([
+    let params = ParamValidator.parseParams([
         "accountID",
         "commentID",
         "addHeart",
@@ -45,7 +36,7 @@ export default async function PingComment (request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await PingCommentCallback(params, request)
+            await PingCommentCallback(params, request.headers.origin)
         })
     } catch (error) {
         console.log(error)
@@ -54,7 +45,7 @@ export default async function PingComment (request, response) {
     }
 }
 
-export async function PingCommentCallback(params, request) {
+export async function PingCommentCallback(params, reqOrigin) {
     const { db } = await getDB();
     if (params.addHeart) await db.collection("accounts").updateOne({ accountID: comment.value.accountID }, { $inc: { hearts: 1 } })
     if (params.removeHeart) await db.collection("accounts").updateOne({ accountID: comment.value.accountID }, { $inc: { hearts: -1 } })

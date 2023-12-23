@@ -21,18 +21,9 @@ function ValidateCreateAccount(data) {
     if (data.password !== data.confirmPassword) throw new Error("Passwords do not match.")
 }
 
-function parseParams(params, data) {
-    const result = {}
-    for (let param of params) {
-        if (data[param] === 'null') return;
-        if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
-    }
-    return result;
-}
-
 export default async function CreateAccount (request, response) {
     const { db } = await getDB();
-    let params = parseParams([
+    let params = ParamValidator.parseParams([
         "firstName", 
         "lastName", 
         "email", 
@@ -124,15 +115,15 @@ export default async function CreateAccount (request, response) {
         response.json(responseData)
 
         response.once("finish", async () => {
-            await axios.post(request.headers.origin + "/api/settings/create-settings", { accountID: accountData.accountID })
-            await axios.post(request.headers.origin + "/api/notification/create-notification", {
+            await axios.post(reqOrigin + "/api/settings/create-settings", { accountID: accountData.accountID })
+            await axios.post(reqOrigin + "/api/notification/create-notification", {
                 accountID: accountData.accountID,
                 content: `Hi, ${accountData.firstName}! Welcome to Echo. Click here to set up your profile.`,
                 image: accountData.profileImage.url,
                 clickable: true,
                 redirect: `/settings`
             })
-            await axios.post(request.headers.origin + "/api/community-members/create-community-member", {
+            await axios.post(reqOrigin + "/api/community-members/create-community-member", {
                 accountID: accountData.accountID,
                 communityID: "64f1cfcbfb50625f2c96883c"
             })

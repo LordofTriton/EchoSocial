@@ -8,18 +8,9 @@ function ValidateCreateNode(data) {
     if (!data || data.name.length < 2) throw new Error("Missing or Invalid: name")
 }
 
-function parseParams(params, data) {
-    const result = {}
-    for (let param of params) {
-        if (data[param] === 'null') return;
-        if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
-    }
-    return result;
-}
-
 export default async function CreateNode(request, response) {
     const { db } = await getDB();
-    let params = parseParams([
+    let params = ParamValidator.parseParams([
         "accountID",
         "name",
         "emoji"

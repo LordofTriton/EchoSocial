@@ -20,18 +20,9 @@ function ValidateUpdateCommunity(data) {
     if (data.communityStatus && !ParamValidator.isValidCommunityStatus(data.communityStatus)) throw new Error("Invalid: community status.")
 }
 
-function parseParams(params, data) {
-    const result = {}
-    for (let param of params) {
-        if (data[param] === 'null') return;
-        if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
-    }
-    return result;
-}
-
 export default async function UpdateCommunity (request, response) {
     const { db } = await getDB();
-    let params = parseParams([
+    let params = ParamValidator.parseParams([
         "communityID",
         "name",
         "profileImage",
@@ -64,7 +55,7 @@ export default async function UpdateCommunity (request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await UpdateCommunityCallback(params, request)
+            await UpdateCommunityCallback(params, request.headers.origin)
         })
     } catch (error) {
         console.log(error)
@@ -73,7 +64,7 @@ export default async function UpdateCommunity (request, response) {
     }
 }
 
-export async function UpdateCommunityCallback(params, request) {
+export async function UpdateCommunityCallback(params, reqOrigin) {
     const { db } = await getDB();
     if (params.nodes) {
         for (let node of params.nodes) {

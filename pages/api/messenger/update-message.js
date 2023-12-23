@@ -11,18 +11,9 @@ function ValidateUpdateMessage(data) {
     if (!data.messageID || !ParamValidator.isValidObjectID(data.messageID)) throw new Error("Missing or Invalid: messageID")
 }
 
-function parseParams(params, data) {
-    const result = {}
-    for (let param of params) {
-        if (data[param] === 'null') return;
-        if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
-    }
-    return result;
-}
-
 export default async function UpdateMessage(request, response) {
     const { db } = await getDB();
-    let params = parseParams([
+    let params = ParamValidator.parseParams([
         "accountID",
         "messageID",
         "deleted"
@@ -42,7 +33,7 @@ export default async function UpdateMessage(request, response) {
         if (params.deleted) {
             const messageData = await db.collection("messages").findOne({ messageID: params.messageID })
             const chatData = await db.collection("chats").findOne({ accountID: params.accountID, chatID: messageData.chatID })
-            await axios.post(request.headers.origin + "/api/messenger/update-chat", {
+            await axios.post(reqOrigin + "/api/messenger/update-chat", {
                 accountID: params.accountID,
                 chatID: messageData.chatID,
                 latestMessage: {
@@ -51,7 +42,7 @@ export default async function UpdateMessage(request, response) {
                 },
                 lastUpdated: Date.now()
             })
-            await axios.post(request.headers.origin + "/api/messenger/update-chat", {
+            await axios.post(reqOrigin + "/api/messenger/update-chat", {
                 accountID: chatData.targetID,
                 chatID: messageData.chatID,
                 latestMessage: {

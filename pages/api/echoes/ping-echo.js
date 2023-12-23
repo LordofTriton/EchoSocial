@@ -10,18 +10,9 @@ function ValidatePingEcho(data) {
     if (Object.keys(data).length > 2) throw new Error("Invalid number of operations.")
 }
 
-function parseParams(params, data) {
-    const result = {}
-    for (let param of params) {
-        if (data[param] === 'null') return;
-        if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
-    }
-    return result;
-}
-
 export default async function PingEcho(request, response) {
     const { db } = await getDB();
-    let params = parseParams([
+    let params = ParamValidator.parseParams([
         "accountID",
         "echoID",
         "addHeart",
@@ -45,7 +36,7 @@ export default async function PingEcho(request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await PingEchoCallback(params, request)
+            await PingEchoCallback(params, request.headers.origin)
         })
     } catch (error) {
         console.log(error)
@@ -54,7 +45,7 @@ export default async function PingEcho(request, response) {
     }
 }
 
-export async function PingEchoCallback(params, request) {
+export async function PingEchoCallback(params, reqOrigin) {
     const { db } = await getDB();
     const echo = await db.collection("echoes").findOne({ echoID: params.echoID })
     if (params.addHeart) await db.collection("accounts").updateOne({ accountID: echo.accountID }, { $inc: { hearts: 1 } })

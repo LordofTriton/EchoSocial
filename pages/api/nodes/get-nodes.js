@@ -7,18 +7,9 @@ function ValidateGetNodes(data) {
     if (data.filter && data.filter.length < 2) throw new Error("Invalid filter.")
 }
 
-function parseParams(params, data) {
-    const result = {}
-    for (let param of params) {
-        if (data[param] === 'null') return;
-        if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
-    }
-    return result;
-}
-
 export default async function GetNodes(request, response) {
     const { db } = await getDB();
-    let params = parseParams([
+    let params = ParamValidator.parseParams([
         "accountID",
         "filter",
         "page",

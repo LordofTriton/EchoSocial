@@ -7,18 +7,16 @@ function ValidateGetCommunities(data) {
     if (!data.accountID || !ParamValidator.isValidAccountID(data.accountID)) throw new Error("Missing or Invalid: accountID")
 }
 
-function parseParams(params, data) {
-    const result = {}
-    for (let param of params) {
-        if (data[param] === 'null') return;
-        if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
-    }
-    return result;
-}
-
 export default async function GetCommunities (request, response) {
     const { db } = await getDB();
-    let params = request.query;
+    let params = ParamValidator.parseParams([
+        "accountID",
+        "userID",
+        "member",
+        "filter",
+        "page",
+        "pageSize"
+    ], request.query);
 
     try {
         ValidateGetCommunities(params);
@@ -33,8 +31,8 @@ export default async function GetCommunities (request, response) {
         }
         if (params.userID !== params.accountID) filters.$and.push({ nodes: { $elemMatch: { nodeID: { $in: userAccount.nodes.map((node) => node.nodeID) } } } })
 
-        if (params.member === true) filters.$and.push({ communityID: { $in: communities.map((obj) => obj.communityID) } })
-        if (params.member === false) {
+        if (params.member === 'true') filters.$and.push({ communityID: { $in: communities.map((obj) => obj.communityID) } })
+        if (params.member === 'false') {
             if (params.userID === params.accountID) filters.$and.push({ nodes: { $elemMatch: { nodeID: { $in: userAccount.nodes.map((node) => node.nodeID) } } } })
             filters.$and.push({ communityID: { $nin: communities.map((obj) => obj.communityID) } })
         }

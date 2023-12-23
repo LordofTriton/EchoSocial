@@ -17,18 +17,9 @@ function ValidateCreateComment(data) {
     }
 }
 
-function parseParams(params, data) {
-    const result = {}
-    for (let param of params) {
-        if (data[param] === 'null') return;
-        if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
-    }
-    return result;
-}
-
 export default async function CreateComment (request, response) {
     const { db } = await getDB();
-    let params = parseParams([
+    let params = ParamValidator.parseParams([
         "accountID",
         "echoID",
         "content",
@@ -73,7 +64,7 @@ export default async function CreateComment (request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await CreateCommentCallback(params, request)
+            await CreateCommentCallback(params, request.headers.origin)
         })
     } catch (error) {
         console.log(error)
@@ -82,12 +73,12 @@ export default async function CreateComment (request, response) {
     }
 }
 
-export async function CreateCommentCallback(params, request) {
+export async function CreateCommentCallback(params, reqOrigin) {
     const { db } = await getDB();
     const echo = (await db.collection("echoes").findOne({ echoID: params.echoID }))
     const commentUser = (await db.collection("accounts").findOne({ accountID: params.accountID }))
     
-    await axios.post(request.headers.origin + "/api/hearts/create-heart", {
+    await axios.post(reqOrigin + "/api/hearts/create-heart", {
         accountID: params.accountID,
         commentID: commentData.commentID
     })
@@ -95,7 +86,7 @@ export async function CreateCommentCallback(params, request) {
     if (params.accountID !== echo.accountID) {
         const echoUserSettings = await db.collection("settings").findOne({ accountID: echo.accountID })
         if (echoUserSettings.commentNotification) {
-            await axios.post(request.headers.origin + "/api/notifications/create-notification", {
+            await axios.post(reqOrigin + "/api/notifications/create-notification", {
                 accountID: echo.accountID,
                 content: `${commentUser.firstName} ${commentUser.lastName} commented on your echo.`,
                 image: commentUser.profileImage.url,
@@ -108,7 +99,7 @@ export async function CreateCommentCallback(params, request) {
     if (params.repliedTo && params.accountID !== params.repliedTo.accountID) {
         const replyUserSettings = await db.collection("settings").findOne({ accountID: params.repliedTo.accountID })
         if (replyUserSettings.commentReplyNotification) {
-            await axios.post(request.headers.origin + "/api/notifications/create-notification", {
+            await axios.post(reqOrigin + "/api/notifications/create-notification", {
                 accountID: params.repliedTo.accountID,
                 content: `${commentUser.firstName} ${commentUser.lastName} replied to your comment on an echo.`,
                 image: commentUser.profileImage.url,

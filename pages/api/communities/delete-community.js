@@ -9,18 +9,9 @@ function ValidateDeleteCommunity(data) {
     if (!data.communityID || !ParamValidator.isValidObjectID(data.communityID)) throw new Error("Missing or Invalid: communityID")
 }
 
-function parseParams(params, data) {
-    const result = {}
-    for (let param of params) {
-        if (data[param] === 'null') return;
-        if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
-    }
-    return result;
-}
-
 export default async function DeleteCommunity (request, response) {
     const { db } = await getDB();
-    let params = parseParams([
+    let params = ParamValidator.parseParams([
         "accountID",
         "communityID"
     ], request.query);
@@ -34,7 +25,7 @@ export default async function DeleteCommunity (request, response) {
 
         const deleteCommunityResponse = await db.collection("communities").deleteOne({ communityID: params.communityID })
 
-        await axios.delete(request.headers.origin + `/api/nodes/delete-node?accountID=${params.accountID}&nodeID=${community.node.nodeID}`)
+        await axios.delete(reqOrigin + `/api/nodes/delete-node?accountID=${params.accountID}&nodeID=${community.node.nodeID}`)
 
         const responseData = ResponseClient.DBModifySuccess({
             data: deleteCommunityResponse,

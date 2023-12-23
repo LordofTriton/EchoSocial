@@ -13,18 +13,9 @@ function ValidateDeleteHeart(data) {
     if (data.commentID && !ParamValidator.isValidObjectID(data.commentID)) throw new Error("Invalid: commentID.")
 }
 
-function parseParams(params, data) {
-    const result = {}
-    for (let param of params) {
-        if (data[param] === 'null') return;
-        if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
-    }
-    return result;
-}
-
 export default async function DeleteHeart(request, response) {
     const { db } = await getDB();
-    let params = parseParams([
+    let params = ParamValidator.parseParams([
         "accountID",
         "echoID",
         "commentID",
@@ -45,7 +36,7 @@ export default async function DeleteHeart(request, response) {
 
         response.once("finish", async () => {
             if (params.userID) {
-                await axios.delete(request.headers.origin + `/api/friends/delete-friend?accountID=${params.accountID}&friendID=${params.userID}`)
+                await axios.delete(reqOrigin + `/api/friends/delete-friend?accountID=${params.accountID}&friendID=${params.userID}`)
             }
         })
     } catch (error) {

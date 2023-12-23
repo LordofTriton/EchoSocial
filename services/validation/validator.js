@@ -1,3 +1,14 @@
+function parseParams(params, data) {
+    const result = {}
+    for (let param of params) {
+        if (data[param] === 'null') continue;
+        if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
+    }
+    if (result.page) result.page = parseInt(result.page)
+    if (result.pageSize) result.pageSize = parseInt(result.pageSize)
+    return result;
+}
+
 function isValidAccountID(accountID) {
     return accountID && accountID.length > 5;
 }
@@ -65,6 +76,7 @@ function isValidMemberRole(role) {
 }
 
 const ParamValidator = {
+    parseParams,
     isValidEmail,
     isValidGender,
     isValidMaritalStatus,

@@ -43,15 +43,7 @@ export default function MyApp({ Component, pageProps }) {
   } else {
     return ( 
       <div className="app-container">
-        { 
-          activeUser && activeUser.accountID ? 
-            <SSEProvider>
-              <ScrollTop />
-              <Component {...pageProps} /> 
-            </SSEProvider>
-          : 
-            publicRoutes.includes(router.route) ? <Component {...pageProps} /> : null
-        }
+        <Component {...pageProps} />
       </div> 
     );
   }

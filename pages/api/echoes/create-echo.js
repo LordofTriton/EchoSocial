@@ -15,18 +15,9 @@ function ValidateCreateEcho(data) {
     }
 }
 
-function parseParams(params, data) {
-    const result = {}
-    for (let param of params) {
-        if (data[param] === 'null') return;
-        if (data[param] || data[param] === 0 || data[param] === false) result[param] = data[param]
-    }
-    return result;
-}
-
 export default async function CreateEcho(request, response) {
     const { db } = await getDB();
-    let params = parseParams([
+    let params = ParamValidator.parseParams([
         "accountID",
         "communityID",
         "audience",
@@ -67,12 +58,12 @@ export default async function CreateEcho(request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await axios.post(request.headers.origin + "/api/hearts/create-heart", {
+            await axios.post(reqOrigin + "/api/hearts/create-heart", {
                 accountID: params.accountID,
                 echoID: echoData.echoID
             })
 
-            await CreateEchoCallback(params, request)
+            await CreateEchoCallback(params, request.headers.origin)
         })
     } catch (error) {
         console.log(error)
@@ -81,7 +72,7 @@ export default async function CreateEcho(request, response) {
     }
 }
 
-export async function CreateEchoCallback(params, request) {
+export async function CreateEchoCallback(params, reqOrigin) {
     const { db } = await getDB();
 
     if (params.communityID) {

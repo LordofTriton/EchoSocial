@@ -40,7 +40,7 @@ export default async function ChangePassword (request, response) {
             message: "Login successful."
         })
 
-        await axios.post(request.headers.origin + "/api/notifications/create-notification", {
+        await axios.post(reqOrigin + "/api/notifications/create-notification", {
             accountID: userAccount.accountID,
             content: `Your password was changed.`,
             image: userAccount.profileImage.url,
