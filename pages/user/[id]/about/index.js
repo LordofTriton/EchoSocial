@@ -132,10 +132,12 @@ export default function UserAbout() {
                         <span className={styles.userTimelineDataTitle}>Nodes</span>
                         <div style={{padding: "0px 20px"}}>
                         {
-                            userData && userData.nodes.length > 1 ?
+                            userData ?
+                            userData.nodes.length > 1 ?
                             userData.nodes.map((node, index) => 
                                 <span key={index} className={styles.userAboutNode}>{node.emoji} {node.displayName}</span>
                             ) : <span style={{color: "var(--primary)", display: "block", padding: "20px"}}>{activeUser.accountID === userData.accountID ? "You have" : "This user has"} no nodes.</span>
+                            : null
                         }
                         </div>
                     </div>
