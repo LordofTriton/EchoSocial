@@ -50,7 +50,7 @@ export default async function CreateBlacklist (request, response) {
         response.json(responseData);
 
         response.once("finish", async () => {
-            await axios.delete(AppConfig.HOST + `/api/hearts/delete-heart?accountID=${params.blocker}&userID=${params.blockee}`)
+            await axios.delete(reqOrigin + `/api/hearts/delete-heart?accountID=${params.blocker}&userID=${params.blockee}`)
         })
     } catch (error) {
         console.log(error)

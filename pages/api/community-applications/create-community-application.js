@@ -47,7 +47,7 @@ export default async function CreateCommunityApplication (request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await CreateApplicationCallback(params)
+            await CreateApplicationCallback(params, AppConfig.getHost(request))
         })
     } catch (error) {
         console.log(error)
@@ -56,7 +56,7 @@ export default async function CreateCommunityApplication (request, response) {
     }
 }
 
-export async function CreateApplicationCallback(params) {
+export async function CreateApplicationCallback(params, reqOrigin) {
     const { db } = await getDB();
     const user = await db.collection("accounts").findOne({ accountID: params.accountID });
     const admins = await db.collection("members").find({ 
@@ -64,7 +64,7 @@ export async function CreateApplicationCallback(params) {
         $or: [ { role: "admin" }, { role: "moderator" } ] 
     }).toArray()
     for (let admin of admins) {
-        await axios.post(AppConfig.HOST + "/api/notifications/create-notification", {
+        await axios.post(reqOrigin + "/api/notifications/create-notification", {
             accountID: admin.accountID,
             content: `${user.firstName} ${user.lastName} applied to join your community. Click to view.`,
             image: user.profileImage.url,

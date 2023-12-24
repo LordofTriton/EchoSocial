@@ -70,7 +70,7 @@ export default async function UpdateAccount (request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await UpdateAccountCallback(params)
+            await UpdateAccountCallback(params, AppConfig.getHost(request))
         })
     } catch (error) {
         console.log(error)
@@ -79,7 +79,7 @@ export default async function UpdateAccount (request, response) {
     }
 }
 
-export async function UpdateAccountCallback(params) {
+export async function UpdateAccountCallback(params, reqOrigin) {
     const { db } = await getDB();
     if (params.nodes) {
         for (let node of params.nodes) {

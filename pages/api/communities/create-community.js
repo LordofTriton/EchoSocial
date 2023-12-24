@@ -32,7 +32,7 @@ export default async function CreateCommunity (request, response) {
         let newCommunity = await db.collection("communities").findOne({ name: String(params.name).toLowerCase().replace(/\s/g, "").trim() })
         if (newCommunity) throw new Error("A community with this name already exists.")
 
-        const nodeData = (await axios.post(AppConfig.HOST + "/api/nodes/create-node", {
+        const nodeData = (await axios.post(AppConfig.getHost(request) + "/api/nodes/create-node", {
             accountID: params.accountID,
             name: params.name,
             emoji: "⚜"
@@ -77,7 +77,7 @@ export default async function CreateCommunity (request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await CreateCommunityCallback(params)
+            await CreateCommunityCallback(params, communityData, AppConfig.getHost(request))
         })
     } catch (error) {
         console.log(error)
@@ -86,7 +86,7 @@ export default async function CreateCommunity (request, response) {
     }
 }
 
-export async function CreateCommunityCallback(params, io, communityData) {
+export async function CreateCommunityCallback(params, communityData, reqOrigin) {
     const { db } = await getDB();
     await db.collection("members").insertOne({
         memberID: IDGenerator.GenerateMemberID(),
@@ -96,7 +96,7 @@ export async function CreateCommunityCallback(params, io, communityData) {
         muted: false,
         status: "active"
     })
-    await axios.post(AppConfig.HOST + "/api/notifications/create-notification", {
+    await axios.post(reqOrigin + "/api/notifications/create-notification", {
         accountID: params.accountID,
         content: `You created a new community! Send an echo to spread the word.`,
         image: `/images/communityProfile.png`,

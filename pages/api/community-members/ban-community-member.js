@@ -39,14 +39,14 @@ export default async function BanCommunityMember (request, response) {
         response.json(responseData);
 
         response.once("finish", async () => {
-            await axios.delete(AppConfig.HOST + `/api/community-members/delete-community-member?accountID=${params.accountID}&userID=${params.userID}&communityID=${params.communityID}`)
-            await axios.post(AppConfig.HOST + "/api/blacklists/create-blacklist", {
+            await axios.delete(AppConfig.getHost(request) + `/api/community-members/delete-community-member?accountID=${params.accountID}&userID=${params.userID}&communityID=${params.communityID}`)
+            await axios.post(AppConfig.getHost(request) + "/api/blacklists/create-blacklist", {
                 accountID: params.accountID,
                 blocker: params.communityID,
                 blockee: params.userID,
                 blockeeType: "user"
             })
-            await axios.post(AppConfig.HOST + "/api/notifications/create-notification", {
+            await axios.post(AppConfig.getHost(request) + "/api/notifications/create-notification", {
                 accountID: params.userID,
                 content: `You have been kicked and banned from the ${community.displayName} community.`,
                 image: community.profileImage.url,

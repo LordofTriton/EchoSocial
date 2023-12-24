@@ -36,7 +36,7 @@ export default async function PingComment (request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await PingCommentCallback(params)
+            await PingCommentCallback(params, AppConfig.getHost(request))
         })
     } catch (error) {
         console.log(error)
@@ -45,7 +45,7 @@ export default async function PingComment (request, response) {
     }
 }
 
-export async function PingCommentCallback(params) {
+export async function PingCommentCallback(params, reqOrigin) {
     const { db } = await getDB();
     if (params.addHeart) await db.collection("accounts").updateOne({ accountID: comment.value.accountID }, { $inc: { hearts: 1 } })
     if (params.removeHeart) await db.collection("accounts").updateOne({ accountID: comment.value.accountID }, { $inc: { hearts: -1 } })

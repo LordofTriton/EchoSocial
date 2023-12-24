@@ -58,12 +58,12 @@ export default async function CreateEcho(request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await axios.post(AppConfig.HOST + "/api/hearts/create-heart", {
+            await axios.post(AppConfig.getHost(request) + "/api/hearts/create-heart", {
                 accountID: params.accountID,
                 echoID: echoData.echoID
             })
 
-            await CreateEchoCallback(params)
+            await CreateEchoCallback(params, AppConfig.getHost(request))
         })
     } catch (error) {
         console.log(error)
@@ -72,7 +72,7 @@ export default async function CreateEcho(request, response) {
     }
 }
 
-export async function CreateEchoCallback(params) {
+export async function CreateEchoCallback(params, reqOrigin) {
     const { db } = await getDB();
 
     if (params.communityID) {

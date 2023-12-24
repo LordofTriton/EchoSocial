@@ -36,7 +36,7 @@ export default async function DeleteFriend(request, response) {
         response.json(responseData);
 
         response.once("finish", async () => {
-            await axios.delete(AppConfig.HOST + `/api/messenger/delete-chat?accountID=${params.accountID}&targetID=${params.friendID}`)
+            await axios.delete(AppConfig.getHost(request) + `/api/messenger/delete-chat?accountID=${params.accountID}&targetID=${params.friendID}`)
         })
     } catch (error) {
         console.log(error)

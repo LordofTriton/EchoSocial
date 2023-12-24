@@ -115,15 +115,15 @@ export default async function CreateAccount (request, response) {
         response.json(responseData)
 
         response.once("finish", async () => {
-            await axios.post(AppConfig.HOST + "/api/settings/create-settings", { accountID: accountData.accountID })
-            await axios.post(AppConfig.HOST + "/api/notification/create-notification", {
+            await axios.post(AppConfig.getHost(request) + "/api/settings/create-settings", { accountID: accountData.accountID })
+            await axios.post(AppConfig.getHost(request) + "/api/notification/create-notification", {
                 accountID: accountData.accountID,
                 content: `Hi, ${accountData.firstName}! Welcome to Echo. Click here to set up your profile.`,
                 image: accountData.profileImage.url,
                 clickable: true,
                 redirect: `/settings`
             })
-            await axios.post(AppConfig.HOST + "/api/community-members/create-community-member", {
+            await axios.post(AppConfig.getHost(request) + "/api/community-members/create-community-member", {
                 accountID: accountData.accountID,
                 communityID: "64f1cfcbfb50625f2c96883c"
             })
