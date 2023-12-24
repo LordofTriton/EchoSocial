@@ -9,6 +9,7 @@ import UpdateChat from "./update-chat";
 import CreateChat from "./create-chat";
 import { SSEPush } from "../sse/SSEClient";
 import PusherServer from "../../../services/PusherServer";
+import AppConfig from "../../../util/config";
 
 function ValidateCreateMessage(data) {
     if (!data.accountID || !ParamValidator.isValidAccountID(data.accountID)) throw new Error("Missing or Invalid: accountID.")
@@ -62,8 +63,8 @@ export default async function CreateMessage(request, response) {
             lastName: messageUser.lastName,
             profileImage: messageUser.profileImage
         }
-
-        PusherServer.trigger(chat.targetID, `NEW_MESSAGE_${params.chatID}`, result)
+        
+        PusherServer.trigger(chat.targetID, `NEW_MESSAGE_${chat.chatID}`, result)
 
         const responseData = ResponseClient.DBModifySuccess({
             data: result,
@@ -73,7 +74,7 @@ export default async function CreateMessage(request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await CreateMessageCallback(params, request.headers.origin)
+            await CreateMessageCallback(params)
         })
     } catch (error) {
         console.log(error)
@@ -82,10 +83,10 @@ export default async function CreateMessage(request, response) {
     }
 }
 
-export async function CreateMessageCallback(params, reqOrigin) {
+export async function CreateMessageCallback(params) {
     const { db } = await getDB();
     const userChat = (await db.collection("chats").findOne({ accountID: params.accountID, chatID: params.chatID }))
-    await axios.post(reqOrigin + "/api/messenger/update-chat", {
+    await axios.post(AppConfig.HOST + "/api/messenger/update-chat", {
         accountID: params.accountID,
         chatID: params.chatID,
         latestMessage: params.content,
@@ -93,13 +94,13 @@ export async function CreateMessageCallback(params, reqOrigin) {
     })
     const targetChat = (await db.collection("chats").findOne({ accountID: userChat.targetID, chatID: params.chatID }))
     if (!targetChat) {
-        await axios.post(reqOrigin + "/api/messenger/create-chat", {
+        await axios.post(AppConfig.HOST + "/api/messenger/create-chat", {
             accountID: userChat.targetID,
             targetID: params.accountID,
             latestMessage: params.content
         })
     } else {
-        await axios.post(reqOrigin + "/api/messenger/update-chat", {
+        await axios.post(AppConfig.HOST + "/api/messenger/update-chat", {
             accountID: targetChat.accountID,
             chatID: params.chatID,
             latestMessage: params.content,

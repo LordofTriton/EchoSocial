@@ -151,7 +151,7 @@ export default function UserMedia() {
                                 )
                             ) : null
                         } />
-                        : <span className={styles.userNull}>Nothing to show - {router.query.id === activeUser.accountID ? 'You have' : 'This user has'} no pictures or videos{router.query.id !== activeUser.accountID ? ' you can see' : ''}.</span>
+                        : !echoLoader ? <span className={styles.userNull}>Nothing to show - {router.query.id === activeUser.accountID ? 'You have' : 'This user has'} no pictures or videos{router.query.id !== activeUser.accountID ? ' you can see' : ''}.</span> : null
                     }
                     
                     {echoLoader ?

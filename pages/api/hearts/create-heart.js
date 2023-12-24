@@ -54,7 +54,7 @@ export default async function CreateHeart(request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await CreateHeartCallback(params, request.headers.origin)
+            await CreateHeartCallback(params)
         })
     } catch (error) {
         console.log(error)
@@ -63,7 +63,7 @@ export default async function CreateHeart(request, response) {
     }
 }
 
-export async function CreateHeartCallback(params, reqOrigin) {
+export async function CreateHeartCallback(params) {
     const { db } = await getDB();
     if (params.echoID) {
         const echo = await db.collection("echoes").findOne({ echoID: params.echoID })
@@ -71,7 +71,7 @@ export async function CreateHeartCallback(params, reqOrigin) {
             const userAccount = await db.collection("accounts").findOne({ accountID: params.accountID })
             const echoUserSettings = await db.collection("settings").findOne({ accountID: echo.accountID })
             if (echoUserSettings.echoHeartNotification) {
-                await axios.post(reqOrigin + "/api/notifications/create-notification", {
+                await axios.post(AppConfig.HOST + "/api/notifications/create-notification", {
                     accountID: echo.accountID,
                     content: `${userAccount.firstName} ${userAccount.lastName} liked your echo.`,
                     image: userAccount.profileImage.url,
@@ -89,7 +89,7 @@ export async function CreateHeartCallback(params, reqOrigin) {
             const userAccount = await db.collection("accounts").findOne({ accountID: params.accountID })
             if (commentUserSettings.commentHeartNotification) {
                 const echo = await db.collection("echoes").findOne({ echoID: comment.echoID })
-                await axios.post(reqOrigin + "/api/notifications/create-notification", {
+                await axios.post(AppConfig.HOST + "/api/notifications/create-notification", {
                     accountID: comment.accountID,
                     content: `${userAccount.firstName} ${userAccount.lastName} liked your comment.`,
                     image: userAccount.profileImage.url,
@@ -103,7 +103,7 @@ export async function CreateHeartCallback(params, reqOrigin) {
     if (params.userID) {
         const userAccount = await db.collection("accounts").findOne({ accountID: params.accountID })
         await db.collection("accounts").updateOne({ accountID: params.userID }, { $push: { followers: params.accountID } })
-        await axios.post(reqOrigin + "/api/notifications/create-notification", {
+        await axios.post(AppConfig.HOST + "/api/notifications/create-notification", {
             accountID: params.userID,
             content: `${userAccount.firstName} ${userAccount.lastName} liked your page! Click here to view their profile.`,
             image: userAccount.profileImage.url,
@@ -116,7 +116,7 @@ export async function CreateHeartCallback(params, reqOrigin) {
             userID: params.accountID
         })
         if (reciprocation) {
-            await axios.post(reqOrigin + "/api/friends/create-friend", {
+            await axios.post(AppConfig.HOST + "/api/friends/create-friend", {
                 accountID: params.accountID,
                 friendID: params.userID
             })

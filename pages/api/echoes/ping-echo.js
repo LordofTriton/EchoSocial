@@ -36,7 +36,7 @@ export default async function PingEcho(request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await PingEchoCallback(params, request.headers.origin)
+            await PingEchoCallback(params)
         })
     } catch (error) {
         console.log(error)
@@ -45,7 +45,7 @@ export default async function PingEcho(request, response) {
     }
 }
 
-export async function PingEchoCallback(params, reqOrigin) {
+export async function PingEchoCallback(params) {
     const { db } = await getDB();
     const echo = await db.collection("echoes").findOne({ echoID: params.echoID })
     if (params.addHeart) await db.collection("accounts").updateOne({ accountID: echo.accountID }, { $inc: { hearts: 1 } })

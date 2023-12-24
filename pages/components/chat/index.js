@@ -185,7 +185,7 @@ export default function Chat({ toggle, data, page }) {
             chatID: data.chatID,
             page: messagePage,
             pageSize: 10
-        }, updateMessages)
+        }, updateMessages, null, true)
     }, [data, messagePage])
 
     useEffect(() => {

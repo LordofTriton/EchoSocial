@@ -28,11 +28,13 @@ async function put(url, data, callback, headers) {
     return response;
 }
 
-async function get(url, data, callback, headers) {
+async function get(url, data, callback, headers, noCache) {
     const query = Object.entries(data).map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`).join('&');
 
-    const cachedResponse = CacheService.getData(`/api${url}?${query}`)
-    if (cachedResponse && callback) callback(JSON.parse(cachedResponse))
+    if (!noCache) {
+        const cachedResponse = CacheService.getData(`/api${url}?${query}`)
+        if (cachedResponse && callback) callback(JSON.parse(cachedResponse))
+    }
 
     const response = await axios.get(`/api${url}?${query}`, {
         headers: {
@@ -41,7 +43,7 @@ async function get(url, data, callback, headers) {
         }
     })
 
-    CacheService.saveData(`/api${url}?${query}`, JSON.stringify(response.data))
+    if (!noCache) CacheService.saveData(`/api${url}?${query}`, JSON.stringify(response.data))
     if (callback) callback(response.data)
     return response;
 }
@@ -58,7 +60,7 @@ async function del(url, data, callback, headers) {
     return response;
 }
 
-const APIClient = { 
+const APIClient = {
     post, 
     put, 
     get, 

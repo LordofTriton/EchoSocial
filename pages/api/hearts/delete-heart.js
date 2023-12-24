@@ -5,6 +5,7 @@ import ResponseClient from "../../../services/validation/ResponseClient";
 import DeleteChat from "../messenger/delete-chat";
 import DeleteFriend from "../friends/delete-friend";
 import { SSEPush } from "../../../services/SSEChannel";
+import AppConfig from "../../../util/config";
 
 function ValidateDeleteHeart(data) {
     if (!data.accountID || !ParamValidator.isValidAccountID(data.accountID)) throw new Error("Missing or Invalid: accountID.")
@@ -36,7 +37,7 @@ export default async function DeleteHeart(request, response) {
 
         response.once("finish", async () => {
             if (params.userID) {
-                await axios.delete(reqOrigin + `/api/friends/delete-friend?accountID=${params.accountID}&friendID=${params.userID}`)
+                await axios.delete(AppConfig.HOST + `/api/friends/delete-friend?accountID=${params.accountID}&friendID=${params.userID}`)
             }
         })
     } catch (error) {

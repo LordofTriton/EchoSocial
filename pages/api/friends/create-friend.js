@@ -8,6 +8,7 @@ import CreateHeart from "../hearts/create-heart";
 import CreateChat from "../messenger/create-chat";
 import { SSEPush } from "../sse/SSEClient";
 import PusherServer from "../../../services/PusherServer";
+import AppConfig from "../../../util/config";
 
 function ValidateCreateFriend(data) {
     if (!data.accountID || !ParamValidator.isValidAccountID(data.accountID)) throw new Error("Missing or Invalid: accountID.")
@@ -50,7 +51,7 @@ export default async function CreateFriend(request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await CreateFriendCallback(params, request.headers.origin)
+            await CreateFriendCallback(params)
         })
     } catch (error) {
         console.log(error)
@@ -59,12 +60,12 @@ export default async function CreateFriend(request, response) {
     }
 }
 
-export async function CreateFriendCallback(params, reqOrigin) {
+export async function CreateFriendCallback(params) {
     const { db } = await getDB();
     const userAccount = await db.collection("accounts").findOne({ accountID: params.accountID })
     const friend = await db.collection("accounts").findOne({ accountID: params.friendID })
     
-    await axios.post(reqOrigin + "/api/notifications/create-notification", {
+    await axios.post(AppConfig.HOST + "/api/notifications/create-notification", {
         accountID: userAccount.accountID,
         content: `You are now friends with ${friend.firstName} ${friend.lastName}.`,
         image: friend.profileImage.url,
@@ -72,7 +73,7 @@ export async function CreateFriendCallback(params, reqOrigin) {
         redirect: `/user/${friend.accountID}`
     })
     console.log("1")
-    await axios.post(reqOrigin + "/api/notifications/create-notification", {
+    await axios.post(AppConfig.HOST + "/api/notifications/create-notification", {
         accountID: friend.accountID,
         content: `${userAccount.firstName} ${userAccount.lastName} liked your page! You are now friends. Click to view their profile.`,
         image: userAccount.profileImage.url,
@@ -80,12 +81,12 @@ export async function CreateFriendCallback(params, reqOrigin) {
         redirect: `/user/${userAccount.accountID}`
     })
     console.log("2")
-    const userChat = (await axios.post(reqOrigin + "/api/messenger/create-chat", {
+    const userChat = (await axios.post(AppConfig.HOST + "/api/messenger/create-chat", {
         accountID: params.accountID,
         targetID: friend.accountID
     })).data;
     console.log("3")
-    const friendChat = (await axios.post(reqOrigin + "/api/messenger/create-chat", {
+    const friendChat = (await axios.post(AppConfig.HOST + "/api/messenger/create-chat", {
         accountID: friend.accountID,
         targetID: params.accountID
     })).data;

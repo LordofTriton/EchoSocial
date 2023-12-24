@@ -50,7 +50,7 @@ export default async function CreateCommunityMember (request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await CreateMemberCallback(params, request.headers.origin)
+            await CreateMemberCallback(params)
         })
     } catch (error) {
         console.log(error)
@@ -59,11 +59,11 @@ export default async function CreateCommunityMember (request, response) {
     }
 }
 
-export async function CreateMemberCallback(params, reqOrigin) {
+export async function CreateMemberCallback(params) {
     const { db } = await getDB();
     const user = await db.collection("accounts").findOne({ accountID: params.accountID });
     const community = await db.collection("communities").findOne({ communityID: params.communityID });
-    await axios.post(reqOrigin + "/api/notifications/create-notification", {
+    await axios.post(AppConfig.HOST + "/api/notifications/create-notification", {
         accountID: user.accountID,
         content: `You joined a new community: ${community.displayName}. Click to view.`,
         image: community.profileImage.url,

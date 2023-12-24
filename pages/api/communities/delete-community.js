@@ -3,6 +3,7 @@ import axios from "axios";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import DeleteNode from "../nodes/delete-node";
+import AppConfig from "../../../util/config";
 
 function ValidateDeleteCommunity(data) {
     if (!data.accountID || !ParamValidator.isValidAccountID(data.accountID)) throw new Error("Missing or Invalid: accountID")
@@ -25,7 +26,7 @@ export default async function DeleteCommunity (request, response) {
 
         const deleteCommunityResponse = await db.collection("communities").deleteOne({ communityID: params.communityID })
 
-        await axios.delete(reqOrigin + `/api/nodes/delete-node?accountID=${params.accountID}&nodeID=${community.node.nodeID}`)
+        await axios.delete(AppConfig.HOST + `/api/nodes/delete-node?accountID=${params.accountID}&nodeID=${community.node.nodeID}`)
 
         const responseData = ResponseClient.DBModifySuccess({
             data: deleteCommunityResponse,

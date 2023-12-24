@@ -96,7 +96,7 @@ export default function User() {
       }
       if (userMediaEchoes.length < 1) {
         APIClient.get(APIClient.routes.getuserFeed, {
-          accountID: userData.accountID,
+          accountID: activeUser.accountID,
           userID: router.query.id,
           hasMedia: true,
           page: 1,

@@ -6,6 +6,7 @@ import CreateMember from "../community-members/create-community-member";
 import DeleteApplication from "./delete-community-application";
 import GetCommunity from "../communities/get-community";
 import CreateNotification from "../notifications/create-notification";
+import AppConfig from "../../../util/config";
 
 function ValidatePingApplication(data) {
     if (!data.applicationID || !ParamValidator.isValidObjectID(data.applicationID)) throw new Error("Missing or Invalid: applicationID")
@@ -31,16 +32,16 @@ export default async function PingCommunityApplications (request, response) {
         const application = await db.collection("applications").findOne({ applicationID: params.applicationID })
         const community = await db.collection("communities").findOne({ communityID: params.communityID });
 
-        await axios.delete(reqOrigin + `/api/community-applications/delete-community-application?accountID=${application.accountID}&applicationID=${params.applicationID}`)
+        await axios.delete(AppConfig.HOST + `/api/community-applications/delete-community-application?accountID=${application.accountID}&applicationID=${params.applicationID}`)
 
         if (params.approve) {
-            await axios.post(reqOrigin + "/api/community-members/create-community-member", {
+            await axios.post(AppConfig.HOST + "/api/community-members/create-community-member", {
                 accountID: application.accountID,
                 communityID: application.communityID
             })
         }
 
-        await axios.post(reqOrigin + "/api/notifications/create-notification", {
+        await axios.post(AppConfig.HOST + "/api/notifications/create-notification", {
             accountID: params.userID,
             content: `An admin ${params.approve ? "approved" : params.deny ? "denied" : "viewed"} your application to join the ${community.displayName} community.`,
             image: community.profileImage.url,

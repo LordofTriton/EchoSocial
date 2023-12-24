@@ -275,14 +275,14 @@
 
 .userAboutSocial {
     width: calc(100% - 40px);
-    height: 40px;
+    height: fit-content;
     border-radius: 5px;
     display: block;
     font-size: 15px;
     font-weight: 500;
     margin: 10px 20px;
     color: white;
-    padding: 5px 25px;
+    padding: 5px 25px 10px 25px;
     cursor: pointer;
 }
 

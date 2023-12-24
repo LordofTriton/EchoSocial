@@ -3,6 +3,7 @@ import axios from "axios";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import DeleteChat from "../messenger/delete-chat";
+import AppConfig from "../../../util/config";
 
 function ValidateDeleteFriend(data) {
     if (!data.friendID || !ParamValidator.isValidObjectID(data.friendID)) throw new Error("Missing or Invalid: friendID")
@@ -35,7 +36,7 @@ export default async function DeleteFriend(request, response) {
         response.json(responseData);
 
         response.once("finish", async () => {
-            await axios.delete(reqOrigin + `/api/messenger/delete-chat?accountID=${params.accountID}&targetID=${params.friendID}`)
+            await axios.delete(AppConfig.HOST + `/api/messenger/delete-chat?accountID=${params.accountID}&targetID=${params.friendID}`)
         })
     } catch (error) {
         console.log(error)
