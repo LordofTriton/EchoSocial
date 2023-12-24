@@ -1,5 +1,6 @@
 import axios from "axios"
 import CacheService from "./CacheService";
+import AppConfig from "../util/config";
 
 function getToken() {
     const token = CacheService.getData("EchoUserToken");
@@ -7,7 +8,7 @@ function getToken() {
 }
 
 async function post(url, data, callback, headers) {
-    const response = await axios.post(`/api${url}`, data, {
+    const response = await axios.post(`${AppConfig.HOST}/api${url}`, data, {
         headers: {
             ...headers,
             Authorization: `Bearer ${getToken()}`
@@ -18,7 +19,7 @@ async function post(url, data, callback, headers) {
 }
 
 async function put(url, data, callback, headers) {
-    const response = await axios.put(`/api${url}`, data, {
+    const response = await axios.put(`${AppConfig.HOST}/api${url}`, data, {
         headers: {
             ...headers,
             Authorization: `Bearer ${getToken()}`
@@ -32,25 +33,25 @@ async function get(url, data, callback, headers, noCache) {
     const query = Object.entries(data).map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`).join('&');
 
     if (!noCache) {
-        const cachedResponse = CacheService.getData(`/api${url}?${query}`)
+        const cachedResponse = CacheService.getData(`${AppConfig.HOST}/api${url}?${query}`)
         if (cachedResponse && callback) callback(JSON.parse(cachedResponse))
     }
 
-    const response = await axios.get(`/api${url}?${query}`, {
+    const response = await axios.get(`${AppConfig.HOST}/api${url}?${query}`, {
         headers: {
             ...headers,
             Authorization: `Bearer ${getToken()}`
         }
     })
 
-    if (!noCache) CacheService.saveData(`/api${url}?${query}`, JSON.stringify(response.data))
+    if (!noCache) CacheService.saveData(`${AppConfig.HOST}/api${url}?${query}`, JSON.stringify(response.data))
     if (callback) callback(response.data)
     return response;
 }
 
 async function del(url, data, callback, headers) {
     const query = Object.entries(data).map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`).join('&');
-    const response = await axios.delete(`/api${url}?${query}`, {
+    const response = await axios.delete(`${AppConfig.HOST}/api${url}?${query}`, {
         headers: {
             ...headers,
             Authorization: `Bearer ${getToken()}`
