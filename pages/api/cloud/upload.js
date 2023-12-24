@@ -4,7 +4,7 @@ import multer from 'multer';
 import fs from 'fs';
 import mime from "mime";
 
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({ dest: '/tmp/' });
 
 export const config = {
     api: {
@@ -18,7 +18,6 @@ function parseParams(data) {
 }
 
 export default async function CreateFile (req, res) {
-    // Use the 'upload' middleware to handle file uploads and store the files temporarily in 'uploads/' directory
     const responseData = await new Promise((resolve, reject) => {
         upload.array('media')(req, res, async (err) => {
             if (err) {
