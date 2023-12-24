@@ -8,6 +8,7 @@ import AccountNav from "../accountnav";
 import Search from "../search";
 import Helpers from "../../../util/Helpers";
 import PusherClient from "../../../services/PusherClient";
+import pusherJs from "pusher-js";
 
 export default function TopNav({ page }) {
     const [userNotifications, setUserNotifications] = useState([])
@@ -16,10 +17,8 @@ export default function TopNav({ page }) {
     const [openAccountNav, setOpenAccountNav] = useState(false)
 
     useEffect(() => {
-        const channel = PusherClient.subscribe(page.activeUser.accountID)
-        channel.bind('NEW_NOTIFICATION', function(data) {
-            setUserNotifications((state) => [data, ...state])
-        });
+        const channel = new pusherJs("50f5658f71430c02353d", { cluster: "eu" });
+        channel.subscribe(page.activeUser.accountID).bind(`NEW_NOTIFICATION`, (data) => { setUserNotifications((state) => [data, ...state]) });
     }, []);
 
     useEffect(() => {

@@ -8,6 +8,7 @@ import APIClient from "../../../services/APIClient";
 import { Form } from "../form";
 import Helpers from "../../../util/Helpers";
 import PusherClient from "../../../services/PusherClient";
+import pusherJs from "pusher-js";
 
 export default function EchoConversation({ data, control, page }) {
     const [echoData, setEchoData] = useState(data)
@@ -30,13 +31,11 @@ export default function EchoConversation({ data, control, page }) {
         if (page.sse) {
             const updateComments = (data) => setEchoComments((state) => state.concat(data))
             
-            const channel = PusherClient.subscribe(data.echoID)
-            if (data) channel.bind(`NEW_COMMENT_${data.echoID}`, function(data) {
-                updateComments(data)
-            });
-            else channel.unbind(`NEW_COMMENT_${data.echoID}`, function(data) {
-                updateComments(data)
-            });
+            const channel = new pusherJs("50f5658f71430c02353d", { cluster: "eu" });
+            channel.subscribe(data.echoID);
+
+            if (data) channel.bind(`NEW_COMMENT_${data.echoID}`, (data) => { updateComments(data) });
+            else channel.unbind(`NEW_COMMENT_${data.echoID}`, (data) => { updateComments(data) });
         }
         setEchoData(data)
         if (data) setCommentLoader(true)

@@ -6,6 +6,7 @@ import SVGServer from "../../../services/svg/svgServer";
 import Helpers from "../../../util/Helpers";
 import APIClient from "../../../services/APIClient";
 import PusherClient from "../../../services/PusherClient";
+import pusherJs from "pusher-js";
 
 export default function Messenger({ toggle, control, page }) {
     const [userChats, setUserChats] = useState([])
@@ -25,10 +26,8 @@ export default function Messenger({ toggle, control, page }) {
             setUserChats((state) => [data, ...(state.filter((chat) => chat.chatID !== data.chatID))])
         }
         
-        const channel = PusherClient.subscribe(page.activeUser.accountID)
-        channel.bind(`UPDATED_CHAT_LIST`, function(data) {
-            updateChat(data)
-        });
+        const channel = new pusherJs("50f5658f71430c02353d", { cluster: "eu" });
+        channel.subscribe(page.activeUser.accountID).bind(`UPDATED_CHAT_LIST`, (data) => { updateChat(data) });
     }, [])
 
     useEffect(() => {

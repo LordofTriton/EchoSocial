@@ -6,6 +6,7 @@ import SVGServer from "../../../services/svg/svgServer";
 import DateGenerator from "../../../services/generators/DateGenerator";
 import Helpers from "../../../util/Helpers";
 import PusherClient from "../../../services/PusherClient";
+import pusherJs from "pusher-js";
 
 export default function Notifications({toggle, control, page}) {
     const [notifications, setNotifications] = useState([])
@@ -19,10 +20,8 @@ export default function Notifications({toggle, control, page}) {
     })
 
     useEffect(() => {
-        const channel = PusherClient.subscribe(page.activeUser.accountID)
-        channel.bind('NEW_NOTIFICATION', function(data) {
-            setNotifications((state) => [data, ...state])
-        });
+        const channel = new pusherJs("50f5658f71430c02353d", { cluster: "eu" });
+        channel.subscribe(page.activeUser.accountID).bind(`NEW_NOTIFICATION`, (data) => { setNotifications((state) => [data, ...state]) });
 
         return () => {
             channel.unsubscribe(page.activeUser.accountID);

@@ -6,6 +6,7 @@ import SVGServer from "../../../services/svg/svgServer";
 import APIClient from "../../../services/APIClient";
 import Helpers from "../../../util/Helpers";
 import PusherClient from "../../../services/PusherClient";
+import pusherJs from "pusher-js";
 
 function Message({ chatData, messageData, page, key, index, methods }) {
 
@@ -148,26 +149,20 @@ export default function Chat({ toggle, data, page }) {
 
     useEffect(() => {
         if (!chatData) return;
-        const channel = PusherClient.subscribe(page.activeUser.accountID)
-        channel.bind(`UPDATED_CHAT_${chatData.chatID}`, function(data) {
-            updateChat(data)
-        });
+        const channel = new pusherJs("50f5658f71430c02353d", { cluster: "eu" });
+        channel.subscribe(page.activeUser.accountID).bind(`UPDATED_CHAT_${chatData.chatID}`, (data) => { updateChat(data) });
     }, [chatData])
 
     useEffect(() => {
         if (!chatData) return;
-        const channel = PusherClient.subscribe(page.activeUser.accountID)
-        channel.bind(`UPDATED_MESSAGE_${chatData.chatID}`, function(data) {
-            updateMessage(data)
-        });
+        const channel = new pusherJs("50f5658f71430c02353d", { cluster: "eu" });
+        channel.subscribe(page.activeUser.accountID).bind(`UPDATED_MESSAGE_${chatData.chatID}`, (data) => { updateMessage(data) });
     }, [chatData])
 
     useEffect(() => {
         if (!chatData) return;
-        const channel = PusherClient.subscribe(page.activeUser.accountID)
-        channel.bind(`NEW_MESSAGE_${chatData.chatID}`, function(data) {
-            updateMessage(data)
-        });
+        const channel = new pusherJs("50f5658f71430c02353d", { cluster: "eu" });
+        channel.subscribe(page.activeUser.accountID).bind(`NEW_MESSAGE_${chatData.chatID}`, (data) => { updateMessages(data) });
     }, [chatData])
 
     useEffect(() => {
@@ -352,13 +347,6 @@ export default function Chat({ toggle, data, page }) {
         return (prev && prev.accountID === curr.accountID) && curr.repliedTo === null && (!next || next.accountID !== curr.accountID || next.repliedTo !== null) ? true : false
     }
 
-    const autoExpandArea = (target) => {
-        if (target.value !== "") {
-            target.style.height = "50px"; // Reset the height to auto to calculate the new height
-            target.style.height = target.scrollHeight + "px"; // Set the height to match the content
-        } else target.style.height = "50px"
-    };
-
     return (
         <>
             <div className="modalOverlay" style={{ display: toggle ? "block" : "none" }} onClick={() => page.setShowChat(false)}></div>
@@ -442,8 +430,10 @@ export default function Chat({ toggle, data, page }) {
                             <label htmlFor="mediaSelector" className={styles.chatInputImage}><SVGServer.CameraIcon color="var(--primary)" width="26px" height="26px" /></label>
                             <input type="file" id="mediaSelector" accept="image/*" onChange={(e) => handleFileSelect(e)} style={{ display: "none" }} multiple />
                             </>
-                            <textarea className={styles.chatInputField} type="text" placeholder="Message" onChange={(e) => { setNewMessageText(e.target.value); autoExpandArea(e.target) }} value={newMessageText}></textarea>
-                            <span className={styles.chatInputSubmit} onClick={() => handleSubmit()}><SVGServer.SendIcon color="var(--primary)" width="30px" height="30px" /></span>
+                            <form>
+                                <textarea className={styles.chatInputField} type="text" placeholder="Message" onChange={(e) => setNewMessageText(e.target.value)} value={newMessageText}></textarea>
+                                <span className={styles.chatInputSubmit} onClick={() => handleSubmit()}><SVGServer.SendIcon color="var(--primary)" width="30px" height="30px" /></span>
+                            </form>
                         </div>
                     </div>
                     : <span className={styles.chatBlock}>You cannot send messages to this user.</span>

@@ -1,3 +1,4 @@
+import pusherJs from "pusher-js";
 import React, {useEffect, useState} from "react";
 import APIClient from "../../../services/APIClient";
 import PusherClient from "../../../services/PusherClient";
@@ -72,10 +73,8 @@ export default function RightNav({ page }) {
             setUserFriends((state) => state.concat(data))
         }
         
-        const channel = PusherClient.subscribe(page.activeUser.accountID)
-        channel.bind(`NEW_FRIEND`, function(data) {
-            updateFriends(data)
-        });
+        const channel = new pusherJs("50f5658f71430c02353d", { cluster: "eu" });
+        channel.subscribe(page.activeUser.accountID).bind(`NEW_FRIEND`, (data) => { updateFriends(data) });
     }, [])
 
     useEffect(() => {
@@ -91,10 +90,8 @@ export default function RightNav({ page }) {
             })
         }
         
-        const channel = PusherClient.subscribe(page.activeUser.accountID)
-        channel.bind(`UPDATED_CHAT_LIST`, function(data) {
-            updateChat(data)
-        });
+        const channel = new pusherJs("50f5658f71430c02353d", { cluster: "eu" });
+        channel.subscribe(page.activeUser.accountID).bind(`UPDATED_CHAT_LIST`, (data) => { updateChat(data) });
     }, [])
 
     const getChat = (friend) => {
