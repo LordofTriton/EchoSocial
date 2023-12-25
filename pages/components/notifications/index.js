@@ -21,10 +21,6 @@ export default function Notifications({toggle, control, page}) {
 
     useEffect(() => {
         PusherClient.subscribe(page.activeUser.accountID).bind(`NEW_NOTIFICATION`, (data) => { setNotifications((state) => [data, ...state]) });
-
-        return () => {
-            channel.unsubscribe(page.activeUser.accountID);
-        };
     }, []);
     
     useEffect(() => {

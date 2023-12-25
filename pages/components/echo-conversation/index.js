@@ -31,10 +31,8 @@ export default function EchoConversation({ data, control, page }) {
         if (page.sse) {
             const updateComments = (data) => setEchoComments((state) => state.concat(data))
             
-            PusherClient.subscribe(data.echoID);
-
-            if (data) channel.bind(`NEW_COMMENT_${data.echoID}`, (data) => { updateComments(data) });
-            else channel.unbind(`NEW_COMMENT_${data.echoID}`, (data) => { updateComments(data) });
+            if (data) PusherClient.subscribe(data.echoID).bind(`NEW_COMMENT_${data.echoID}`, (data) => { updateComments(data) });
+            else PusherClient.subscribe(data.echoID).unbind(`NEW_COMMENT_${data.echoID}`, (data) => { updateComments(data) });
         }
         setEchoData(data)
         if (data) setCommentLoader(true)
