@@ -22,6 +22,7 @@ export default function CommunityHead({ data, page, title }) {
         if (!file) return;
         if (file.size >= 6291456) {
             page.createAlert("error", "File size must be lower than 6 MB.")
+            setCoverLoader(false)
             return;
         }
 
@@ -50,6 +51,7 @@ export default function CommunityHead({ data, page, title }) {
         if (!file) return;
         if (file.size >= 6291456) {
             page.createAlert("error", "File size must be lower than 6 MB.")
+            setProfileLoader(false)
             return;
         }
 
