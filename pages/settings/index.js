@@ -12,6 +12,7 @@ import useModalStates from '../hooks/useModalStates'
 import { useSSEContext } from '../../util/SocketProvider'
 import { nickDict } from '../../services/generators/NIckGenerator'
 import useDataStates from '../hooks/useDataStates'
+import { Country, State, City }  from 'country-state-city';
 
 export default function ProfileSettings() {
     const router = useRouter()
@@ -39,7 +40,16 @@ export default function ProfileSettings() {
     const [alert, setAlert] = useState(null)
     const {modalStates, modalControl} = useModalStates()
     const [showAccountDrop, setShowAccountDrop] = useState(true)
+    const [countryList, setCountryList] = useState([])
+    const [cityList, setCityList] = useState([])
     
+    useEffect(() => {
+        if (countryList.length < 1) setCountryList(Country.getAllCountries())
+        if (updatedData.country) {
+            const countryData = Country.getAllCountries().find((country) => country.name === updatedData.country)
+            if (countryData) setCityList(City.getCitiesOfCountry(countryData.isoCode))
+        }
+    }, [updatedData.country, updatedData.city])
 
     const createAlert = (type, message) => {
         setAlert({ type, message })
@@ -212,7 +222,7 @@ export default function ProfileSettings() {
                                     <Form.TextInput
                                         label="Phone"
                                         type="tel"
-                                        style={{ float: "left" }}
+                                        style={{ float: "left", marginBottom: "20px" }}
                                         value={updatedData.phone}
                                         onChange={(e) => setUpdatedData({ ...updatedData, phone: e.target.value })}
                                         placeholder="Your phone number."
@@ -224,24 +234,14 @@ export default function ProfileSettings() {
                                         style={{ float: "left" }}
                                         value={updatedData.country}
                                         setValue={(value) => setUpdatedData({ ...updatedData, country: value })}
-                                        options={[
-                                            { label: "Nigeria", value: "Nigeria" },
-                                            { label: "Ghana", value: "Ghana" },
-                                            { label: "Cameroon", value: "Cameroon" },
-                                            { label: "Niger", value: "Niger" }
-                                        ]}
+                                        options={countryList.map((country) => { return { label: country.name, value: country.name }})}
                                     />
                                     <Form.SelectSingleInput
                                         label="City"
                                         style={{ float: "right" }}
                                         value={updatedData.city}
                                         setValue={(value) => setUpdatedData({ ...updatedData, city: value })}
-                                        options={[
-                                            { label: "Lagos", value: "Lagos" },
-                                            { label: "Abeokuta", value: "Abeokuta" },
-                                            { label: "Akure", value: "Akure" },
-                                            { label: "Ibadan", value: "Ibadan" },
-                                        ]}
+                                        options={cityList.map((city) => { return { label: city.name, value: city.name }})}
                                     />
                                 </Form.ThirdWrapper>
 

@@ -69,7 +69,7 @@ export default function EchoConversation({ data, control, page }) {
         if (!file) return;
         if (file.size >= 6291456) {
             page.createAlert("error", "File size must be lower than 6 MB.")
-        } else setNewCommentMedia(echoMedia.concat(file));
+        } else setNewCommentMedia(file);
     };
 
     const createComment = async () => {
