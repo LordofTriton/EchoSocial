@@ -71,7 +71,7 @@ export default async function CreateChat(request, response) {
             userFriend: userFriend ? true : false
         }
 
-        PusherServer.trigger(params.accountID, `UPDATED_CHAT`, finalChatData)
+        await PusherServer.trigger(params.accountID, `UPDATED_CHAT`, finalChatData)
 
         const responseData = ResponseClient.DBModifySuccess({
             data: createdChat,

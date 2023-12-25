@@ -53,8 +53,8 @@ export default async function UpdateMessage(request, response) {
                 lastUpdated: Date.now()
             })
 
-            PusherServer.trigger(chatData.accountID, `UPDATED_MESSAGE_${messageData.chatID}`, messageData)
-            PusherServer.trigger(chatData.targetID, `UPDATED_MESSAGE_${messageData.chatID}`, messageData)
+            await PusherServer.trigger(chatData.accountID, `UPDATED_MESSAGE_${messageData.chatID}`, messageData)
+            await PusherServer.trigger(chatData.targetID, `UPDATED_MESSAGE_${messageData.chatID}`, messageData)
         }
 
         response.json(responseData);

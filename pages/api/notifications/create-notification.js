@@ -39,7 +39,7 @@ export default async function CreateNotification(request, response) {
         const createNotificationResponse = await db.collection("notifications").insertOne(notificationData)
         if (createNotificationResponse.errors) throw new Error("An error occured when creating notification.");
 
-        PusherServer.trigger(params.accountID, "NEW_NOTIFICATION", notificationData)
+        await PusherServer.trigger(params.accountID, "NEW_NOTIFICATION", notificationData)
 
         const responseData = ResponseClient.DBModifySuccess({
             data: createNotificationResponse,

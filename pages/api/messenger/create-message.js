@@ -64,7 +64,7 @@ export default async function CreateMessage(request, response) {
             profileImage: messageUser.profileImage
         }
         
-        PusherServer.trigger(chat.targetID, `NEW_MESSAGE_${chat.chatID}`, result)
+        await PusherServer.trigger(chat.targetID, `NEW_MESSAGE_${chat.chatID}`, result)
 
         const responseData = ResponseClient.DBModifySuccess({
             data: result,

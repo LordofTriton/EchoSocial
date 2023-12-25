@@ -92,7 +92,7 @@ export async function CreateFriendCallback(params, reqOrigin) {
     })).data;
     console.log("4")
 
-    PusherServer.trigger(params.accountID, `NEW_FRIEND`, {
+    await PusherServer.trigger(params.accountID, `NEW_FRIEND`, {
         accountID: friend.accountID,
         firstName: friend.firstName,
         lastName: friend.lastName,
@@ -106,7 +106,7 @@ export async function CreateFriendCallback(params, reqOrigin) {
     })
     console.log("5")
 
-    PusherServer.trigger(params.friendID, `NEW_FRIEND`, {
+    await PusherServer.trigger(params.friendID, `NEW_FRIEND`, {
         accountID: userAccount.accountID,
         firstName: userAccount.firstName,
         lastName: userAccount.lastName,

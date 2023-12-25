@@ -59,8 +59,8 @@ export default async function UpdateChat(request, response) {
             userFriend: userFriend ? true : false
         }
 
-        PusherServer.trigger(origin.accountID, `UPDATED_CHAT_${updatedChat.chatID}`, finalChatData)
-        PusherServer.trigger(origin.accountID, `UPDATED_CHAT_LIST`, finalChatData)
+        await PusherServer.trigger(origin.accountID, `UPDATED_CHAT_${updatedChat.chatID}`, finalChatData)
+        await PusherServer.trigger(origin.accountID, `UPDATED_CHAT_LIST`, finalChatData)
 
         response.json(responseData);
     } catch (error) {

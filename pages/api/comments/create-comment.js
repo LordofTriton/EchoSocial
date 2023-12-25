@@ -55,7 +55,7 @@ export default async function CreateComment (request, response) {
             profileImage: commentUser.profileImage
         }
 
-        PusherServer.trigger(params.echoID, `NEW_COMMENT_${params.echoID}`, result)
+        await PusherServer.trigger(params.echoID, `NEW_COMMENT_${params.echoID}`, result)
 
         const responseData = ResponseClient.DBModifySuccess({
             data: result,
