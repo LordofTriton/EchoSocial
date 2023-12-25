@@ -102,8 +102,13 @@ body {
   padding: 80px 5px 120px 5px;
 }
 
+.mobile-only { display: block; }
+.desktop-only { display: none; }
+
 @media screen and (min-width: 1125px) {
   .pageContent {
     padding: 80px 120px 120px 120px;
   }
+  .mobile-only { display: none; }
+  .desktop-only { display: block; }
 }

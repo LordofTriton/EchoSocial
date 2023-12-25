@@ -69,7 +69,7 @@ export default function CommunityHead({ data, page, title }) {
             accountID: page.activeUser.accountID,
             communityID: communityData.communityID,
             audience: communityData.displayName,
-            nodes: [communityData.node],
+            nodes: [communityData.node.nodeID],
             content: {
                 text: null,
                 media: [{

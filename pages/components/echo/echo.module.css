@@ -1,9 +1,47 @@
+.echoContainer {
+    margin: 3px 0px;
+}
+
+.echoNodeList {
+    width: 100%;
+    height: 57px;
+    background-color: var(--alt);
+    border-radius: 5px 5px 0px 0px;
+    float: left;
+    padding-left: 20px;
+    padding-right: 20px;
+    overflow: hidden;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.echoNode {
+    background-color: var(--base);
+    padding: 10px 40px 10px 10px;
+    border-radius: 5px;
+    color: var(--primary);
+    display: inline-block;
+    margin: 10px 5px 5px 5px;
+    font-size: 13px;
+    cursor: pointer;
+    position: relative;
+}
+
+.echoNode span {
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    padding: 5px;
+    cursor: pointer;
+}
+
 .echo {
     width: 100%;
     height: fit-content;
     background-color: var(--surface);
     border-radius: 5px;
-    margin: 3px 0px;
     box-shadow: 0 0 8px 0 rgba(63,66,87,.1);
     padding: 25px 15px 25px 15px;
     overflow: hidden;
@@ -264,8 +302,10 @@
 }
 
 @media screen and (min-width: 1125px) {
-    .echo {
+    .echoContainer {
         margin: 10px 0px;
+    }
+    .echo {
         padding: 25px 25px 25px 25px;
     }
     .echoHeadData {
