@@ -47,7 +47,7 @@ export default async function CreateCommunityApplication (request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await CreateApplicationCallback(params, AppConfig.getHost(request))
+            await CreateApplicationCallback(params, AppConfig.HOST)
         })
     } catch (error) {
         console.log(error)

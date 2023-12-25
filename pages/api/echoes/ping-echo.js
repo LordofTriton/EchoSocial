@@ -36,7 +36,7 @@ export default async function PingEcho(request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await PingEchoCallback(params, AppConfig.getHost(request))
+            await PingEchoCallback(params, AppConfig.HOST)
         })
     } catch (error) {
         console.log(error)

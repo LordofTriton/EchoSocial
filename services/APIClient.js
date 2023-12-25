@@ -8,7 +8,8 @@ function getToken() {
 }
 
 async function post(url, data, callback, headers) {
-    const response = await axios.post(`${AppConfig.HOST}/api${url}`, data, {
+    const host = window.location.host;
+    const response = await axios.post(`${host}/api${url}`, data, {
         headers: {
             ...headers,
             Authorization: `Bearer ${getToken()}`
@@ -19,7 +20,8 @@ async function post(url, data, callback, headers) {
 }
 
 async function put(url, data, callback, headers) {
-    const response = await axios.put(`${AppConfig.HOST}/api${url}`, data, {
+    const host = window.location.host;
+    const response = await axios.put(`${host}/api${url}`, data, {
         headers: {
             ...headers,
             Authorization: `Bearer ${getToken()}`
@@ -30,28 +32,30 @@ async function put(url, data, callback, headers) {
 }
 
 async function get(url, data, callback, headers, noCache) {
+    const host = window.location.host;
     const query = Object.entries(data).map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`).join('&');
 
     if (!noCache) {
-        const cachedResponse = CacheService.getData(`${AppConfig.HOST}/api${url}?${query}`)
+        const cachedResponse = CacheService.getData(`${host}/api${url}?${query}`)
         if (cachedResponse && callback) callback(JSON.parse(cachedResponse))
     }
 
-    const response = await axios.get(`${AppConfig.HOST}/api${url}?${query}`, {
+    const response = await axios.get(`${host}/api${url}?${query}`, {
         headers: {
             ...headers,
             Authorization: `Bearer ${getToken()}`
         }
     })
 
-    if (!noCache) CacheService.saveData(`${AppConfig.HOST}/api${url}?${query}`, JSON.stringify(response.data))
+    if (!noCache) CacheService.saveData(`${host}/api${url}?${query}`, JSON.stringify(response.data))
     if (callback) callback(response.data)
     return response;
 }
 
 async function del(url, data, callback, headers) {
+    const host = window.location.host;
     const query = Object.entries(data).map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`).join('&');
-    const response = await axios.delete(`${AppConfig.HOST}/api${url}?${query}`, {
+    const response = await axios.delete(`${host}/api${url}?${query}`, {
         headers: {
             ...headers,
             Authorization: `Bearer ${getToken()}`

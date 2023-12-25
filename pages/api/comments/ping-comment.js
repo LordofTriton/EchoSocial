@@ -36,7 +36,7 @@ export default async function PingComment (request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await PingCommentCallback(params, AppConfig.getHost(request))
+            await PingCommentCallback(params, AppConfig.HOST)
         })
     } catch (error) {
         console.log(error)

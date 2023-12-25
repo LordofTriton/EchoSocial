@@ -37,7 +37,7 @@ export default async function DeleteHeart(request, response) {
 
         response.once("finish", async () => {
             if (params.userID) {
-                await axios.delete(AppConfig.getHost(request) + `/api/friends/delete-friend?accountID=${params.accountID}&friendID=${params.userID}`)
+                await axios.delete(AppConfig.HOST + `/api/friends/delete-friend?accountID=${params.accountID}&friendID=${params.userID}`)
             }
         })
     } catch (error) {

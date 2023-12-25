@@ -70,7 +70,7 @@ export default async function UpdateAccount (request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await UpdateAccountCallback(params, AppConfig.getHost(request))
+            await UpdateAccountCallback(params, AppConfig.HOST)
         })
     } catch (error) {
         console.log(error)

@@ -58,12 +58,12 @@ export default async function CreateEcho(request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await axios.post(AppConfig.getHost(request) + "/api/hearts/create-heart", {
+            await axios.post(AppConfig.HOST + "/api/hearts/create-heart", {
                 accountID: params.accountID,
                 echoID: echoData.echoID
             })
 
-            await CreateEchoCallback(params, AppConfig.getHost(request))
+            await CreateEchoCallback(params, AppConfig.HOST)
         })
     } catch (error) {
         console.log(error)

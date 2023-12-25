@@ -28,7 +28,7 @@ export default async function DeleteCommunityMember (request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await DeleteMemberCallback(params, AppConfig.getHost(request))
+            await DeleteMemberCallback(params, AppConfig.HOST)
         })
     } catch (error) {
         console.log(error)

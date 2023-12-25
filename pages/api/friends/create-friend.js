@@ -51,7 +51,7 @@ export default async function CreateFriend(request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await CreateFriendCallback(params, AppConfig.getHost(request))
+            await CreateFriendCallback(params, AppConfig.HOST)
         })
     } catch (error) {
         console.log(error)

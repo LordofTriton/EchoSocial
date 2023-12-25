@@ -54,7 +54,7 @@ export default async function CreateHeart(request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await CreateHeartCallback(params, AppConfig.getHost(request))
+            await CreateHeartCallback(params, AppConfig.HOST)
         })
     } catch (error) {
         console.log(error)

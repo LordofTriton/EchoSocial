@@ -55,7 +55,7 @@ export default async function UpdateCommunity (request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await UpdateCommunityCallback(params, AppConfig.getHost(request))
+            await UpdateCommunityCallback(params, AppConfig.HOST)
         })
     } catch (error) {
         console.log(error)

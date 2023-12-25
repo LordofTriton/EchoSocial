@@ -74,7 +74,7 @@ export default async function CreateMessage(request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await CreateMessageCallback(params, AppConfig.getHost(request))
+            await CreateMessageCallback(params, AppConfig.HOST)
         })
     } catch (error) {
         console.log(error)

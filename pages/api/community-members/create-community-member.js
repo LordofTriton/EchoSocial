@@ -50,7 +50,7 @@ export default async function CreateCommunityMember (request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await CreateMemberCallback(params, AppConfig.getHost(request))
+            await CreateMemberCallback(params, AppConfig.HOST)
         })
     } catch (error) {
         console.log(error)

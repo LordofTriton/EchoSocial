@@ -41,7 +41,7 @@ export default async function PingAccounts (request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await PingAccountCallback(params, AppConfig.getHost(request))
+            await PingAccountCallback(params, AppConfig.HOST)
         })
     } catch (error) {
         console.log(error)

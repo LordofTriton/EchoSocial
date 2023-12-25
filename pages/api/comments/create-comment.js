@@ -65,7 +65,7 @@ export default async function CreateComment (request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await CreateCommentCallback(params, commentData, AppConfig.getHost(request))
+            await CreateCommentCallback(params, commentData, AppConfig.HOST)
         })
     } catch (error) {
         console.log(error)

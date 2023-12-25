@@ -32,7 +32,7 @@ export default async function CreateCommunity (request, response) {
         let newCommunity = await db.collection("communities").findOne({ name: String(params.name).toLowerCase().replace(/\s/g, "").trim() })
         if (newCommunity) throw new Error("A community with this name already exists.")
 
-        const nodeData = (await axios.post(AppConfig.getHost(request) + "/api/nodes/create-node", {
+        const nodeData = (await axios.post(AppConfig.HOST + "/api/nodes/create-node", {
             accountID: params.accountID,
             name: params.name,
             emoji: "⚜"
@@ -77,7 +77,7 @@ export default async function CreateCommunity (request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await CreateCommunityCallback(params, communityData, AppConfig.getHost(request))
+            await CreateCommunityCallback(params, communityData, AppConfig.HOST)
         })
     } catch (error) {
         console.log(error)
