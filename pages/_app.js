@@ -8,7 +8,7 @@ import Helpers from '../util/Helpers';
 import DateGenerator from '../services/generators/DateGenerator';
 import ScrollTop from './hooks/useScrollTop';
 
-const publicRoutes = ["/login", "/signup", "/password-reset"]
+const publicRoutes = ["/login", "/signup", "/reset-password", "/forgot-password"]
 
 export default function MyApp({ Component, pageProps }) {
   const router = useRouter()

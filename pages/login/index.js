@@ -78,7 +78,7 @@ export default function Login() {
                         <form onSubmit={handleSubmit}>
                             <input type="text" className={styles.loginFormField} placeholder="Email Address" value={loginDetails.email} onChange={(e) => setLoginDetails({ ...loginDetails, email: e.target.value })} style={{ backgroundImage: `url(/images/icons/email.png)` }} required />
                             <input type="password" className={styles.loginFormField} placeholder="Password" value={loginDetails.password} onChange={(e) => setLoginDetails({ ...loginDetails, password: e.target.value })} style={{ backgroundImage: `url(/images/icons/password.png)` }} required />
-                            <Link href="/fyp"><span className={styles.loginFormFYP}>Forgot password?</span></Link>
+                            <Link href="/forgot-password"><span className={styles.loginFormFYP}>Forgot password?</span></Link>
 
                             <Form.Submit text="SIGN IN" loader={loginLoader} />
                             <span className={styles.loginSignUp}>Don`t have an account? <Link href="/signup"><span>Sign Up</span></Link>!</span>

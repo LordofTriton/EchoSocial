@@ -76,6 +76,8 @@ const APIClient = {
 
         changePassword: "/auth/change-password",
         login: "/auth/login",
+        forgotPassword: "/auth/forgot-password",
+        resetPassword: "/auth/reset-password",
 
         createBlacklist: "/blacklist/create-blacklist",
         deleteBlacklist: "/blacklist/delete-blacklist",

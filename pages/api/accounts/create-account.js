@@ -11,6 +11,7 @@ import NickGenerator from "../../../services/generators/NIckGenerator";
 import CreateNotification from "../notifications/create-notification";
 import CreateSettings from "../settings/create-settings";
 import CreateMember from "../community-members/create-community-member";
+import SendEmail from "../../../services/EmailService";
 
 function ValidateCreateAccount(data) {
     if (!data.firstName || data.firstName.length < 2) throw new Error("Missing or Invalid: first name.")
@@ -115,6 +116,8 @@ export default async function CreateAccount (request, response) {
         response.json(responseData)
 
         response.once("finish", async () => {
+            await SendEmail(params.email, "Welcome", "welcome", { firstName: params.firstName })
+            
             await axios.post(AppConfig.HOST + "/api/settings/create-settings", { accountID: accountData.accountID })
             await axios.post(AppConfig.HOST + "/api/notification/create-notification", {
                 accountID: accountData.accountID,
