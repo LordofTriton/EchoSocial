@@ -149,20 +149,17 @@ export default function Chat({ toggle, data, page }) {
 
     useEffect(() => {
         if (!chatData) return;
-        const channel = new pusherJs("50f5658f71430c02353d", { cluster: "eu" });
-        channel.subscribe(page.activeUser.accountID).bind(`UPDATED_CHAT_${chatData.chatID}`, (data) => { updateChat(data) });
+        PusherClient.subscribe(page.activeUser.accountID).bind(`UPDATED_CHAT_${chatData.chatID}`, (data) => { updateChat(data) });
     }, [chatData])
 
     useEffect(() => {
         if (!chatData) return;
-        const channel = new pusherJs("50f5658f71430c02353d", { cluster: "eu" });
-        channel.subscribe(page.activeUser.accountID).bind(`UPDATED_MESSAGE_${chatData.chatID}`, (data) => { updateMessage(data) });
+        PusherClient.subscribe(page.activeUser.accountID).bind(`UPDATED_MESSAGE_${chatData.chatID}`, (data) => { updateMessage(data) });
     }, [chatData])
 
     useEffect(() => {
         if (!chatData) return;
-        const channel = new pusherJs("50f5658f71430c02353d", { cluster: "eu" });
-        channel.subscribe(page.activeUser.accountID).bind(`NEW_MESSAGE_${chatData.chatID}`, (data) => { updateMessages(data) });
+        PusherClient.subscribe(page.activeUser.accountID).bind(`NEW_MESSAGE_${chatData.chatID}`, (data) => { updateMessages(data) });
     }, [chatData])
 
     useEffect(() => {

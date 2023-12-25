@@ -20,8 +20,7 @@ export default function Notifications({toggle, control, page}) {
     })
 
     useEffect(() => {
-        const channel = new pusherJs("50f5658f71430c02353d", { cluster: "eu" });
-        channel.subscribe(page.activeUser.accountID).bind(`NEW_NOTIFICATION`, (data) => { setNotifications((state) => [data, ...state]) });
+        PusherClient.subscribe(page.activeUser.accountID).bind(`NEW_NOTIFICATION`, (data) => { setNotifications((state) => [data, ...state]) });
 
         return () => {
             channel.unsubscribe(page.activeUser.accountID);

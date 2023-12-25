@@ -26,8 +26,7 @@ export default function Messenger({ toggle, control, page }) {
             setUserChats((state) => [data, ...(state.filter((chat) => chat.chatID !== data.chatID))])
         }
         
-        const channel = new pusherJs("50f5658f71430c02353d", { cluster: "eu" });
-        channel.subscribe(page.activeUser.accountID).bind(`UPDATED_CHAT_LIST`, (data) => { updateChat(data) });
+        PusherClient.subscribe(page.activeUser.accountID).bind(`UPDATED_CHAT_LIST`, (data) => { updateChat(data) });
     }, [])
 
     useEffect(() => {

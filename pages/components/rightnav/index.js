@@ -73,8 +73,7 @@ export default function RightNav({ page }) {
             setUserFriends((state) => state.concat(data))
         }
         
-        const channel = new pusherJs("50f5658f71430c02353d", { cluster: "eu" });
-        channel.subscribe(page.activeUser.accountID).bind(`NEW_FRIEND`, (data) => { updateFriends(data) });
+        PusherClient.subscribe(page.activeUser.accountID).bind(`NEW_FRIEND`, (data) => { updateFriends(data) });
     }, [])
 
     useEffect(() => {
@@ -90,8 +89,7 @@ export default function RightNav({ page }) {
             })
         }
         
-        const channel = new pusherJs("50f5658f71430c02353d", { cluster: "eu" });
-        channel.subscribe(page.activeUser.accountID).bind(`UPDATED_CHAT_LIST`, (data) => { updateChat(data) });
+        PusherClient.subscribe(page.activeUser.accountID).bind(`UPDATED_CHAT_LIST`, (data) => { updateChat(data) });
     }, [])
 
     const getChat = (friend) => {

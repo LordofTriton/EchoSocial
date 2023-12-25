@@ -17,8 +17,7 @@ export default function TopNav({ page }) {
     const [openAccountNav, setOpenAccountNav] = useState(false)
 
     useEffect(() => {
-        const channel = new pusherJs("50f5658f71430c02353d", { cluster: "eu" });
-        channel.subscribe(page.activeUser.accountID).bind(`NEW_NOTIFICATION`, (data) => { setUserNotifications((state) => [data, ...state]) });
+        PusherClient.subscribe(page.activeUser.accountID).bind(`NEW_NOTIFICATION`, (data) => { setUserNotifications((state) => [data, ...state]) });
     }, []);
 
     useEffect(() => {

@@ -1,6 +1,6 @@
-import Pusher from "pusher-js"
+import pusherJs from "pusher-js";
 
-const PusherClient = new Pusher("50f5658f71430c02353d", {
+const PusherClient = new pusherJs("50f5658f71430c02353d", {
     cluster: "eu"
 });
 
