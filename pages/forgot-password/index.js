@@ -69,7 +69,7 @@ export default function ForgotPassword() {
                             <Form.Submit text="Return to Log In" onClick={() => router.push("/login")} />
                         </> : 
                         <>
-                            <h3 className={styles.fypFormTip}>We'll help you recover your account in no time! Simply input your email address below.</h3>
+                            <h3 className={styles.fypFormTip}>{`We'll help you recover your account in no time! Simply input your email address below.`}</h3>
                             <div>
                                 <form onSubmit={handleSubmit}>
                                     <input type="text" className={styles.fypFormField} placeholder="Email Address" value={email} onChange={(e) => setEmail(e.target.value)} style={{ backgroundImage: `url(/images/icons/email.png)` }} required />
