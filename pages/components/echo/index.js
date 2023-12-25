@@ -140,8 +140,13 @@ export default function Echo({ data, page, fullText=false, saved=false }) {
                     <div className={styles.echoHeadOptionIcon}>
                         <SVGServer.OptionIcon color="var(--secondary)" width="25px" height="25px" />
                         <div className={styles.echoHeadOptionBox}>
-                            { echoData.communityID && !page.community ? null : <span className={styles.echoHeadOption} onClick={() => page.setShowEchoCreator(echoData)}>Edit Post</span> }
-                            { echoData.accountID === page.activeUser.accountID && echoData.nodes.length > 0 ? <span className={styles.echoHeadOption} onClick={() => handleDeleteEcho()}>Delete Post</span> : null }
+                            {
+                                echoData.accountID === page.activeUser.accountID && echoData.nodes.length > 0 ?
+                                <>
+                                { echoData.communityID && !page.community ? null : <span className={styles.echoHeadOption} onClick={() => page.setShowEchoCreator(echoData)}>Edit Post</span> }
+                                <span className={styles.echoHeadOption} onClick={() => handleDeleteEcho()}>Delete Post</span>
+                                </> : null
+                            }
                             <span className={styles.echoHeadOption} onClick={() => setSHowNodes(!showNodes)}>{showNodes ? "Hide" : "Show"} Nodes</span>
                         </div>
                     </div>

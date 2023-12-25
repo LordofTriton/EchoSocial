@@ -18,12 +18,18 @@ export default function CommunityHead({ data, page, title }) {
     const handleUpdateProfileCover = async (e) => {
         e.stopPropagation()
         setCoverLoader(true)
+        const file = e.target.files[0]
+        if (!file) return;
+        if (file.size >= 6291456) {
+            page.createAlert("error", "File size must be lower than 6 MB.")
+            return;
+        }
 
         const formData = new FormData();
         formData.append(`media`, e.target.files[0])
         const uploadedFile = (await APIClient.post(APIClient.routes.uploadFile, formData, null, { 'Content-Type': "multipart/form-data" })).data;
         if (!uploadedFile.success) {
-            page.createAlert({ type: "error", message: uploadedFile.message })
+            page.createAlert("error", uploadedFile.message)
             return;
         }
         if (communityData.profileCover.publicID) await APIClient.del(`/cloud/delete?publicID=${communityData.profileCover.publicID}`);
@@ -40,12 +46,18 @@ export default function CommunityHead({ data, page, title }) {
     const handleUpdateProfileImage = async (e) => {
         e.stopPropagation()
         setProfileLoader(true)
+        const file = e.target.files[0];
+        if (!file) return;
+        if (file.size >= 6291456) {
+            page.createAlert("error", "File size must be lower than 6 MB.")
+            return;
+        }
 
         const formData = new FormData();
-        formData.append(`media`, e.target.files[0])
+        formData.append(`media`, file)
         const uploadedFile = (await APIClient.post(APIClient.routes.uploadFile, formData, null, { 'Content-Type': "multipart/form-data" })).data;
         if (!uploadedFile.success) {
-            page.createAlert({ type: "error", message: uploadedFile.message })
+            page.createAlert("error", uploadedFile.message)
             return;
         }
         
@@ -63,7 +75,7 @@ export default function CommunityHead({ data, page, title }) {
             })
             setProfileLoader(false)
             setCommunityData({ ...communityData, profileImage: updated })
-            page.createAlert({ type: "success", message: "Profile Image updated successfully." })
+            page.createAlert("success", "Profile Image updated successfully.")
         }
         APIClient.post(APIClient.routes.createEcho, {
             accountID: page.activeUser.accountID,
@@ -135,7 +147,7 @@ export default function CommunityHead({ data, page, title }) {
                         <label htmlFor="coverSelector" className={styles.communityHeadCoverButton}>
                         { coverLoader ? <Loader size="20px" thickness="3px" color="white" style={{margin: "0px calc(50% - 10px) 0px calc(50% - 10px)"}} /> : <SVGServer.ImageIcon color="white" width="20px" height="20px" /> }
                         </label>
-                        <input type="file" id="coverSelector" accept="image/*" onChange={(e) => handleUpdateProfileCover(e)} style={{ display: "none" }} multiple />
+                        <input type="file" id="coverSelector" accept="image/*" size="6144000" onChange={(e) => handleUpdateProfileCover(e)} style={{ display: "none" }} multiple />
                     </> : null
                 }
                 <div className={styles.communityHeadBar}></div>
@@ -147,7 +159,7 @@ export default function CommunityHead({ data, page, title }) {
                             <label htmlFor="profileSelector" className={styles.communityHeadProfileButton}>
                             { profileLoader ? <Loader size="20px" thickness="3px" color="var(--primary)" style={{margin: "0px calc(50% - 10px) 0px calc(50% - 10px)"}} /> : <SVGServer.CameraIcon color="var(--primary)" width="20px" height="20px" /> }
                             </label>
-                            <input type="file" id="profileSelector" accept="image/*" onChange={(e) => handleUpdateProfileImage(e)} style={{ display: "none" }} multiple />
+                            <input type="file" id="profileSelector" accept="image/*" size="6144000" onChange={(e) => handleUpdateProfileImage(e)} style={{ display: "none" }} multiple />
                         </> : null
                     }
                     </div>

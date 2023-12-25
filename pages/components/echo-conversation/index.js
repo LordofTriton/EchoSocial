@@ -70,8 +70,9 @@ export default function EchoConversation({ data, control, page }) {
     const handleFileSelect = (event) => {
         const file = event.target.files[0];
         if (!file) return;
-
-        setNewCommentMedia(file);
+        if (file.size >= 6291456) {
+            page.createAlert("error", "File size must be lower than 6 MB.")
+        } else setNewCommentMedia(echoMedia.concat(file));
     };
 
     const createComment = async () => {
@@ -82,7 +83,7 @@ export default function EchoConversation({ data, control, page }) {
             formData.append(`media`, newCommentMedia)
             uploadedFile = (await APIClient.post(APIClient.routes.uploadFile, formData, null, { 'Content-Type': "multipart/form-data" })).data;
             if (!uploadedFile.success) {
-                createAlert({type: "error", message: uploadedFile.message})
+                createAlert("error", uploadedFile.message)
                 return;
             }
         }
@@ -171,7 +172,7 @@ export default function EchoConversation({ data, control, page }) {
                                 </div> :
                                 <>
                                     <label htmlFor="fileSelector" className={styles.echoViewerCommentEditorFileSelect}><SVGServer.ImageIcon color="var(--secondary)" width="30px" height="30px" /></label>
-                                    <input type="file" id="fileSelector" className={styles.fileInput} accept="image/*" onChange={(e) => handleFileSelect(e)} multiple />
+                                    <input type="file" id="fileSelector" className={styles.fileInput} accept="image/*" size="6144000" onChange={(e) => handleFileSelect(e)} />
                                 </>
                         }
                         <Form.Submit text="POST" onClick={() => createComment()} loader={commentEditorLoader} />

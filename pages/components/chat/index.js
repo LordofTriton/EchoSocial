@@ -213,8 +213,11 @@ export default function Chat({ toggle, data, page }) {
         const files = event.target.files;
         if (!files) return;
         const fileList = Array.from(files);
-
-        setNewMessageMedia(fileList);
+        if (fileList.find((file) => file.size >= 6291456)) {
+            page.createAlert("error", "File size must be lower than 6 MB.")
+            const filteredList = fileList.filter((file) => file.size < 6291456)
+            setNewMessageMedia(filteredList);
+        } else setNewMessageMedia(fileList);
     };
 
     const handleSubmit = async () => {
@@ -276,7 +279,7 @@ export default function Chat({ toggle, data, page }) {
         formData.append(`media`, file)
         const uploadedFile = (await APIClient.post(APIClient.routes.uploadFile, formData, null, { 'Content-Type': "multipart/form-data" })).data;
         if (!uploadedFile.success) {
-            page.createAlert({ type: "error", message: uploadedFile.message })
+            page.createAlert("error", uploadedFile.message)
             return;
         }
 
@@ -428,7 +431,7 @@ export default function Chat({ toggle, data, page }) {
                         <div className={styles.chatInput}>
                             <>
                             <label htmlFor="mediaSelector" className={styles.chatInputImage}><SVGServer.CameraIcon color="var(--primary)" width="26px" height="26px" /></label>
-                            <input type="file" id="mediaSelector" accept="image/*" onChange={(e) => handleFileSelect(e)} style={{ display: "none" }} multiple />
+                            <input type="file" id="mediaSelector" accept="image/*" size="6144000" onChange={(e) => handleFileSelect(e)} style={{ display: "none" }} multiple />
                             </>
                             <form>
                                 <textarea className={styles.chatInputField} type="text" placeholder="Message" onChange={(e) => setNewMessageText(e.target.value)} value={newMessageText}></textarea>

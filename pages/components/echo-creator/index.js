@@ -44,8 +44,11 @@ export default function EchoCreator({toggle, control, page}) {
         const files = event.target.files;
         if (!files) return;
         const fileList = Array.from(files);
-    
-        setEchoMedia(echoMedia.concat(fileList));
+        if (fileList.find((file) => file.size >= 6291456)) {
+            page.createAlert("error", "File size must be lower than 6 MB.")
+            const filteredList = fileList.filter((file) => file.size < 6291456)
+            setEchoMedia(echoMedia.concat(filteredList));
+        } else setEchoMedia(echoMedia.concat(fileList));
     };
 
     const handleNewFileRemove = (id) => {
@@ -81,7 +84,7 @@ export default function EchoCreator({toggle, control, page}) {
             echoMedia.forEach((file) => { formData.append(`media`, file) });
             const uploadedFiles = (await APIClient.post(APIClient.routes.uploadFile, formData, null, {'Content-Type': "multipart/form-data"})).data;
             if (!uploadedFiles.success) {
-                page.createAlert({type: "error", message: uploadedFiles.message})
+                page.createAlert("error", uploadedFiles.message)
                 return;
             }
             media = media.concat(uploadedFiles.data.map((file) => { return { ...file, type: Helpers.getFileType(file.url) }}))
@@ -111,7 +114,7 @@ export default function EchoCreator({toggle, control, page}) {
             echoMedia.forEach((file) => { formData.append(`media`, file) });
             const uploadedFiles = (await APIClient.post(APIClient.routes.uploadFile, formData, null, {'Content-Type': "multipart/form-data"})).data;
             if (!uploadedFiles.success) {
-                page.createAlert({type: "error", message: uploadedFiles.message})
+                page.createAlert("error", uploadedFiles.message)
                 return;
             }
             media = media.concat(uploadedFiles.data.map((file) => { return { ...file, type: Helpers.getFileType(file.url) }}))
@@ -219,11 +222,11 @@ export default function EchoCreator({toggle, control, page}) {
             <div className={styles.echoCreatorMediaGallery}>
                 <>
                     <label htmlFor="imagefileSelector"><SVGServer.ImageIcon color="var(--primary)" width="30px" height="30px" /></label>
-                    <input type="file" id="imagefileSelector" className={styles.echoCreatorFile} accept="image/*" onChange={(e) => handleFileSelect(e)} multiple/>
+                    <input type="file" id="imagefileSelector" className={styles.echoCreatorFile} accept="image/*" size="6144000" onChange={(e) => handleFileSelect(e)} multiple/>
                 </>
                 <>
                     <label htmlFor="videofileSelector"><SVGServer.VideoIcon color="var(--primary)" width="30px" height="30px" /></label>
-                    <input type="file" id="videofileSelector" className={styles.echoCreatorFile} accept="video/mp4" onChange={(e) => handleFileSelect(e)} multiple/>
+                    <input type="file" id="videofileSelector" className={styles.echoCreatorFile} accept="video/mp4" size="6144000" onChange={(e) => handleFileSelect(e)} multiple/>
                 </>
                 <span onClick={() => setLinkSelector(true)}><SVGServer.LinkIcon color="var(--primary)" width="30px" height="30px" /></span>
             </div>

@@ -6,14 +6,13 @@
     left: 0px;
     overflow: hidden;
     opacity: 0.8;
+    z-index: 10000;
 }
 
 .alertContent {
     width: fit-content;
     height: 100%;
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%, 0px);
+    padding-left: 15px;
 }
 
 .alertIcon {
@@ -26,8 +25,9 @@
 .alertMessage {
     color: white;
     font-size: 15px;
+    font-weight: 600;
     float: left;
-    padding-top: 10px;
+    padding-top: 9px;
 }
 
 .alertClose {
@@ -36,4 +36,10 @@
     height: 15px;
     float: right;
     cursor: pointer;
+}
+
+@media screen and (min-width: 1125px) {
+    .alertContent {
+        padding-left: 80px;
+    }
 }
