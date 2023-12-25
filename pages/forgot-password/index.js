@@ -65,7 +65,7 @@ export default function ForgotPassword() {
                     {
                         sent ?
                         <>
-                            <h3 className={styles.fypFormTip}>We've sent you a link to reset your password in the mail. Please click the link to recover your account.</h3>
+                            <h3 className={styles.fypFormTip}>{`We've sent you a link to reset your password in the mail. Please click the link to recover your account.`}</h3>
                             <Form.Submit text="Return to Log In" onClick={() => router.push("/login")} />
                         </> : 
                         <>
