@@ -11,6 +11,7 @@ import LogoSplash from '../components/logo-splash';
 import CacheService from "../../services/CacheService";
 import APIClient from "../../services/APIClient";
 import { Form } from '../components/form';
+import ParamValidator from '../../services/validation/validator';
 
 export default function ResetPassword() {
     const router = useRouter()
@@ -80,7 +81,7 @@ export default function ResetPassword() {
                         <div>
                             <form onSubmit={handleSubmit}>
                                 <input type="password" className={styles.resetFormField} placeholder="Password (at least six characters)" value={password.newPassword} onChange={(e) => setPassword({...password, newPassword: e.target.value.trim()})} style={{backgroundImage: `url(/images/icons/password.png)`, float: "left"}} required/>
-                                {password.newPassword && password.newPassword.trim().length < 6 ? <span className={styles.formErrorMessage}>Password must be at least 6 characters.</span> : null}
+                                {password.newPassword && !ParamValidator.isValidPassword(password.newPassword) ? <span className={styles.formErrorMessage}>Password must be at least 6 characters.</span> : null}
     
                                 <input type="password" className={styles.resetFormField} placeholder="Confirm Password (same as above)" value={password.confirmNewPassword} onChange={(e) => setPassword({...password, confirmNewPassword: e.target.value.trim()})} style={{backgroundImage: `url(/images/icons/password.png)`, float: "right"}} required/>
                                 {password.confirmNewPassword && password.newPassword !== password.confirmNewPassword ? <span className={styles.formErrorMessage}>{`Passwords don't match.`}</span> : null}

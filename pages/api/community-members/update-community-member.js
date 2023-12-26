@@ -11,7 +11,7 @@ function ValidateUpdateMember(data) {
     if (data.role && !ParamValidator.isValidMemberRole(data.role)) throw new Error("Invalid: role")
 }
 
-async function UpdateMember(request, response) {
+async function UpdateMember(request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",

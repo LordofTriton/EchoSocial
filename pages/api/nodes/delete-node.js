@@ -8,7 +8,7 @@ function ValidateDeleteNode(data) {
     if (!data.nodeID || !ParamValidator.isValidObjectID(data.nodeID)) throw new Error("Missing or Invalid: nodeID")
 }
 
-async function DeleteNode(request, response) {
+async function DeleteNode(request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",

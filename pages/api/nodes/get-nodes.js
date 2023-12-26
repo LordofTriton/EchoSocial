@@ -8,7 +8,7 @@ function ValidateGetNodes(data) {
     if (data.filter && data.filter.length < 2) throw new Error("Invalid filter.")
 }
 
-async function GetNodes(request, response) {
+async function GetNodes(request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",

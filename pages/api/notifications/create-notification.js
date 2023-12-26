@@ -13,7 +13,7 @@ function ValidateCreateNotification(data) {
     if (data.redirect && data.redirect.length < 5) throw new Error("Invalid: redirect.")
 }
 
-async function CreateNotification(request, response) {
+async function CreateNotification(request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",

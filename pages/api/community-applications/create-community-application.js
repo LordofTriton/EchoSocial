@@ -13,7 +13,7 @@ function ValidateCreateApplication(data) {
     if (!data.communityID || !ParamValidator.isValidObjectID(data.communityID)) throw new Error("Missing or Invalid: communityID.")
 }
 
-async function CreateCommunityApplication (request, response) {
+async function CreateCommunityApplication (request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -48,7 +48,7 @@ async function CreateCommunityApplication (request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await CreateApplicationCallback(params, AppConfig.HOST, request)
+            await CreateApplicationCallback(params, AppConfig.HOST, authToken)
         })
     } catch (error) {
         console.log(error)
@@ -57,7 +57,7 @@ async function CreateCommunityApplication (request, response) {
     }
 }
 
-export async function CreateApplicationCallback(params, reqOrigin, request) {
+export async function CreateApplicationCallback(params, reqOrigin, authToken) {
     const { db } = await getDB();
     const user = await db.collection("accounts").findOne({ accountID: params.accountID });
     const admins = await db.collection("members").find({ 
@@ -71,7 +71,7 @@ export async function CreateApplicationCallback(params, reqOrigin, request) {
             image: user.profileImage.url,
             clickable: true,
             redirect: `/communities/${params.communityID}/settings/applications`
-        }, { headers: request.headers })
+        }, { headers: { Authorization: `Bearer ${authToken}` } })
     }
 }
 

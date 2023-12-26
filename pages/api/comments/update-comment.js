@@ -13,7 +13,7 @@ function ValidateUpdateComment(data) {
     }
 }
 
-async function UpdateComment (request, response) {
+async function UpdateComment (request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",

@@ -17,7 +17,7 @@ function ValidateCreateCommunity(data) {
     if (!data.privacy || !ParamValidator.isValidCommunityPrivacy(data.privacy)) throw new Error("Missing or Invalid: privacy")
 }
 
-async function CreateCommunity (request, response) {
+async function CreateCommunity (request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -37,7 +37,7 @@ async function CreateCommunity (request, response) {
             accountID: params.accountID,
             name: params.name,
             emoji: "⚜"
-        }, { headers: request.headers })).data;
+        }, { headers: { Authorization: `Bearer ${authToken}` } })).data;
 
         const communityData = {
             communityID: IDGenerator.GenerateCommunityID(),
@@ -78,7 +78,7 @@ async function CreateCommunity (request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await CreateCommunityCallback(params, communityData, AppConfig.HOST, request)
+            await CreateCommunityCallback(params, communityData, AppConfig.HOST, authToken)
         })
     } catch (error) {
         console.log(error)
@@ -87,7 +87,7 @@ async function CreateCommunity (request, response) {
     }
 }
 
-export async function CreateCommunityCallback(params, communityData, reqOrigin, request) {
+export async function CreateCommunityCallback(params, communityData, reqOrigin, authToken) {
     const { db } = await getDB();
     await db.collection("members").insertOne({
         memberID: IDGenerator.GenerateMemberID(),
@@ -103,7 +103,7 @@ export async function CreateCommunityCallback(params, communityData, reqOrigin, 
         image: `/images/communityProfile.png`,
         clickable: true,
         redirect: `/communities/${communityData.communityID}`
-    }, { headers: request.headers })
+    }, { headers: { Authorization: `Bearer ${authToken}` } })
 }
 
 export default authenticate(CreateCommunity);

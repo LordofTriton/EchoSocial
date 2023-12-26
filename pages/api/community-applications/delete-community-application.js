@@ -8,7 +8,7 @@ function ValidateDeleteApplication(data) {
     if (!data.applicationID || !ParamValidator.isValidObjectID(data.applicationID)) throw new Error("Missing or Invalid: applicationID")
 }
 
-async function DeleteCommunityApplication (request, response) {
+async function DeleteCommunityApplication (request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",

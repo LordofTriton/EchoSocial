@@ -8,7 +8,7 @@ function ValidateDeleteMember(data) {
     if (!data.userID || !ParamValidator.isValidObjectID(data.userID)) throw new Error("Missing or Invalid: userID")
 }
 
-async function DeleteCommunityMember (request, response) {
+async function DeleteCommunityMember (request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -29,7 +29,7 @@ async function DeleteCommunityMember (request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await DeleteMemberCallback(params, AppConfig.HOST, request)
+            await DeleteMemberCallback(params, AppConfig.HOST, authToken)
         })
     } catch (error) {
         console.log(error)
@@ -38,7 +38,7 @@ async function DeleteCommunityMember (request, response) {
     }
 }
 
-export async function DeleteMemberCallback(params, reqOrigin, request) {
+export async function DeleteMemberCallback(params, reqOrigin, authToken) {
     const community = await db.collection("communities").findOne({ communityID: params.communityID })
     await db.collection("nodes").findOneAndUpdate({ nodeID: community.node.nodeID }, { $inc: { pings: 1 }})
     const memberCount = await db.collection("members").countDocuments({ communityID: params.communityID })

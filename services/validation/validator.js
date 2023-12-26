@@ -18,7 +18,14 @@ function isValidObjectID(id) {
 }
 
 function isValidEmail(email) {
-    return email && email.length > 5;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const isValid = emailRegex.test(email);
+    return isValid;
+}
+
+function isValidPassword(password) {
+    if (password.includes(" ")) return false;
+    if (password.trim().length < 6) return false;
 }
 
 function isValidGender(gender) {
@@ -78,6 +85,7 @@ function isValidMemberRole(role) {
 const ParamValidator = {
     parseParams,
     isValidEmail,
+    isValidPassword,
     isValidGender,
     isValidMaritalStatus,
     isValidNotificationStatus,

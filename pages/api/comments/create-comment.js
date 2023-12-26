@@ -19,7 +19,7 @@ function ValidateCreateComment(data) {
     }
 }
 
-async function CreateComment (request, response) {
+async function CreateComment (request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -68,7 +68,7 @@ async function CreateComment (request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await CreateCommentCallback(params, commentData, AppConfig.HOST, request)
+            await CreateCommentCallback(params, commentData, AppConfig.HOST, authToken)
         })
     } catch (error) {
         console.log(error)
@@ -77,7 +77,7 @@ async function CreateComment (request, response) {
     }
 }
 
-export async function CreateCommentCallback(params, commentData, reqOrigin, request) {
+export async function CreateCommentCallback(params, commentData, reqOrigin, authToken) {
     const { db } = await getDB();
     const echo = (await db.collection("echoes").findOne({ echoID: params.echoID }))
     const commentUser = (await db.collection("accounts").findOne({ accountID: params.accountID }))
@@ -85,7 +85,7 @@ export async function CreateCommentCallback(params, commentData, reqOrigin, requ
     await axios.post(reqOrigin + "/api/hearts/create-heart", {
         accountID: params.accountID,
         commentID: commentData.commentID
-    }, { headers: request.headers })
+    }, { headers: { Authorization: `Bearer ${authToken}` } })
 
     if (params.accountID !== echo.accountID) {
         const echoUserSettings = await db.collection("settings").findOne({ accountID: echo.accountID })
@@ -96,7 +96,7 @@ export async function CreateCommentCallback(params, commentData, reqOrigin, requ
                 image: commentUser.profileImage.url,
                 clickable: true,
                 redirect: echo.url
-            }, { headers: request.headers })
+            }, { headers: { Authorization: `Bearer ${authToken}` } })
         }
     }
 
@@ -109,7 +109,7 @@ export async function CreateCommentCallback(params, commentData, reqOrigin, requ
                 image: commentUser.profileImage.url,
                 clickable: true,
                 redirect: echo.url
-            }, { headers: request.headers })
+            }, { headers: { Authorization: `Bearer ${authToken}` } })
         }
     }
 }

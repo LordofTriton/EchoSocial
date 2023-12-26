@@ -10,7 +10,7 @@ function ValidateDeleteChat(data) {
     if (data.chatID && !ParamValidator.isValidObjectID(data.chatID)) throw new Error("Missing or Invalid: chatID")
 }
 
-async function DeleteChat(request, response) {
+async function DeleteChat(request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",

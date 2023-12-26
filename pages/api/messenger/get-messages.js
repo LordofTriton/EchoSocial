@@ -10,7 +10,7 @@ function ValidateGetMessages(data) {
     if (data.nodes && data.nodes.length < 1) throw new Error("Invalid: nodes.")
 }
 
-async function GetMessages(request, response) {
+async function GetMessages(request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",

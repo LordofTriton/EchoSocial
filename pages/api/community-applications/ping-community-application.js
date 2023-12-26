@@ -13,7 +13,7 @@ function ValidatePingApplication(data) {
     if (!data.applicationID || !ParamValidator.isValidObjectID(data.applicationID)) throw new Error("Missing or Invalid: applicationID")
 }
 
-async function PingCommunityApplications (request, response) {
+async function PingCommunityApplications (request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -33,13 +33,13 @@ async function PingCommunityApplications (request, response) {
         const application = await db.collection("applications").findOne({ applicationID: params.applicationID })
         const community = await db.collection("communities").findOne({ communityID: params.communityID });
 
-        await axios.delete(AppConfig.HOST + `/api/community-applications/delete-community-application?accountID=${application.accountID}&applicationID=${params.applicationID}`, { headers: request.headers })
+        await axios.delete(AppConfig.HOST + `/api/community-applications/delete-community-application?accountID=${application.accountID}&applicationID=${params.applicationID}`, { headers: { Authorization: `Bearer ${authToken}` } })
 
         if (params.approve) {
             await axios.post(AppConfig.HOST + "/api/community-members/create-community-member", {
                 accountID: application.accountID,
                 communityID: application.communityID
-            }, { headers: request.headers })
+            }, { headers: { Authorization: `Bearer ${authToken}` } })
         }
 
         await axios.post(AppConfig.HOST + "/api/notifications/create-notification", {
@@ -48,7 +48,7 @@ async function PingCommunityApplications (request, response) {
             image: community.profileImage.url,
             clickable: params.approve ? true : false,
             redirect: params.approve ? `/communities/${community.communityID}` : ""
-        }, { headers: request.headers })
+        }, { headers: { Authorization: `Bearer ${authToken}` } })
 
         const responseData = ResponseClient.GenericSuccess({
             data: null,

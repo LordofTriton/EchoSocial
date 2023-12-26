@@ -10,7 +10,7 @@ function ValidateGetComment(data) {
     if (data.nodes && data.nodes.length < 1) throw new Error("Invalid: nodes.")
 }
 
-async function GetComment (request, response) {
+async function GetComment (request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",

@@ -10,7 +10,7 @@ function ValidateUpdateSettings(data) {
     if (data.activeStatus && !ParamValidator.isValidActiveStatus(data.activeStatus)) throw new Error("Invalid activeStatus")
 }
 
-async function UpdateSettings(request, response) {
+async function UpdateSettings(request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID", 

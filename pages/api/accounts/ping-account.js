@@ -15,7 +15,7 @@ function ValidatePingAccount(data) {
     if (data.unfollow && (data.unfollow === data.accountID)) throw new Error("You can't unfollow yourself :)")
 }
 
-async function PingAccounts (request, response) {
+async function PingAccounts (request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -42,7 +42,7 @@ async function PingAccounts (request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await PingAccountCallback(params, AppConfig.HOST, request)
+            await PingAccountCallback(params, AppConfig.HOST, authToken)
         })
     } catch (error) {
         console.log(error)
@@ -51,7 +51,7 @@ async function PingAccounts (request, response) {
     }
 }
 
-export async function PingAccountCallback(params, reqOrigin, request) {
+export async function PingAccountCallback(params, reqOrigin, authToken) {
     const { db } = await getDB();
     const userAccount = await db.collection("accounts").findOne({ accountID: params.accountID })
     if (params.follow) {
@@ -63,7 +63,7 @@ export async function PingAccountCallback(params, reqOrigin, request) {
             image: userAccount.profileImage.url,
             clickable: true,
             redirect: `/user/${userAccount.accountID}`
-        }, { headers: request.headers })
+        }, { headers: { Authorization: `Bearer ${authToken}` } })
         
         const follower = await db.collection("accounts").findOne({ accountID: params.accountID })
         const followee = await db.collection("accounts").findOne({ accountID: params.follow })
@@ -74,14 +74,14 @@ export async function PingAccountCallback(params, reqOrigin, request) {
                 image: followee.profileImage.url,
                 clickable: true,
                 redirect: `/user/${followee.accountID}`
-            }, { headers: request.headers })
+            }, { headers: { Authorization: `Bearer ${authToken}` } })
             await axios.post(reqOrigin + "/api/notifications/create-notification", {
                 accountID: followee.accountID,
                 content: `${follower.firstName} ${follower.lastName} followed you! You are now friends. Click to view their profile.`,
                 image: follower.profileImage.url,
                 clickable: true,
                 redirect: `/user/${follower.accountID}`
-            }, { headers: request.headers })
+            }, { headers: { Authorization: `Bearer ${authToken}` } })
         }
 
     }

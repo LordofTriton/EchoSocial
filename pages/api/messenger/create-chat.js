@@ -12,7 +12,7 @@ function ValidateCreateChat(data) {
     if (!data.targetID || !ParamValidator.isValidAccountID(data.targetID)) throw new Error("Missing or Invalid: targetID.")
 }
 
-async function CreateChat(request, response) {
+async function CreateChat(request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",

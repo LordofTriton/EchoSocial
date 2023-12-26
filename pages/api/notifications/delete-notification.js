@@ -8,7 +8,7 @@ function ValidateDeleteNotification(data) {
     if (!data.notificationID || !ParamValidator.isValidObjectID(data.notificationID)) throw new Error("Missing or Invalid: notificationID.")
 }
 
-async function DeleteNotification(request, response) {
+async function DeleteNotification(request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",

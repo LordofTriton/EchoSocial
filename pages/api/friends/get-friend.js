@@ -9,7 +9,7 @@ function ValidateGetFriend(data) {
     if (data.friendID && !ParamValidator.isValidObjectID(data.friendID)) throw new Error("Invalid: friendID.")
 }
 
-async function GetFriend(request, response) {
+async function GetFriend(request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",

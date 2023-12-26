@@ -11,7 +11,7 @@ function ValidateUpdateNotification(data) {
     if (!data.status || !ParamValidator.isValidNotificationStatus(data.status)) throw new Error("Missing or Invalid: status.")
 }
 
-async function UpdateNotification(request, response) {
+async function UpdateNotification(request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",

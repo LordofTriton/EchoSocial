@@ -11,6 +11,7 @@ import LogoSplash from '../components/logo-splash';
 import CacheService from "../../services/CacheService";
 import APIClient from "../../services/APIClient";
 import { Form } from '../components/form';
+import ParamValidator from '../../services/validation/validator';
 
 export default function ForgotPassword() {
     const router = useRouter()
@@ -24,7 +25,7 @@ export default function ForgotPassword() {
         event.preventDefault()
         setLoader(true)
 
-        if (email.trim().length > 2 && email.includes("@")) {
+        if (ParamValidator.isValidEmail(email)) {
             const response = await APIClient.post(APIClient.routes.forgotPassword, { email });
 
             if (response.success) {
@@ -36,7 +37,7 @@ export default function ForgotPassword() {
             }
         }
         else {
-            setAlert({ type: "error", message: "Invalid email." })
+            setAlert({ type: "error", message: "Invalid email address." })
         }
 
         setLoader(false)

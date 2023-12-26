@@ -10,7 +10,7 @@ function ValidateDeleteBlacklist(data) {
     if (data.blockee && !ParamValidator.isValidObjectID(data.blockee)) throw new Error("Invalid: blockee.")
 }
 
-async function DeleteBlacklist (request, response) {
+async function DeleteBlacklist (request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",

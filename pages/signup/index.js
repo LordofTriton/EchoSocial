@@ -10,6 +10,7 @@ import Link from 'next/link'
 import Alert from "../components/alert";
 import CacheService from "../../services/CacheService";
 import APIClient from "../../services/APIClient";
+import ParamValidator from '../../services/validation/validator';
 
 export default function Signup() {
     const router = useRouter()
@@ -51,10 +52,10 @@ export default function Signup() {
     }
 
     const isValidData = () => {
-        if (signupDetails.firstName.trim().length < 2) return false;
-        if (signupDetails.lastName.trim().length < 2) return false;
-        if (signupDetails.email.trim().length < 2) return false;
-        if (signupDetails.password.trim().length < 6) return false;
+        if (signupDetails.firstName.trim().length < 2 || signupDetails.firstName.includes(" ")) return false;
+        if (signupDetails.lastName.trim().length < 2 || signupDetails.lastName.includes(" ")) return false;
+        if (!ParamValidator.isValidEmail(signupDetails.email)) return false;
+        if (!ParamValidator.isValidPassword(signupDetails.password)) return false;
         if (signupDetails.password !== signupDetails.confirmPassword) return false;
         return true;
     }
@@ -84,15 +85,17 @@ export default function Signup() {
                         <form onSubmit={handleSubmit}>
                             <input type="text" className={styles.signupFormField} placeholder="First Name" value={signupDetails.firstName} onChange={(e) => setSignupDetails({...signupDetails, firstName: e.target.value.trim()})} style={{backgroundImage: `url(/images/icons/user1.png)`, float: "left"}} required/>
                             {signupDetails.firstName && signupDetails.firstName.trim().length < 3 ? <span className={styles.formErrorMessage}>First Name must be more than 2 letters.</span> : null}
+                            {signupDetails.firstName && signupDetails.firstName.includes(" ") ? <span className={styles.formErrorMessage}>No spaces.</span> : null}
 
                             <input type="text" className={styles.signupFormField} placeholder="Last Name" value={signupDetails.lastName} onChange={(e) => setSignupDetails({...signupDetails, lastName: e.target.value.trim()})} style={{backgroundImage: `url(/images/icons/user1.png)`, float: "right"}} required/>
                             {signupDetails.lastName && signupDetails.lastName.trim().length < 3 ? <span className={styles.formErrorMessage}>Last Name must be more than 2 letters.</span> : null}
+                            {signupDetails.lastName && signupDetails.lastName.includes(" ") ? <span className={styles.formErrorMessage}>No spaces.</span> : null}
 
                             <input type="email" className={styles.signupFormField} placeholder="Email Address" value={signupDetails.email} onChange={(e) => setSignupDetails({...signupDetails, email: e.target.value.trim()})} style={{backgroundImage: `url(/images/icons/email.png)`}} required/>
-                            {signupDetails.email && (signupDetails.email.trim().length < 3 || !signupDetails.email.includes("@")) ? <span className={styles.formErrorMessage}>Please enter a valid email.</span> : null}
+                            {signupDetails.email && !ParamValidator.isValidEmail(signupDetails.email) ? <span className={styles.formErrorMessage}>Please enter a valid email.</span> : null}
 
                             <input type="password" className={styles.signupFormField} placeholder="Password (at least six characters)" value={signupDetails.password} onChange={(e) => setSignupDetails({...signupDetails, password: e.target.value.trim()})} style={{backgroundImage: `url(/images/icons/password.png)`, float: "left"}} required/>
-                            {signupDetails.password && signupDetails.password.trim().length < 6 ? <span className={styles.formErrorMessage}>Password must be at least 6 characters.</span> : null}
+                            {signupDetails.password && !ParamValidator.isValidPassword(signupDetails.password) ? <span className={styles.formErrorMessage}>Password must be at least 6 characters. No spaces.</span> : null}
 
                             <input type="password" className={styles.signupFormField} placeholder="Confirm Password (same as above)" value={signupDetails.confirmPassword} onChange={(e) => setSignupDetails({...signupDetails, confirmPassword: e.target.value.trim()})} style={{backgroundImage: `url(/images/icons/password.png)`, float: "right"}} required/>
                             {signupDetails.confirmPassword && signupDetails.password !== signupDetails.confirmPassword ? <span className={styles.formErrorMessage}>{`Passwords don't match.`}</span> : null}

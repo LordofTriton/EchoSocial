@@ -11,7 +11,7 @@ function ValidateDeleteCommunity(data) {
     if (!data.communityID || !ParamValidator.isValidObjectID(data.communityID)) throw new Error("Missing or Invalid: communityID")
 }
 
-async function DeleteCommunity (request, response) {
+async function DeleteCommunity (request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -32,7 +32,7 @@ async function DeleteCommunity (request, response) {
         const responseData = ResponseClient.DBModifySuccess({
             data: deleteCommunityResponse,
             message: "Community deleted successfully."
-        }, { headers: request.headers })
+        }, { headers: { Authorization: `Bearer ${authToken}` } })
         response.json(responseData);
     } catch (error) {
         console.log(error)

@@ -12,7 +12,7 @@ function ValidateResetPassword(data) {
     if (!data.email || data.email.length < 2 || !data.email.includes("@")) throw new Error("Invalid email.")
 }
 
-async function ForgotPassword (request, response) {
+async function ForgotPassword (request, response, authToken) {
     const { db } = await getDB();
     const params = {
         email: request.body.email

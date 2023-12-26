@@ -9,7 +9,7 @@ function ValidateGetEcho(data) {
     if (data.communityID && !ParamValidator.isValidObjectID(data.communityID)) throw new Error("Invalid: communityID.")
 }
 
-async function GetEcho(request, response) {
+async function GetEcho(request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",

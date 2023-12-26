@@ -10,7 +10,7 @@ function ValidateGetMember(data) {
     if (data.userID && !ParamValidator.isValidObjectID(data.userID)) throw new Error("Invalid: userID.")
 }
 
-async function GetMember(request, response) {
+async function GetMember(request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",

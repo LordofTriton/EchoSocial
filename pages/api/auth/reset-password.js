@@ -12,7 +12,7 @@ function ValidateResetPassword(data) {
     if (data.newPassword !== data.confirmNewPassword) throw new Error("Passwords do not match!")
 }
 
-async function ResetPassword(request, response) {
+async function ResetPassword(request, response, authToken) {
     const { db } = await getDB();
     const params = {
         token: request.body.token,
@@ -43,7 +43,7 @@ async function ResetPassword(request, response) {
                 clickable: false,
                 redirect: ""
             })
-        }, { headers: request.headers })
+        }, { headers: { Authorization: `Bearer ${userAccount.access.token}` } })
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })

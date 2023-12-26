@@ -10,7 +10,7 @@ function ValidateGetSaves(data) {
     if (data.nodes && data.nodes.length < 1) throw new Error("Invalid: nodes.")
 }
 
-async function GetSaves(request, response) {
+async function GetSaves(request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",

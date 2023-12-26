@@ -27,7 +27,7 @@ function ValidateUpdateAccount(data) {
     if (data.userStatus && !ParamValidator.isValidUserStatus(data.userStatus)) throw new Error("Invalid: user status.")
 }
 
-async function UpdateAccount (request, response) {
+async function UpdateAccount (request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -72,7 +72,7 @@ async function UpdateAccount (request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await UpdateAccountCallback(params, AppConfig.HOST, request)
+            await UpdateAccountCallback(params, AppConfig.HOST, authToken)
         })
     } catch (error) {
         console.log(error)
@@ -81,7 +81,7 @@ async function UpdateAccount (request, response) {
     }
 }
 
-export async function UpdateAccountCallback(params, reqOrigin, request) {
+export async function UpdateAccountCallback(params, reqOrigin, authToken) {
     const { db } = await getDB();
     if (params.nodes) {
         for (let node of params.nodes) {

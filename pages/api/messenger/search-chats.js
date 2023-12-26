@@ -12,7 +12,7 @@ function ValidateSearchChats(data) {
     if (data.nodes && data.nodes.length < 1) throw new Error("Invalid: nodes.")
 }
 
-async function SearchChats(request, response) {
+async function SearchChats(request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",

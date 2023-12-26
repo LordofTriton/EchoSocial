@@ -13,7 +13,7 @@ function parseParams(data) {
     return { accountID, echoID, content, repliedTo };
 }
 
-async function DeleteFile (request, response) {
+async function DeleteFile (request, response, authToken) {
     let params = request.query;
 
     try {

@@ -22,7 +22,7 @@ function ValidateUpdateCommunity(data) {
     if (data.communityStatus && !ParamValidator.isValidCommunityStatus(data.communityStatus)) throw new Error("Invalid: community status.")
 }
 
-async function UpdateCommunity (request, response) {
+async function UpdateCommunity (request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "communityID",
@@ -57,7 +57,7 @@ async function UpdateCommunity (request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await UpdateCommunityCallback(params, AppConfig.HOST, request)
+            await UpdateCommunityCallback(params, AppConfig.HOST, authToken)
         })
     } catch (error) {
         console.log(error)
@@ -66,7 +66,7 @@ async function UpdateCommunity (request, response) {
     }
 }
 
-export async function UpdateCommunityCallback(params, reqOrigin, request) {
+export async function UpdateCommunityCallback(params, reqOrigin, authToken) {
     const { db } = await getDB();
     if (params.nodes) {
         for (let node of params.nodes) {

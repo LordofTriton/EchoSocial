@@ -14,7 +14,7 @@ function ValidateCreateSettings(data) {
     if (!data.accountID || !ParamValidator.isValidAccountID(data.accountID)) throw new Error("Missing or Invalid: accountID.")
 }
 
-async function CreateSettings(request, response) {
+async function CreateSettings(request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID"

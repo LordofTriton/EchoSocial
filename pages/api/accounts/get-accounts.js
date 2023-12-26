@@ -12,7 +12,7 @@ function ValidateGetAccounts(data) {
     if (!data.pageSize || data.pageSize < 1) throw new Error("Missing or Invalid: page")
 }
 
-async function GetAccounts (request, response) {
+async function GetAccounts (request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",

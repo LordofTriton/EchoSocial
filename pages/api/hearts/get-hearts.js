@@ -11,7 +11,7 @@ function ValidateGetHearts(data) {
     if (data.commentID && !ParamValidator.isValidObjectID(data.commentID)) throw new Error("Invalid: commentID.")
 }
 
-async function GetHearts(request, response) {
+async function GetHearts(request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",

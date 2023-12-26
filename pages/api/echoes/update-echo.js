@@ -12,7 +12,7 @@ function ValidateUpdateEcho(data) {
     }
 }
 
-async function UpdateEcho(request, response) {
+async function UpdateEcho(request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",

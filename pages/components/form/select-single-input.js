@@ -7,10 +7,12 @@ export default function SelectSingleInput({label, style, value, setValue, option
     const [showDrop, setShowDrop] = useState(false)
 
     useEffect(() => {
+        if (options.length < 1) return;
         setValue(options[0].value)
     }, [])
 
     useEffect(() => {
+        if (options.length < 1) return;
         if (!value) setValue(options[0].value);
     })
 

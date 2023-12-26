@@ -23,7 +23,7 @@ function ValidateCreateAccount(data) {
     if (data.password !== data.confirmPassword) throw new Error("Passwords do not match.")
 }
 
-async function CreateAccount (request, response) {
+async function CreateAccount (request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "firstName", 
@@ -118,6 +118,19 @@ async function CreateAccount (request, response) {
         response.json(responseData)
 
         response.once("finish", async () => {
+            await axios.post(AppConfig.HOST + "/api/settings/create-settings", { accountID: accountData.accountID }, { headers: { Authorization: `Bearer ${accountData.access.token}` } })
+            await axios.post(AppConfig.HOST + "/api/notifications/create-notification", {
+                accountID: accountData.accountID,
+                content: `Hi, ${accountData.firstName}! Welcome to Echo. Click here to set up your profile.`,
+                image: accountData.profileImage.url,
+                clickable: true,
+                redirect: `/settings`
+            }, { headers: { Authorization: `Bearer ${accountData.access.token}` } })
+            await axios.post(AppConfig.HOST + "/api/community-members/create-community-member", {
+                accountID: accountData.accountID,
+                communityID: "64f1cfcbfb50625f2c96883c"
+            }, { headers: { Authorization: `Bearer ${accountData.access.token}` } })
+
             await SendEmail(params.email, "Welcome to Echo!", "welcome", { 
                 firstName: params.firstName,
                 profileUrl: `${AppConfig.HOST}/user/${accountData.accountID}`
@@ -126,19 +139,6 @@ async function CreateAccount (request, response) {
                 firstName: params.firstName,
                 verifyEmailUrl: `${AppConfig.HOST}/verify-email?code=${accountData.emailVToken}`
             })
-
-            await axios.post(AppConfig.HOST + "/api/settings/create-settings", { accountID: accountData.accountID }, { headers: request.headers })
-            await axios.post(AppConfig.HOST + "/api/notifications/create-notification", {
-                accountID: accountData.accountID,
-                content: `Hi, ${accountData.firstName}! Welcome to Echo. Click here to set up your profile.`,
-                image: accountData.profileImage.url,
-                clickable: true,
-                redirect: `/settings`
-            }, { headers: request.headers })
-            await axios.post(AppConfig.HOST + "/api/community-members/create-community-member", {
-                accountID: accountData.accountID,
-                communityID: "64f1cfcbfb50625f2c96883c"
-            }, { headers: request.headers })
         })
     } catch (error) {
         console.log(error)

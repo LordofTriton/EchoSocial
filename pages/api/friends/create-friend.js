@@ -16,7 +16,7 @@ function ValidateCreateFriend(data) {
     if (!data.friendID || !ParamValidator.isValidObjectID(data.friendID)) throw new Error("Missing or Invalid: friendID.")
 }
 
-async function CreateFriend(request, response) {
+async function CreateFriend(request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -52,7 +52,7 @@ async function CreateFriend(request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await CreateFriendCallback(params, AppConfig.HOST, request)
+            await CreateFriendCallback(params, AppConfig.HOST, authToken)
         })
     } catch (error) {
         console.log(error)
@@ -61,7 +61,7 @@ async function CreateFriend(request, response) {
     }
 }
 
-export async function CreateFriendCallback(params, reqOrigin, request) {
+export async function CreateFriendCallback(params, reqOrigin, authToken) {
     const { db } = await getDB();
     const userAccount = await db.collection("accounts").findOne({ accountID: params.accountID })
     const friend = await db.collection("accounts").findOne({ accountID: params.friendID })
@@ -72,22 +72,22 @@ export async function CreateFriendCallback(params, reqOrigin, request) {
         image: friend.profileImage.url,
         clickable: true,
         redirect: `/user/${friend.accountID}`
-    }, { headers: request.headers })
+    }, { headers: { Authorization: `Bearer ${authToken}` } })
     await axios.post(reqOrigin + "/api/notifications/create-notification", {
         accountID: friend.accountID,
         content: `${userAccount.firstName} ${userAccount.lastName} liked your page! You are now friends. Click to view their profile.`,
         image: userAccount.profileImage.url,
         clickable: true,
         redirect: `/user/${userAccount.accountID}`
-    }, { headers: request.headers })
+    }, { headers: { Authorization: `Bearer ${authToken}` } })
     const userChat = (await axios.post(reqOrigin + "/api/messenger/create-chat", {
         accountID: params.accountID,
         targetID: friend.accountID
-    }, { headers: request.headers })).data;
+    }, { headers: { Authorization: `Bearer ${authToken}` } })).data;
     const friendChat = (await axios.post(reqOrigin + "/api/messenger/create-chat", {
         accountID: friend.accountID,
         targetID: params.accountID
-    }, { headers: request.headers })).data;
+    }, { headers: { Authorization: `Bearer ${authToken}` } })).data;
 
     await PusherServer.trigger(params.accountID, `NEW_FRIEND`, {
         accountID: friend.accountID,

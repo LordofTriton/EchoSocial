@@ -8,7 +8,7 @@ function ValidateDeleteComment(data) {
     if (!data.commentID || !ParamValidator.isValidObjectID(data.commentID)) throw new Error("Missing or Invalid: commentID")
 }
 
-async function DeleteComment (request, response) {
+async function DeleteComment (request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",

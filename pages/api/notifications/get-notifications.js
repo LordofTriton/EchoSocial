@@ -9,7 +9,7 @@ function ValidateGetNotification(data) {
     if (data.status && !ParamValidator.isValidNotificationStatus(data.status)) throw new Error("Invalid: status.")
 }
 
-async function GetNotifications(request, response) {
+async function GetNotifications(request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",

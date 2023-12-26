@@ -13,7 +13,7 @@ function ValidateCreateSave(data) {
     if (!data.echoID || !ParamValidator.isValidAccountID(data.echoID)) throw new Error("Missing or Invalid: echoID")
 }
 
-async function CreateSave(request, response) {
+async function CreateSave(request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",

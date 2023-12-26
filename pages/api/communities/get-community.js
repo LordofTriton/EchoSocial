@@ -8,7 +8,7 @@ function ValidateGetCommunity(data) {
     if (!data.communityID || !ParamValidator.isValidObjectID(data.communityID)) throw new Error("Missing or Invalid: communityID")
 }
 
-async function GetCommunity (request, response) {
+async function GetCommunity (request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",

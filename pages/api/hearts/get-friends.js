@@ -9,7 +9,7 @@ function ValidateGetFriends(data) {
     if (!data.userID || !ParamValidator.isValidAccountID(data.userID)) throw new Error("Missing or Invalid: userID.")
 }
 
-async function GetFriends(request, response) {
+async function GetFriends(request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",

@@ -9,7 +9,7 @@ function ValidateDeleteSave(data) {
     if (!data.echoID || !ParamValidator.isValidObjectID(data.echoID)) throw new Error("Missing or Invalid: echoID")
 }
 
-async function DeleteSave(request, response) {
+async function DeleteSave(request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",

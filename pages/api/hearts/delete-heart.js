@@ -15,7 +15,7 @@ function ValidateDeleteHeart(data) {
     if (data.commentID && !ParamValidator.isValidObjectID(data.commentID)) throw new Error("Invalid: commentID.")
 }
 
-async function DeleteHeart(request, response) {
+async function DeleteHeart(request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -38,7 +38,7 @@ async function DeleteHeart(request, response) {
 
         response.once("finish", async () => {
             if (params.userID) {
-                await axios.delete(AppConfig.HOST + `/api/friends/delete-friend?accountID=${params.accountID}&friendID=${params.userID}`, { headers: request.headers })
+                await axios.delete(AppConfig.HOST + `/api/friends/delete-friend?accountID=${params.accountID}&friendID=${params.userID}`, { headers: { Authorization: `Bearer ${authToken}` } })
             }
         })
     } catch (error) {

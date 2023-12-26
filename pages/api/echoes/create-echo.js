@@ -16,7 +16,7 @@ function ValidateCreateEcho(data) {
     }
 }
 
-async function CreateEcho(request, response) {
+async function CreateEcho(request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -62,9 +62,9 @@ async function CreateEcho(request, response) {
             await axios.post(AppConfig.HOST + "/api/hearts/create-heart", {
                 accountID: params.accountID,
                 echoID: echoData.echoID
-            }, { headers: request.headers })
+            }, { headers: { Authorization: `Bearer ${authToken}` } })
 
-            await CreateEchoCallback(params, AppConfig.HOST, request)
+            await CreateEchoCallback(params, AppConfig.HOST, authToken)
         })
     } catch (error) {
         console.log(error)
@@ -73,7 +73,7 @@ async function CreateEcho(request, response) {
     }
 }
 
-export async function CreateEchoCallback(params, reqOrigin, request) {
+export async function CreateEchoCallback(params, reqOrigin, authToken) {
     const { db } = await getDB();
 
     if (params.communityID) {

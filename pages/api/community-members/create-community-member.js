@@ -13,7 +13,7 @@ function ValidateCreateMember(data) {
     if (!data.communityID || !ParamValidator.isValidObjectID(data.communityID)) throw new Error("Missing or Invalid: communityID.")
 }
 
-async function CreateCommunityMember (request, response) {
+async function CreateCommunityMember (request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -22,6 +22,7 @@ async function CreateCommunityMember (request, response) {
 
     try {
         ValidateCreateMember(params)
+        console.log(params)
 
         const memberData = {
             memberID: IDGenerator.GenerateMemberID(),
@@ -51,7 +52,7 @@ async function CreateCommunityMember (request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await CreateMemberCallback(params, AppConfig.HOST, request)
+            await CreateMemberCallback(params, AppConfig.HOST, authToken)
         })
     } catch (error) {
         console.log(error)
@@ -60,7 +61,7 @@ async function CreateCommunityMember (request, response) {
     }
 }
 
-export async function CreateMemberCallback(params, reqOrigin, request) {
+export async function CreateMemberCallback(params, reqOrigin, authToken) {
     const { db } = await getDB();
     const user = await db.collection("accounts").findOne({ accountID: params.accountID });
     const community = await db.collection("communities").findOne({ communityID: params.communityID });
@@ -70,7 +71,7 @@ export async function CreateMemberCallback(params, reqOrigin, request) {
         image: community.profileImage.url,
         clickable: true,
         redirect: `/communities/${community.communityID}`
-    }, { headers: request.headers })
+    }, { headers: { Authorization: `Bearer ${authToken}` } })
     await db.collection("nodes").findOneAndUpdate({ nodeID: community.node.nodeID }, { $inc: { pings: 1 }})
 }
 

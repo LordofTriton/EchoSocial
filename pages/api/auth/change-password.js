@@ -19,7 +19,7 @@ function parseParams(data) {
     return { accountID, echoID, content, repliedTo };
 }
 
-async function ChangePassword (request, response) {
+async function ChangePassword (request, response, authToken) {
     const { db } = await getDB();
     const params = {
         accountID: request.body.accountID,
@@ -47,7 +47,7 @@ async function ChangePassword (request, response) {
             image: userAccount.profileImage.url,
             clickable: false,
             redirect: `/settings`
-        }, { headers: request.headers })
+        }, { headers: { Authorization: `Bearer ${authToken}` } })
 
         response.json(responseData)
     } catch (error) {

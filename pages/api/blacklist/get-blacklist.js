@@ -9,7 +9,7 @@ function ValidateGetBlacklists(data) {
     if (!data.blocker || !ParamValidator.isValidObjectID(data.blocker)) throw new Error("Invalid: blocker.")
 }
 
-async function GetBlacklist (request, response) {
+async function GetBlacklist (request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",

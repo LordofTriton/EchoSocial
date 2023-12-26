@@ -10,7 +10,7 @@ function ValidateGetApplications(data) {
     if (data.nodes && data.nodes.length < 1) throw new Error("Invalid: nodes.")
 }
 
-async function GetCommunityApplications (request, response) {
+async function GetCommunityApplications (request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",

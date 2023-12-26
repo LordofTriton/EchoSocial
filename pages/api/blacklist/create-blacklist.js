@@ -14,7 +14,7 @@ function ValidateCreateBlacklist(data) {
     if (data.blockee && !ParamValidator.isValidObjectID(data.blockee)) throw new Error("Invalid: blockee.")
 }
 
-async function CreateBlacklist (request, response) {
+async function CreateBlacklist (request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -52,7 +52,7 @@ async function CreateBlacklist (request, response) {
 
         response.once("finish", async () => {
             await axios.delete(reqOrigin + `/api/hearts/delete-heart?accountID=${params.blocker}&userID=${params.blockee}`)
-        }, { headers: request.headers })
+        }, { headers: { Authorization: `Bearer ${authToken}` } })
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })

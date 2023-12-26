@@ -9,7 +9,7 @@ function ValidateCreateNode(data) {
     if (!data || data.name.length < 2) throw new Error("Missing or Invalid: name")
 }
 
-async function CreateNode(request, response) {
+async function CreateNode(request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",

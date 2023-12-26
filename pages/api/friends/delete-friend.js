@@ -10,7 +10,7 @@ function ValidateDeleteFriend(data) {
     if (!data.friendID || !ParamValidator.isValidObjectID(data.friendID)) throw new Error("Missing or Invalid: friendID")
 }
 
-async function DeleteFriend(request, response) {
+async function DeleteFriend(request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -37,7 +37,7 @@ async function DeleteFriend(request, response) {
         response.json(responseData);
 
         response.once("finish", async () => {
-            await axios.delete(AppConfig.HOST + `/api/messenger/delete-chat?accountID=${params.accountID}&targetID=${params.friendID}`, { headers: request.headers })
+            await axios.delete(AppConfig.HOST + `/api/messenger/delete-chat?accountID=${params.accountID}&targetID=${params.friendID}`, { headers: { Authorization: `Bearer ${authToken}` } })
         })
     } catch (error) {
         console.log(error)

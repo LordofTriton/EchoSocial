@@ -13,7 +13,7 @@ function ValidateUpdateMessage(data) {
     if (!data.messageID || !ParamValidator.isValidObjectID(data.messageID)) throw new Error("Missing or Invalid: messageID")
 }
 
-async function UpdateMessage(request, response) {
+async function UpdateMessage(request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -43,7 +43,7 @@ async function UpdateMessage(request, response) {
                     media: null
                 },
                 lastUpdated: Date.now()
-            }, { headers: request.headers })
+            }, { headers: { Authorization: `Bearer ${authToken}` } })
             await axios.post(AppConfig.HOST + "/api/messenger/update-chat", {
                 accountID: chatData.targetID,
                 chatID: messageData.chatID,
@@ -52,7 +52,7 @@ async function UpdateMessage(request, response) {
                     media: null
                 },
                 lastUpdated: Date.now()
-            }, { headers: request.headers })
+            }, { headers: { Authorization: `Bearer ${authToken}` } })
 
             await PusherServer.trigger(chatData.accountID, `UPDATED_MESSAGE_${messageData.chatID}`, messageData)
             await PusherServer.trigger(chatData.targetID, `UPDATED_MESSAGE_${messageData.chatID}`, messageData)

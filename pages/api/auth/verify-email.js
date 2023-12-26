@@ -12,7 +12,7 @@ function ValidateResetPassword(data) {
     if (!data.code || !ParamValidator.isValidObjectID(data.code)) throw new Error("Invalid verification code.")
 }
 
-async function VerifyEmail(request, response) {
+async function VerifyEmail(request, response, authToken) {
     const { db } = await getDB();
     const params = {
         code: request.body.code
@@ -43,7 +43,7 @@ async function VerifyEmail(request, response) {
                 clickable: false,
                 redirect: ""
             })
-        }, { headers: request.headers })
+        }, { headers: { Authorization: `Bearer ${userAccount.access.token}` } })
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })

@@ -15,7 +15,7 @@ import SaveSocket from '../saves/socket';
 import ChatSocket from '../messenger/socket';
 import FriendSocket from '../friends/socket';
 
-export default async (request, response) => {
+export default async (request, response, authToken) => {
     if (!response.socket.server.io) {
         console.log("Socket: Initialized.")
         const io = new Server(response.socket.server, { path: "/api/socket", addTrailingSlash: false, cors: {

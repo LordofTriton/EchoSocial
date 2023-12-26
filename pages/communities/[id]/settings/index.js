@@ -15,6 +15,7 @@ import DateGenerator from '../../../../services/generators/DateGenerator';
 import DuoMasonryLayout from '../../../components/masonry/duo-masonry';
 import { Form } from '../../../components/form';
 import CommunityHead from '../../../components/community-head';
+import { City, Country } from 'country-state-city';
 
 export default function CommunitySettings() {
   const router = useRouter()
@@ -41,6 +42,16 @@ export default function CommunitySettings() {
   const [communityApplications, setCommunityApplications] = useState([])
   const [alert, setAlert] = useState(null)
   const [settingsPage, setSettingsPage] = useState("general")
+  const [countryList, setCountryList] = useState([])
+  const [cityList, setCityList] = useState([])
+  
+  useEffect(() => {
+      if (countryList.length < 1) setCountryList(Country.getAllCountries())
+      if (updatedData.country) {
+          const countryData = Country.getAllCountries().find((country) => country.name === updatedData.country)
+          if (countryData) setCityList(City.getCitiesOfCountry(countryData.isoCode))
+      }
+  }, [updatedCommunityData.country, updatedCommunityData.city])
 
   useEffect(() => {
     const updateCommunityData = (data) => {
@@ -92,10 +103,12 @@ export default function CommunitySettings() {
   }
 
   const isValidData = () => {
-    if (communityData.displayName.length < 4) return false;
-    if (communityData.displayName.length < 4) return false;
-    if (communityData.displayName.length < 4) return false;
-    if (communityData.displayName.length < 4) return false;
+    if (updatedCommunityData.displayName.length < 4) return false;
+    if (updatedCommunityData.description.length < 10) return false;
+    if (updatedCommunityData.website && updatedCommunityData.website.length < 4) return false;
+    if (updatedCommunityData.fSocial && (updatedCommunityData.fSocial.trim().length < 6 || !updatedCommunityData.fSocial.includes("http"))) return false;
+    if (updatedCommunityData.iSocial && (updatedCommunityData.iSocial.trim().length < 6 || !updatedCommunityData.iSocial.includes("http"))) return false;
+    if (updatedCommunityData.tSocial && (updatedCommunityData.tSocial.trim().length < 6 || !updatedCommunityData.tSocial.includes("http"))) return false;
   }
 
   return (
@@ -170,24 +183,14 @@ export default function CommunitySettings() {
                     style={{ float: "left", marginBottom: "20px" }}
                     value={updatedCommunityData.country}
                     setValue={(value) => setUpdatedCommunityData({ ...updatedCommunityData, country: value })}
-                    options={[
-                      { label: "Nigeria", value: "Nigeria" },
-                      { label: "Ghana", value: "Ghana" },
-                      { label: "Cameroon", value: "Cameroon" },
-                      { label: "Niger", value: "Niger" }
-                    ]}
+                    options={countryList.map((country) => { return { label: country.name, value: country.name }})}
                   />
                   <Form.SelectSingleInput
                     label="City"
                     style={{ float: "left", marginBottom: "20px" }}
                     value={updatedCommunityData.city}
                     setValue={(value) => setUpdatedCommunityData({ ...updatedCommunityData, city: value })}
-                    options={[
-                      { label: "Lagos", value: "Lagos" },
-                      { label: "Abeokuta", value: "Abeokuta" },
-                      { label: "Akure", value: "Akure" },
-                      { label: "Ibadan", value: "Ibadan" },
-                    ]}
+                    options={cityList.map((city) => { return { label: city.name, value: city.name }})}
                   />
                 </Form.ThirdWrapper>
                 
@@ -217,7 +220,7 @@ export default function CommunitySettings() {
 
                 <div className={styles.communitySettingsFormButtons}>
                   <button className={styles.communitySettingsFormRevertHalf} onClick={() => setUpdatedCommunityData(communityData)}>Revert Changes</button>
-                  <button className={styles.communitySettingsFormSubmitHalf} onClick={() => handleSubmitGeneral()}>Save Changes</button>
+                  <button className={styles.communitySettingsFormSubmitHalf} style={{opacity: isValidData() ? "1" : "0.5"}} onClick={() => isValidData() ? handleSubmitGeneral() : null}>Save Changes</button>
                 </div>
               </div>
             </div>

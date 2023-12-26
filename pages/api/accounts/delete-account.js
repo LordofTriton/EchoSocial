@@ -9,7 +9,7 @@ function ValidateDeleteAccount(data) {
     if (!data.password || data.password.length < 6) throw new Error("Missing or Invalid: password.")
 }
 
-async function DeleteAccount (request, response) {
+async function DeleteAccount (request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",

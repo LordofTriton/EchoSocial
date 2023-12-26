@@ -16,7 +16,7 @@ function ValidateCreateHeart(data) {
     if (data.commentID && !ParamValidator.isValidObjectID(data.commentID)) throw new Error("Invalid: commentID.")
 }
 
-async function CreateHeart(request, response) {
+async function CreateHeart(request, response, authToken) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -55,7 +55,7 @@ async function CreateHeart(request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await CreateHeartCallback(params, AppConfig.HOST, request)
+            await CreateHeartCallback(params, AppConfig.HOST, authToken)
         })
     } catch (error) {
         console.log(error)
@@ -64,7 +64,7 @@ async function CreateHeart(request, response) {
     }
 }
 
-export async function CreateHeartCallback(params, reqOrigin, request) {
+export async function CreateHeartCallback(params, reqOrigin, authToken) {
     const { db } = await getDB();
     if (params.echoID) {
         const echo = await db.collection("echoes").findOne({ echoID: params.echoID })
@@ -78,7 +78,7 @@ export async function CreateHeartCallback(params, reqOrigin, request) {
                     image: userAccount.profileImage.url,
                     clickable: true,
                     redirect: echo.url
-                }, { headers: request.headers })
+                }, { headers: { Authorization: `Bearer ${authToken}` } })
             }
         }
     }
@@ -96,7 +96,7 @@ export async function CreateHeartCallback(params, reqOrigin, request) {
                     image: userAccount.profileImage.url,
                     clickable: true,
                     redirect: echo.url
-                }, { headers: request.headers })
+                }, { headers: { Authorization: `Bearer ${authToken}` } })
             }
         }
     }
@@ -110,7 +110,7 @@ export async function CreateHeartCallback(params, reqOrigin, request) {
             image: userAccount.profileImage.url,
             clickable: true,
             redirect: `/user/${userAccount.accountID}`
-        }, { headers: request.headers })
+        }, { headers: { Authorization: `Bearer ${authToken}` } })
         
         const reciprocation = await db.collection("hearts").findOne({
             accountID: params.userID,
@@ -120,7 +120,7 @@ export async function CreateHeartCallback(params, reqOrigin, request) {
             await axios.post(reqOrigin + "/api/friends/create-friend", {
                 accountID: params.accountID,
                 friendID: params.userID
-            }, { headers: request.headers })
+            }, { headers: { Authorization: `Bearer ${authToken}` } })
         }
     }
 }

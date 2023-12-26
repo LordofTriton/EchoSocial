@@ -13,7 +13,7 @@ export const authenticate = (handler) => async (req, res) => {
         if (!userAccount) throw new Error("Unauthorised. Are you logged in?")
         if (DateGenerator.hoursBetween(Date.now(), userAccount.lastLogin) > 24) throw new Error("Your login expired. Please re-login.")
 
-        return handler(req, res);
+        return handler(req, res, accessToken);
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.Unauthorised(error.message)
