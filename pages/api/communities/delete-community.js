@@ -32,7 +32,7 @@ async function DeleteCommunity (request, response) {
         const responseData = ResponseClient.DBModifySuccess({
             data: deleteCommunityResponse,
             message: "Community deleted successfully."
-        })
+        }, { headers: request.headers })
         response.json(responseData);
     } catch (error) {
         console.log(error)

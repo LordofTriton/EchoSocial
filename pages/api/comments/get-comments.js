@@ -48,7 +48,7 @@ async function GetComments (request, response) {
         for (let comment of fetchCommentsResponse) {
             const user = (await db.collection("accounts").findOne({ accountID: comment.accountID }))
             let heartCount = await db.collection("hearts").countDocuments({ commentID: comment.commentID });
-            let userHearted = await db.collection("hearts").findOne({ accountID: params.accountID, commentID: params.commentID });
+            let userHearted = await db.collection("hearts").findOne({ accountID: params.accountID, commentID: comment.commentID });
 
             const finalCommentData = {
                 ...comment,

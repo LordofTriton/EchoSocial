@@ -56,7 +56,7 @@ async function UpdateCommunity (request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await UpdateCommunityCallback(params, AppConfig.HOST)
+            await UpdateCommunityCallback(params, AppConfig.HOST, request)
         })
     } catch (error) {
         console.log(error)
@@ -65,7 +65,7 @@ async function UpdateCommunity (request, response) {
     }
 }
 
-export async function UpdateCommunityCallback(params, reqOrigin) {
+export async function UpdateCommunityCallback(params, reqOrigin, request) {
     const { db } = await getDB();
     if (params.nodes) {
         for (let node of params.nodes) {

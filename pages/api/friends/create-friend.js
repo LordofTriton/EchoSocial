@@ -52,7 +52,7 @@ async function CreateFriend(request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await CreateFriendCallback(params, AppConfig.HOST)
+            await CreateFriendCallback(params, AppConfig.HOST, request)
         })
     } catch (error) {
         console.log(error)
@@ -61,7 +61,7 @@ async function CreateFriend(request, response) {
     }
 }
 
-export async function CreateFriendCallback(params, reqOrigin) {
+export async function CreateFriendCallback(params, reqOrigin, request) {
     const { db } = await getDB();
     const userAccount = await db.collection("accounts").findOne({ accountID: params.accountID })
     const friend = await db.collection("accounts").findOne({ accountID: params.friendID })
@@ -72,22 +72,22 @@ export async function CreateFriendCallback(params, reqOrigin) {
         image: friend.profileImage.url,
         clickable: true,
         redirect: `/user/${friend.accountID}`
-    })
+    }, { headers: request.headers })
     await axios.post(reqOrigin + "/api/notifications/create-notification", {
         accountID: friend.accountID,
         content: `${userAccount.firstName} ${userAccount.lastName} liked your page! You are now friends. Click to view their profile.`,
         image: userAccount.profileImage.url,
         clickable: true,
         redirect: `/user/${userAccount.accountID}`
-    })
+    }, { headers: request.headers })
     const userChat = (await axios.post(reqOrigin + "/api/messenger/create-chat", {
         accountID: params.accountID,
         targetID: friend.accountID
-    })).data;
+    }, { headers: request.headers })).data;
     const friendChat = (await axios.post(reqOrigin + "/api/messenger/create-chat", {
         accountID: friend.accountID,
         targetID: params.accountID
-    })).data;
+    }, { headers: request.headers })).data;
 
     await PusherServer.trigger(params.accountID, `NEW_FRIEND`, {
         accountID: friend.accountID,

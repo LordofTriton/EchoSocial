@@ -29,7 +29,7 @@ async function DeleteCommunityMember (request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await DeleteMemberCallback(params, AppConfig.HOST)
+            await DeleteMemberCallback(params, AppConfig.HOST, request)
         })
     } catch (error) {
         console.log(error)
@@ -38,7 +38,7 @@ async function DeleteCommunityMember (request, response) {
     }
 }
 
-export async function DeleteMemberCallback(params, reqOrigin) {
+export async function DeleteMemberCallback(params, reqOrigin, request) {
     const community = await db.collection("communities").findOne({ communityID: params.communityID })
     await db.collection("nodes").findOneAndUpdate({ nodeID: community.node.nodeID }, { $inc: { pings: 1 }})
 }

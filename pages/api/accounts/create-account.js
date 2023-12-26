@@ -127,18 +127,18 @@ async function CreateAccount (request, response) {
                 verifyEmailUrl: `${AppConfig.HOST}/verify-email?code=${accountData.emailVToken}`
             })
 
-            await axios.post(AppConfig.HOST + "/api/settings/create-settings", { accountID: accountData.accountID })
+            await axios.post(AppConfig.HOST + "/api/settings/create-settings", { accountID: accountData.accountID }, { headers: request.headers })
             await axios.post(AppConfig.HOST + "/api/notification/create-notification", {
                 accountID: accountData.accountID,
                 content: `Hi, ${accountData.firstName}! Welcome to Echo. Click here to set up your profile.`,
                 image: accountData.profileImage.url,
                 clickable: true,
                 redirect: `/settings`
-            })
+            }, { headers: request.headers })
             await axios.post(AppConfig.HOST + "/api/community-members/create-community-member", {
                 accountID: accountData.accountID,
                 communityID: "64f1cfcbfb50625f2c96883c"
-            })
+            }, { headers: request.headers })
         })
     } catch (error) {
         console.log(error)

@@ -52,7 +52,7 @@ async function CreateBlacklist (request, response) {
 
         response.once("finish", async () => {
             await axios.delete(reqOrigin + `/api/hearts/delete-heart?accountID=${params.blocker}&userID=${params.blockee}`)
-        })
+        }, { headers: request.headers })
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })

@@ -37,7 +37,7 @@ async function CreateCommunity (request, response) {
             accountID: params.accountID,
             name: params.name,
             emoji: "⚜"
-        })).data;
+        }, { headers: request.headers })).data;
 
         const communityData = {
             communityID: IDGenerator.GenerateCommunityID(),
@@ -78,7 +78,7 @@ async function CreateCommunity (request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await CreateCommunityCallback(params, communityData, AppConfig.HOST)
+            await CreateCommunityCallback(params, communityData, AppConfig.HOST, request)
         })
     } catch (error) {
         console.log(error)
@@ -87,7 +87,7 @@ async function CreateCommunity (request, response) {
     }
 }
 
-export async function CreateCommunityCallback(params, communityData, reqOrigin) {
+export async function CreateCommunityCallback(params, communityData, reqOrigin, request) {
     const { db } = await getDB();
     await db.collection("members").insertOne({
         memberID: IDGenerator.GenerateMemberID(),
@@ -103,7 +103,7 @@ export async function CreateCommunityCallback(params, communityData, reqOrigin) 
         image: `/images/communityProfile.png`,
         clickable: true,
         redirect: `/communities/${communityData.communityID}`
-    })
+    }, { headers: request.headers })
 }
 
 export default authenticate(CreateCommunity);

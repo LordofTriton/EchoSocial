@@ -43,7 +43,7 @@ async function UpdateMessage(request, response) {
                     media: null
                 },
                 lastUpdated: Date.now()
-            })
+            }, { headers: request.headers })
             await axios.post(AppConfig.HOST + "/api/messenger/update-chat", {
                 accountID: chatData.targetID,
                 chatID: messageData.chatID,
@@ -52,7 +52,7 @@ async function UpdateMessage(request, response) {
                     media: null
                 },
                 lastUpdated: Date.now()
-            })
+            }, { headers: request.headers })
 
             await PusherServer.trigger(chatData.accountID, `UPDATED_MESSAGE_${messageData.chatID}`, messageData)
             await PusherServer.trigger(chatData.targetID, `UPDATED_MESSAGE_${messageData.chatID}`, messageData)

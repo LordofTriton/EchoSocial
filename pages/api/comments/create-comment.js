@@ -53,7 +53,9 @@ async function CreateComment (request, response) {
             ...commentData,
             firstName: commentUser.firstName,
             lastName: commentUser.lastName,
-            profileImage: commentUser.profileImage
+            profileImage: commentUser.profileImage,
+            hearts: 1,
+            userHearted: true
         }
 
         await PusherServer.trigger(params.echoID, `NEW_COMMENT_${params.echoID}`, result)
@@ -66,7 +68,7 @@ async function CreateComment (request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await CreateCommentCallback(params, commentData, AppConfig.HOST)
+            await CreateCommentCallback(params, commentData, AppConfig.HOST, request)
         })
     } catch (error) {
         console.log(error)
@@ -75,7 +77,7 @@ async function CreateComment (request, response) {
     }
 }
 
-export async function CreateCommentCallback(params, commentData, reqOrigin) {
+export async function CreateCommentCallback(params, commentData, reqOrigin, request) {
     const { db } = await getDB();
     const echo = (await db.collection("echoes").findOne({ echoID: params.echoID }))
     const commentUser = (await db.collection("accounts").findOne({ accountID: params.accountID }))
@@ -83,7 +85,7 @@ export async function CreateCommentCallback(params, commentData, reqOrigin) {
     await axios.post(reqOrigin + "/api/hearts/create-heart", {
         accountID: params.accountID,
         commentID: commentData.commentID
-    })
+    }, { headers: request.headers })
 
     if (params.accountID !== echo.accountID) {
         const echoUserSettings = await db.collection("settings").findOne({ accountID: echo.accountID })
@@ -94,7 +96,7 @@ export async function CreateCommentCallback(params, commentData, reqOrigin) {
                 image: commentUser.profileImage.url,
                 clickable: true,
                 redirect: echo.url
-            })
+            }, { headers: request.headers })
         }
     }
 
@@ -107,7 +109,7 @@ export async function CreateCommentCallback(params, commentData, reqOrigin) {
                 image: commentUser.profileImage.url,
                 clickable: true,
                 redirect: echo.url
-            })
+            }, { headers: request.headers })
         }
     }
 }

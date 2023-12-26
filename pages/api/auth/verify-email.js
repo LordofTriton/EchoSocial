@@ -43,7 +43,7 @@ async function VerifyEmail(request, response) {
                 clickable: false,
                 redirect: ""
             })
-        })
+        }, { headers: request.headers })
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })

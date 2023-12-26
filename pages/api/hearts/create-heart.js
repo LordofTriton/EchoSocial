@@ -55,7 +55,7 @@ async function CreateHeart(request, response) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await CreateHeartCallback(params, AppConfig.HOST)
+            await CreateHeartCallback(params, AppConfig.HOST, request)
         })
     } catch (error) {
         console.log(error)
@@ -64,7 +64,7 @@ async function CreateHeart(request, response) {
     }
 }
 
-export async function CreateHeartCallback(params, reqOrigin) {
+export async function CreateHeartCallback(params, reqOrigin, request) {
     const { db } = await getDB();
     if (params.echoID) {
         const echo = await db.collection("echoes").findOne({ echoID: params.echoID })
@@ -78,7 +78,7 @@ export async function CreateHeartCallback(params, reqOrigin) {
                     image: userAccount.profileImage.url,
                     clickable: true,
                     redirect: echo.url
-                })
+                }, { headers: request.headers })
             }
         }
     }
@@ -96,7 +96,7 @@ export async function CreateHeartCallback(params, reqOrigin) {
                     image: userAccount.profileImage.url,
                     clickable: true,
                     redirect: echo.url
-                })
+                }, { headers: request.headers })
             }
         }
     }
@@ -110,7 +110,7 @@ export async function CreateHeartCallback(params, reqOrigin) {
             image: userAccount.profileImage.url,
             clickable: true,
             redirect: `/user/${userAccount.accountID}`
-        })
+        }, { headers: request.headers })
         
         const reciprocation = await db.collection("hearts").findOne({
             accountID: params.userID,
@@ -120,7 +120,7 @@ export async function CreateHeartCallback(params, reqOrigin) {
             await axios.post(reqOrigin + "/api/friends/create-friend", {
                 accountID: params.accountID,
                 friendID: params.userID
-            })
+            }, { headers: request.headers })
         }
     }
 }

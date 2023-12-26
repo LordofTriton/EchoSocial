@@ -47,7 +47,7 @@ async function ChangePassword (request, response) {
             image: userAccount.profileImage.url,
             clickable: false,
             redirect: `/settings`
-        })
+        }, { headers: request.headers })
 
         response.json(responseData)
     } catch (error) {
