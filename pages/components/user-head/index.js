@@ -192,7 +192,7 @@ export default function UserHead({ data, page, title }) {
                                             <SVGServer.HeartFilledIcon color="var(--surface)" width="20px" height="20px" /> :
                                             <SVGServer.HeartLineIcon color="var(--primary)" width="20px" height="20px" />
                                     }
-                                    <span style={{color: userData && userData.userHearted ? "var(--surface)" : "var(--primary)"}}>{userData && userData.userHearted ? "Liked" : "Like"}</span>
+                                    <span style={{color: userData && userData.userHearted ? "var(--surface)" : "var(--primary)"}}>{userData && userData.userHearted ? "Followed" : "Follow"}</span>
                                 </span>
                                 : null
                             }

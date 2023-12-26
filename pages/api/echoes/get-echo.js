@@ -51,7 +51,8 @@ async function GetEcho(request, response, authToken) {
             userData: {
                 firstName: echoUser.firstName,
                 lastName: echoUser.lastName,
-                profileImage: echoUser.profileImage
+                profileImage: echoUser.profileImage,
+                nickname: user.nickname
             },
             communityData: {
                 name: community ? community.displayName : null,

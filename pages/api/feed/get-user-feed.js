@@ -72,7 +72,8 @@ async function UserFeed(request, response, authToken) {
                 userData: {
                     firstName: user.firstName,
                     lastName: user.lastName,
-                    profileImage: user.profileImage
+                    profileImage: user.profileImage,
+                    nickname: user.nickname
                 },
                 communityData: {
                     name: community ? community.displayName : null,
