@@ -25,7 +25,7 @@ export default function ForgotPassword() {
         setLoader(true)
 
         if (email.trim().length > 2 && email.includes("@")) {
-            const response = (await APIClient.post(APIClient.routes.forgotPassword, { email })).data;
+            const response = await APIClient.post(APIClient.routes.forgotPassword, { email });
 
             if (response.success) {
                 setAlert({ type: "success", message: response.message })

@@ -26,7 +26,7 @@ async function post(url, data, callback, headers) {
 
     if (isAuthorized(response.data)) {
         if (callback) callback(response.data);
-        return response;
+        return response.data;
     }
 }
 
@@ -40,7 +40,7 @@ async function put(url, data, callback, headers) {
     
     if (isAuthorized(response.data)) {
         if (callback) callback(response.data);
-        return response;
+        return response.data;
     }
 }
 
@@ -62,7 +62,7 @@ async function get(url, data, callback, headers, noCache) {
     if (isAuthorized(response.data)) {
         if (!noCache) CacheService.saveData(`${AppConfig.HOST}/api${url}?${query}`, JSON.stringify(response.data))
         if (callback) callback(response.data);
-        return response;
+        return response.data;
     }
 }
 
@@ -77,7 +77,7 @@ async function del(url, data, callback, headers) {
     
     if (isAuthorized(response.data)) {
         if (callback) callback(response.data);
-        return response;
+        return response.data;
     }
 }
 

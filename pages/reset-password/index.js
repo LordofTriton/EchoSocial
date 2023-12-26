@@ -29,10 +29,10 @@ export default function ResetPassword() {
         if (!router.query.token) return;
 
         if (password.newPassword.trim().length > 6 && password.newPassword === password.confirmNewPassword) {
-            const response = (await APIClient.post(APIClient.routes.resetPassword, {
+            const response = await APIClient.post(APIClient.routes.resetPassword, {
                 token: router.query.token,
                 ...password
-            })).data;
+            });
 
             if (response.success) {
                 setAlert({ type: "success", message: response.message })

@@ -3,6 +3,7 @@ import axios from "axios";
 import { authenticate } from "../auth/authenticate";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
+import AppConfig from "../../../util/config";
 
 function ValidateUpdateCommunity(data) {
     if (!data.communityID || !ParamValidator.isValidObjectID(data.communityID)) throw new Error("Missing or Invalid: communityID")

@@ -32,7 +32,7 @@ export default function Login() {
         setLoginLoader(true)
 
         if (loginDetails.email.trim().length > 2 && loginDetails.password.trim().length >= 8) {
-            const authResult = (await APIClient.post(APIClient.routes.login, loginDetails)).data;
+            const authResult = await APIClient.post(APIClient.routes.login, loginDetails);
 
             if (authResult.success) {
                 localStorage.clear()

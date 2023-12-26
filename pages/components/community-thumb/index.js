@@ -48,9 +48,11 @@ export default function CommunityThumb({ data, page, member }) {
             </span>
             { communityData.userMember ? <span className={styles.communityThumbJoin} onClick={() => handleClickButton()}>View Community</span> : null }
             { 
-                applied ? 
-                <span className={styles.communityThumbJoin} style={{backgroundColor: "var(--base)", color: "var(--primary)"}}>Applied</span> :
-                <span className={styles.communityThumbJoin} onClick={() => handleClickButton(data)}>{communityData.entryApproval ? "Apply to Join" : `Join Community`}</span>
+                !communityData.userMember ?
+                    applied ? 
+                    <span className={styles.communityThumbJoin} style={{backgroundColor: "var(--base)", color: "var(--primary)"}}>Applied</span> :
+                    <span className={styles.communityThumbJoin} onClick={() => handleClickButton(data)}>{communityData.entryApproval ? "Apply to Join" : `Join Community`}</span>
+                : null
             }
         </div>
     )

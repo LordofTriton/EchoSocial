@@ -274,7 +274,7 @@ export default function Chat({ toggle, data, page }) {
 
         const formData = new FormData();
         formData.append(`media`, file)
-        const uploadedFile = (await APIClient.post(APIClient.routes.uploadFile, formData, null, { 'Content-Type': "multipart/form-data" })).data;
+        const uploadedFile = await APIClient.post(APIClient.routes.uploadFile, formData, null, { 'Content-Type': "multipart/form-data" });
         if (!uploadedFile.success) {
             page.createAlert("error", uploadedFile.message)
             return;

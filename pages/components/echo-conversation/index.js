@@ -78,7 +78,7 @@ export default function EchoConversation({ data, control, page }) {
         if (newCommentMedia) {
             const formData = new FormData();
             formData.append(`media`, newCommentMedia)
-            uploadedFile = (await APIClient.post(APIClient.routes.uploadFile, formData, null, { 'Content-Type': "multipart/form-data" })).data;
+            uploadedFile = await APIClient.post(APIClient.routes.uploadFile, formData, null, { 'Content-Type': "multipart/form-data" });
             if (!uploadedFile.success) {
                 createAlert("error", uploadedFile.message)
                 return;

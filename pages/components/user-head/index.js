@@ -29,7 +29,7 @@ export default function UserHead({ data, page, title }) {
 
         const formData = new FormData();
         formData.append(`media`, e.target.files[0])
-        const uploadedFile = (await APIClient.post(APIClient.routes.uploadFile, formData, null, { 'Content-Type': "multipart/form-data" })).data;
+        const uploadedFile = await APIClient.post(APIClient.routes.uploadFile, formData, null, { 'Content-Type': "multipart/form-data" });
         if (!uploadedFile.success) {
             page.createAlert("error", uploadedFile.message)
             return;
@@ -59,7 +59,7 @@ export default function UserHead({ data, page, title }) {
 
         const formData = new FormData();
         formData.append(`media`, e.target.files[0])
-        const uploadedFile = (await APIClient.post(APIClient.routes.uploadFile, formData, null, { 'Content-Type': "multipart/form-data" })).data;
+        const uploadedFile = await APIClient.post(APIClient.routes.uploadFile, formData, null, { 'Content-Type': "multipart/form-data" });
         if (!uploadedFile.success) {
             page.createAlert("error", uploadedFile.message)
             return;

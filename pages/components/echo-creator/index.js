@@ -82,7 +82,7 @@ export default function EchoCreator({toggle, control, page}) {
         if (echoMedia.length > 0) {
             const formData = new FormData();
             echoMedia.forEach((file) => { formData.append(`media`, file) });
-            const uploadedFiles = (await APIClient.post(APIClient.routes.uploadFile, formData, null, {'Content-Type': "multipart/form-data"})).data;
+            const uploadedFiles = await APIClient.post(APIClient.routes.uploadFile, formData, null, {'Content-Type': "multipart/form-data"});
             if (!uploadedFiles.success) {
                 page.createAlert("error", uploadedFiles.message)
                 return;
@@ -112,7 +112,7 @@ export default function EchoCreator({toggle, control, page}) {
         if (echoMedia.length > 0) {
             const formData = new FormData();
             echoMedia.forEach((file) => { formData.append(`media`, file) });
-            const uploadedFiles = (await APIClient.post(APIClient.routes.uploadFile, formData, null, {'Content-Type': "multipart/form-data"})).data;
+            const uploadedFiles = await APIClient.post(APIClient.routes.uploadFile, formData, null, {'Content-Type': "multipart/form-data"});
             if (!uploadedFiles.success) {
                 page.createAlert("error", uploadedFiles.message)
                 return;

@@ -26,7 +26,7 @@ export default function VerifyEmail() {
     }, [router.query]);
 
     const verifyEmail = async (code) => {
-        const response = (await APIClient.post(APIClient.routes.verifyEmail, { code })).data;
+        const response = await APIClient.post(APIClient.routes.verifyEmail, { code });
         setVerified(response.success)
         setLoader(false)
     }

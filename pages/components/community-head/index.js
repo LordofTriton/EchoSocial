@@ -28,12 +28,15 @@ export default function CommunityHead({ data, page, title }) {
 
         const formData = new FormData();
         formData.append(`media`, e.target.files[0])
-        const uploadedFile = (await APIClient.post(APIClient.routes.uploadFile, formData, null, { 'Content-Type': "multipart/form-data" })).data;
+        const uploadedFile = await APIClient.post(APIClient.routes.uploadFile, formData, null, { 'Content-Type': "multipart/form-data" });
+        console.log(uploadedFile)
         if (!uploadedFile.success) {
             page.createAlert("error", uploadedFile.message)
             return;
         }
-        if (communityData.profileCover.publicID) await APIClient.del(`/cloud/delete?publicID=${communityData.profileCover.publicID}`);
+        if (communityData.profileCover.publicID) await APIClient.del(APIClient.routes.deleteFile, {
+            publicID: communityData.profileCover.publicID
+        });
         setCommunityData({ ...communityData, profileCover: uploadedFile.data[0] })
         setCoverLoader(false)
 
@@ -57,7 +60,7 @@ export default function CommunityHead({ data, page, title }) {
 
         const formData = new FormData();
         formData.append(`media`, file)
-        const uploadedFile = (await APIClient.post(APIClient.routes.uploadFile, formData, null, { 'Content-Type': "multipart/form-data" })).data;
+        const uploadedFile = await APIClient.post(APIClient.routes.uploadFile, formData, null, { 'Content-Type': "multipart/form-data" });
         if (!uploadedFile.success) {
             page.createAlert("error", uploadedFile.message)
             return;
