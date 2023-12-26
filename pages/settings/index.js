@@ -61,7 +61,7 @@ export default function ProfileSettings() {
             if (data.success) {
                 setUserAccount(data.data)
                 setUpdatedData(data.data)
-            }
+            } else createAlert("error", data.message)
         }
         if (activeUser.accountID) {
             APIClient.get(APIClient.routes.getAccount, { accountID: activeUser.accountID }, getAccount)

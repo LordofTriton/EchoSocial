@@ -39,7 +39,7 @@ export default function UserCommunities() {
         const updateUserData = (data) => {
             if (data.success) {
                 setUserData(data.data)
-            }
+            } else createAlert("error", data.message)
         }
         if (router.query.id) {
             APIClient.get(APIClient.routes.getAccount, {
@@ -54,7 +54,7 @@ export default function UserCommunities() {
             if (data.success) {
                 Helpers.setPaginatedState(data.data, setUserCommunities, data.pagination, "communityID")
                 setPagination(data.pagination)
-            }
+            } else createAlert("error", data.message)
             setCommunityLoader(false)
         }
         if (userData) {

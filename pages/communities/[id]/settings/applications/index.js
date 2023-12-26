@@ -34,12 +34,12 @@ export default function CommunitySettings() {
     const [applicationPage, setApplicationPage] = useState(1)
 
     useEffect(() => {
-        const updateCommunityData = (data) => (data.success) ? setCommunityData(data.data) : null;
+        const updateCommunityData = (data) => (data.success) ? setCommunityData(data.data) : createAlert("error", data.message);
         const updateCommunityApplications = (data) => {
             if (data.success) {
                 Helpers.setPaginatedState(data.data, setCommunityApplications, data.pagination, "applicationID")
                 setPagination(data.pagination)
-            }
+            } else createAlert("error", data.message)
             setApplicationLoader(false)
         }
         if (router.query.id) {

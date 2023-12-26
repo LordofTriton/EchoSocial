@@ -58,7 +58,7 @@ export default function RightNav({ page }) {
         const updateUserFriends = (data) => {
             if (data.success) {
                 setUserFriends(data.data);
-            }
+            } else page.createAlert("error", data.message)
         }
         APIClient.get(APIClient.routes.getFriends, { 
             accountID: page.activeUser.accountID, 

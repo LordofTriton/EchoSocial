@@ -39,7 +39,7 @@ export default function CommunitiesFeed() {
                 if (data.data.length > 0) Helpers.setPaginatedState(data.data, searchQuery.length > 0 ? setSearchedCommunities : setCommunities, data.pagination, "communityID")
                 else searchQuery.length > 0 ? searchedCommunities([]) : setCommunities([])
                 setPagination(data.pagination)
-            }
+            } else createAlert("error", data.message)
             setCommunityLoader(false)
         }
         APIClient.get(APIClient.routes.getCommunities, {

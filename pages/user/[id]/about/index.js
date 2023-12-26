@@ -28,7 +28,7 @@ export default function UserAbout() {
         const updateUserData = (data) => {
             if (data.success) {
                 setUserData(data.data)
-            }
+            } else createAlert("error", data.message)
         }
         if (router.query.id) {
             APIClient.get(APIClient.routes.getAccount, {

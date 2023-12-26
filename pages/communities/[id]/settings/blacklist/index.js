@@ -35,7 +35,7 @@ export default function CommunitySettings() {
     const [bannedPage, setBannedPage] = useState(1)
 
     useEffect(() => {
-        const updateCommunityData = (data) => (data.success) ? setCommunityData(data.data) : null;
+        const updateCommunityData = (data) => (data.success) ? setCommunityData(data.data) : createAlert("error", data.message);
         if (router.query.id) {
             APIClient.get(APIClient.routes.getCommunity, {
                 accountID: activeUser.accountID,
@@ -49,7 +49,7 @@ export default function CommunitySettings() {
             if (data.success) {
                 Helpers.setPaginatedState(data.data, setCommunityBanned, data.pagination, "accountID")
                 setPagination(data.pagination)
-            }
+            } else createAlert("error", data.message)
             setBannedLoader(false)
         }
         if (router.query.id) {

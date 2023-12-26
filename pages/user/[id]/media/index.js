@@ -47,7 +47,7 @@ export default function UserMedia() {
         const updateUserData = (data) => {
             if (data.success) {
                 setUserData(data.data)
-            }
+            } else createAlert("error", data.message)
         }
         const showEcho = (data) => data.success ? modalControl.setShowEchoViewer(data.data) : null
         if (router.query.id) {
@@ -69,7 +69,7 @@ export default function UserMedia() {
             if (data.success) {
                 Helpers.setPaginatedState(data.data, setUserMediaEchoes, data.pagination, "echoID")
                 setPagination(data.pagination)
-            }
+            } else createAlert("error", data.message)
             setEchoLoader(false)
         }
         if (userData) {

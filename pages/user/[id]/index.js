@@ -64,7 +64,7 @@ export default function User() {
       if (data.success) {
         Helpers.setPaginatedState(data.data, setUserEchoes, data.pagination, "echoID")
         setPagination(data.pagination)
-      }
+      } else createAlert("error", data.message)
       setEchoLoader(false)
     }
     const updateMediaEchoes = (data) => data.success ? setUserMediaEchoes(data.data) : null;

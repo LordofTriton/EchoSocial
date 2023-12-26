@@ -38,7 +38,7 @@ export default function UserFriends() {
         const updateUserData = (data) => {
             if (data.success) {
                 setUserData(data.data)
-            }
+            } else createAlert("error", data.message)
         }
         if (router.query.id) {
             APIClient.get(APIClient.routes.getAccount, {
@@ -53,7 +53,7 @@ export default function UserFriends() {
             if (data.success) {
                 Helpers.setPaginatedState(data.data, setUserFriends, data.pagination, "accountID")
                 setPagination(data.pagination)
-            }
+            } else createAlert("error", data.message)
             setFriendLoader(false)
         }
         if (userData) {

@@ -52,7 +52,7 @@ export default function EchoConversation({ data, control, page }) {
                 if (data.success) {
                     Helpers.setPaginatedState(data.data, setEchoComments, data.pagination, "commentID", false)
                     setPagination(data.pagination)
-                }
+                } else page.createAlert("error", data.message)
                 setCommentLoader(false)
             }
             APIClient.get(APIClient.routes.getComments, { 

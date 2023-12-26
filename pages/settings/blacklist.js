@@ -41,7 +41,7 @@ export default function BlacklistSettings() {
             if (data.success) {
                 Helpers.setPaginatedState(data.data, setBlacklists, data.pagination, "accountID")
                 setPagination(data.pagination)
-            }
+            } else createAlert("error", data.message)
             setBlacklistLoader(false)
         }
         if (activeUser.accountID) {

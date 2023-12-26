@@ -34,7 +34,7 @@ export default function Messenger({ toggle, control, page }) {
             if (data.success) {
                 Helpers.setPaginatedState(data.data, setUserChats, data.pagination, "chatID")
                 setPagination(data.pagination)
-            }
+            } else page.createAlert("error", data.message)
             setChatsLoader(false)
         }
         APIClient.get(APIClient.routes.getChats, { 
@@ -54,7 +54,7 @@ export default function Messenger({ toggle, control, page }) {
             const getSearchChats = (data) => {
                 if (data.success) {
                     setSearchChats(data.data)
-                }
+                } else page.createAlert("error", data.message)
                 setChatsLoader(false)
             }
             APIClient.get(APIClient.routes.searchChats, { 

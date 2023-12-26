@@ -169,7 +169,7 @@ export default function Chat({ toggle, data, page }) {
                 Helpers.setPaginatedState(data.data, setChatMessages, data.pagination, "messageID", false)
                 setPagination(data.pagination)
                 if (messagePage === 1) setScrollChat(true)
-            }
+            } else createAlert("error", data.message)
             setMessageLoader(false)
         }
         if (data) APIClient.get(APIClient.routes.getMessages, { 
@@ -252,7 +252,7 @@ export default function Chat({ toggle, data, page }) {
         const createdTextMessage = (data) => {
             if (data.success) {
                 setChatMessages(chatMessages.filter((message) => message.messageID !== newTextMessage.messageID).concat(data.data))
-            }
+            } else createAlert("error", data.message)
         }
         APIClient.post(APIClient.routes.createMessage, newTextMessage, createdTextMessage)
     }

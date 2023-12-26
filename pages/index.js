@@ -35,7 +35,7 @@ export default function Home() {
       if (data.success) {
         Helpers.setPaginatedState(data.data, setEchoFeed, data.pagination, "echoID")
         setPagination(data.pagination)
-      }
+      } else createAlert("error", data.message)
       setFeedLoader(false)
     }
     APIClient.get(APIClient.routes.getFeed, {

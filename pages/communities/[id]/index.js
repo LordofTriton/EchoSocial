@@ -62,13 +62,14 @@ export default function Community() {
       if (data.success) {
         Helpers.setPaginatedState(data.data, setCommunityEchoes, data.pagination, "echoID")
         setPagination(data.pagination)
-      }
+      } else createAlert("error", data.message)
       setEchoLoader(false)
     }
     const updateMediaEchoes = (data) => {
       if (data.success) setCommunityMediaEchoes(data.data);
+      else createAlert("error", data.message)
     }
-    const updateCommunityMembers = (data) => data.success ? setCommunityMembers(data.data) : null;
+    const updateCommunityMembers = (data) => data.success ? setCommunityMembers(data.data) :  createAlert("error", data.message);
     if (communityData) {
       APIClient.get(APIClient.routes.getCommunityFeed, {
         accountID: activeUser.accountID,

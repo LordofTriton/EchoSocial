@@ -41,7 +41,7 @@ export default function PeopleStrangers() {
                 if (data.data.length > 0) Helpers.setPaginatedState(data.data, searchQuery.length > 0 ? setSearchedPeople : setPeople, data.pagination, "accountID")
                 else searchQuery.length > 0 ? setSearchedPeople([]) : setPeople([]);
                 setPagination(data.pagination)
-            }
+            } else createAlert("error", data.message)
             setPeopleLoader(false)
         }
         APIClient.get(APIClient.routes.getAccounts, {

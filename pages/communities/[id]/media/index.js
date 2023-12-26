@@ -46,6 +46,7 @@ export default function CommunityMedia() {
   useEffect(() => {
     const updateCommunityData = (data) => {
       if (data.success) setCommunityData(data.data)
+      else createAlert("error", data.message)
     }
     if (router.query.id) {
       APIClient.get(APIClient.routes.getCommunity, {
@@ -60,7 +61,7 @@ export default function CommunityMedia() {
         if (data.success) {
             Helpers.setPaginatedState(data.data, setCommunityMediaEchoes, data.pagination, "echoID")
             setPagination(data.pagination)
-        }
+        } else createAlert("error", data.message)
         setEchoLoader(false)
     }
     if (communityData) {

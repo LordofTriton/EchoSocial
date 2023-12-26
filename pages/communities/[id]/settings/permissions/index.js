@@ -34,7 +34,7 @@ export default function CommunitySettings() {
             if (data.success) {
                 setCommunityData(data.data);
                 setUpdatedCommunityData(data.data)
-            }
+            } else createAlert("error", data.message)
         }
         if (router.query.id) {
             APIClient.get(APIClient.routes.getCommunity, {

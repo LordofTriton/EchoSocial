@@ -38,6 +38,7 @@ export default function CommunityMembers() {
   useEffect(() => {
     const updateCommunityData = (data) => {
       if (data.success) setCommunityData(data.data)
+      else createAlert("error", data.message)
     }
     if (router.query.id) {
       APIClient.get(APIClient.routes.getCommunity, {
@@ -52,7 +53,7 @@ export default function CommunityMembers() {
       if (data.success) {
         Helpers.setPaginatedState(data.data, setCommunityMembers, data.pagination, "accountID")
         setPagination(data.pagination)
-      }
+      } else createAlert("error", data.message)
       setMemberLoader(false)
     }
     if (communityData) {

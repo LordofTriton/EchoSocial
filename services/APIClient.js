@@ -7,6 +7,15 @@ function getToken() {
     return token ? token : null;
 }
 
+function isAuthorized(data) {
+    if (data.status && data.status === "UNAUTHORISED") {
+        localStorage.clear()
+        document.location = "/login"
+        return false;
+    }
+    return true;
+}
+
 async function post(url, data, callback, headers) {
     const response = await axios.post(`${AppConfig.HOST}/api${url}`, data, {
         headers: {
@@ -14,8 +23,11 @@ async function post(url, data, callback, headers) {
             Authorization: `Bearer ${getToken()}`
         }
     })
-    if (callback) callback(response.data);
-    return response;
+
+    if (isAuthorized(response.data)) {
+        if (callback) callback(response.data);
+        return response;
+    }
 }
 
 async function put(url, data, callback, headers) {
@@ -25,8 +37,11 @@ async function put(url, data, callback, headers) {
             Authorization: `Bearer ${getToken()}`
         }
     })
-    if (callback) callback(response.data)
-    return response;
+    
+    if (isAuthorized(response.data)) {
+        if (callback) callback(response.data);
+        return response;
+    }
 }
 
 async function get(url, data, callback, headers, noCache) {
@@ -43,10 +58,12 @@ async function get(url, data, callback, headers, noCache) {
             Authorization: `Bearer ${getToken()}`
         }
     })
-
-    if (!noCache) CacheService.saveData(`${AppConfig.HOST}/api${url}?${query}`, JSON.stringify(response.data))
-    if (callback) callback(response.data)
-    return response;
+    
+    if (isAuthorized(response.data)) {
+        if (!noCache) CacheService.saveData(`${AppConfig.HOST}/api${url}?${query}`, JSON.stringify(response.data))
+        if (callback) callback(response.data);
+        return response;
+    }
 }
 
 async function del(url, data, callback, headers) {
@@ -57,8 +74,11 @@ async function del(url, data, callback, headers) {
             Authorization: `Bearer ${getToken()}`
         }
     })
-    if (callback) callback(response.data)
-    return response;
+    
+    if (isAuthorized(response.data)) {
+        if (callback) callback(response.data);
+        return response;
+    }
 }
 
 const APIClient = {

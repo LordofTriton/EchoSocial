@@ -16,7 +16,7 @@ export const authenticate = (handler) => async (req, res) => {
         return handler(req, res);
     } catch (error) {
         console.log(error)
-        const responseData = ResponseClient.GenericFailure({ error: error.message })
+        const responseData = ResponseClient.Unauthorised(error.message)
         res.json(responseData)
     }
 };

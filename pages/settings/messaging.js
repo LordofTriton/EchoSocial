@@ -35,7 +35,7 @@ export default function MessagingSettings() {
             if (data.success) {
                 setUserSettings(data.data)
                 setUpdatedSettings({...updatedSettings, ...data.data})
-            }
+            } else createAlert("error", data.message)
         }
         if (activeUser.accountID) {
             APIClient.get(APIClient.routes.getSettings, { accountID: activeUser.accountID }, getSettings)

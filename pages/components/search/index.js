@@ -122,7 +122,7 @@ export default function Search({toggle, control, page}) {
             if (data.success) {
                 Helpers.setPaginatedState(data.data, setResults, data.pagination, searchClass === "people" ? "accountID" : "communityID")
                 setPagination(data.pagination)
-            }
+            } else page.createAlert("error", data.message)
             setSearchLoader(false)
         }
         if (query.length > 2 && query.length % 2 === 0) {

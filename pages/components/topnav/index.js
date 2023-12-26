@@ -25,7 +25,7 @@ export default function TopNav({ page }) {
             if (data.success) {
                 Helpers.setPaginatedState(data.data, setUserNotifications, data.pagination, "notificationID")
                 if (data.data.filter((notification) => notification.status === "unread").length > 0) page.setShowNotificationDot(true)
-            }
+            } else page.createAlert("error", data.message)
         }
         APIClient.get(APIClient.routes.getNotifications, {
             accountID: page.activeUser.accountID,

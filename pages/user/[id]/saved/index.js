@@ -40,7 +40,7 @@ export default function UserSaved() {
         const updateUserData = (data) => {
             if (data.success) {
                 setUserData(data.data)
-            }
+            } else createAlert("error", data.message)
         }
         if (router.query.id) {
             APIClient.get(APIClient.routes.getAccount, {
@@ -55,7 +55,7 @@ export default function UserSaved() {
             if (data.success) {
                 Helpers.setPaginatedState(data.data, setUserSaved, data.pagination, "echoID")
                 setPagination(data.pagination)
-            }
+            } else createAlert("error", data.message)
             setSavedLoader(false)
         }
         if (userData) {

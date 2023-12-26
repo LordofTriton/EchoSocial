@@ -26,6 +26,7 @@ export default function CommunityAbout() {
     useEffect(() => {
         const updateCommunityData = (data) => {
             if (data.success) setCommunityData(data.data)
+            else createAlert("error", data.message)
         }
         if (router.query.id) {
             APIClient.get(APIClient.routes.getCommunity, {

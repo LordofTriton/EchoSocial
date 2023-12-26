@@ -32,7 +32,7 @@ export default function CommunitySettings() {
             if (data.success) {
                 setCommunityData(data.data);
                 setCommunityNodes(data.data.nodes)
-            }
+            } else createAlert("error", data.message)
         }
         if (router.query.id) {
             APIClient.get(APIClient.routes.getCommunity, {

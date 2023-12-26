@@ -33,7 +33,7 @@ export default function Notifications({toggle, control, page}) {
             if (data.success) {
                 Helpers.setPaginatedState(data.data, setNotifications, data.pagination, "notificationID")
                 setPagination(data.pagination)
-            }
+            } else page.createAlert("error", data.message)
             setNotificationsLoader(false)
         }
         APIClient.get(APIClient.routes.getNotifications, { 
@@ -49,7 +49,7 @@ export default function Notifications({toggle, control, page}) {
             if (data.success) {
                 Helpers.setPaginatedState(data.data, setNotifications, data.pagination, "notificationID")
                 setPagination(data.pagination)
-            }
+            } else page.createAlert("error", data.message)
             setNotificationsLoader(false)
         }
         APIClient.get(APIClient.routes.getNotifications, { 

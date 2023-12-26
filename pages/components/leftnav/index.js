@@ -13,7 +13,7 @@ export default function LeftNav({ page }) {
         const updateUserCommunities = (data) => {
             if (data.success) {
                 setUserCommunities(data.data)
-            }
+            } else page.createAlert("error", data.message)
             setCommunityLoader(false)
         }
         if (page.activeUser) {

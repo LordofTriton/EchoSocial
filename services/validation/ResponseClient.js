@@ -48,12 +48,22 @@ function DBFetchSuccess(data) {
     }
 }
 
+function Unauthorised(message) {
+    return {
+        success: false,
+        data: null,
+        status: "UNAUTHORISED",
+        message: message || "Unauthorised request."
+    }
+}
+
 const ResponseClient = {
     GenericSuccess,
     GenericFailure,
     InternalServerError,
     DBModifySuccess,
-    DBFetchSuccess
+    DBFetchSuccess,
+    Unauthorised
 }
 
 export default ResponseClient;
