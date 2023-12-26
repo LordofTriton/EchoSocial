@@ -24,7 +24,7 @@ export default function SideNav({toggle, control, page}) {
     }
 
     return(
-        <div className={styles.sidenavContainer} style={{right: !toggle ? "-700px" : null}}>
+        <div className={styles.sidenavContainer} style={{right: !toggle ? "-100vw" : null}}>
             <span className={styles.sidenavClose} onClick={() => control(false)}><SVGServer.CloseIcon color="var(--accent)" width="50px" height="50px" /></span>
 
             <div className={styles.sidenavButtons}>
