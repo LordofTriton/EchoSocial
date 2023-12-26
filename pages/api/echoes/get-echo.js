@@ -1,5 +1,6 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 
@@ -8,7 +9,7 @@ function ValidateGetEcho(data) {
     if (data.communityID && !ParamValidator.isValidObjectID(data.communityID)) throw new Error("Invalid: communityID.")
 }
 
-export default async function GetEcho(request, response) {
+async function GetEcho(request, response) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -71,3 +72,5 @@ export default async function GetEcho(request, response) {
         response.json(responseData);
     }
 }
+
+export default authenticate(GetEcho);

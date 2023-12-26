@@ -1,7 +1,8 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 
-export default async function SocketAuth(data) {
+async function SocketAuth(data) {
     const { db } = await getDB();
     if (!data.accessToken) return false;
 

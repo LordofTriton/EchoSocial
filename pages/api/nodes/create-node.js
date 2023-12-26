@@ -1,5 +1,6 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import IDGenerator from "../../../services/generators/IDGenerator";
@@ -8,7 +9,7 @@ function ValidateCreateNode(data) {
     if (!data || data.name.length < 2) throw new Error("Missing or Invalid: name")
 }
 
-export default async function CreateNode(request, response) {
+async function CreateNode(request, response) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -51,3 +52,5 @@ export default async function CreateNode(request, response) {
         response.json(responseData);
     }
 }
+
+export default authenticate(CreateNode);

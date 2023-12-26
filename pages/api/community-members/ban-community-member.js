@@ -1,6 +1,7 @@
 
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import DeleteMember from "./delete-community-member";
@@ -14,7 +15,7 @@ function ValidateBlacklistMember(data) {
     if (!data.userID || !ParamValidator.isValidObjectID(data.userID)) throw new Error("Missing or Invalid: userID.")
 }
 
-export default async function BanCommunityMember (request, response) {
+async function BanCommunityMember (request, response) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -60,3 +61,5 @@ export default async function BanCommunityMember (request, response) {
         response.json(responseData);
     }
 }
+
+export default authenticate(BanCommunityMember);

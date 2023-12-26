@@ -1,5 +1,6 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import CloudinaryService from "../../../services/CloudinaryService";
 
@@ -12,7 +13,7 @@ function parseParams(data) {
     return { accountID, echoID, content, repliedTo };
 }
 
-export default async function DeleteFile (request, response) {
+async function DeleteFile (request, response) {
     let params = request.query;
 
     try {
@@ -31,3 +32,5 @@ export default async function DeleteFile (request, response) {
         response.json(responseData)
     }
 }
+
+export default authenticate(DeleteFile);

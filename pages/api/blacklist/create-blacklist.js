@@ -1,5 +1,6 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import IDGenerator from "../../../services/generators/IDGenerator";
@@ -13,7 +14,7 @@ function ValidateCreateBlacklist(data) {
     if (data.blockee && !ParamValidator.isValidObjectID(data.blockee)) throw new Error("Invalid: blockee.")
 }
 
-export default async function CreateBlacklist (request, response) {
+async function CreateBlacklist (request, response) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -58,3 +59,5 @@ export default async function CreateBlacklist (request, response) {
         response.json(responseData);
     }
 }
+
+export default authenticate(CreateBlacklist);

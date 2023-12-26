@@ -1,5 +1,6 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 
@@ -8,7 +9,7 @@ function ValidateDeleteAccount(data) {
     if (!data.password || data.password.length < 6) throw new Error("Missing or Invalid: password.")
 }
 
-export default async function DeleteAccount (request, response) {
+async function DeleteAccount (request, response) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -31,3 +32,5 @@ export default async function DeleteAccount (request, response) {
         response.json(responseData);
     }
 }
+
+export default authenticate(DeleteAccount);

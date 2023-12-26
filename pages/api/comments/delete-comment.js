@@ -1,5 +1,6 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 
@@ -7,7 +8,7 @@ function ValidateDeleteComment(data) {
     if (!data.commentID || !ParamValidator.isValidObjectID(data.commentID)) throw new Error("Missing or Invalid: commentID")
 }
 
-export default async function DeleteComment (request, response) {
+async function DeleteComment (request, response) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -30,3 +31,5 @@ export default async function DeleteComment (request, response) {
         response.json(responseData);
     }
 }
+
+export default authenticate(DeleteComment);

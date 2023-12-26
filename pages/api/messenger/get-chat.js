@@ -1,5 +1,6 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 
@@ -9,7 +10,7 @@ function ValidateGetChat(data) {
     if (data.nodes && data.nodes.length < 1) throw new Error("Invalid: nodes.")
 }
 
-export default async function GetChat(request, response) {
+async function GetChat(request, response) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -58,3 +59,5 @@ export default async function GetChat(request, response) {
         response.json(responseData);
     }
 }
+
+export default authenticate(GetChat);

@@ -1,5 +1,6 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 
@@ -8,7 +9,7 @@ function ValidateGetNotification(data) {
     if (data.status && !ParamValidator.isValidNotificationStatus(data.status)) throw new Error("Invalid: status.")
 }
 
-export default async function GetNotifications(request, response) {
+async function GetNotifications(request, response) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -49,3 +50,5 @@ export default async function GetNotifications(request, response) {
         response.json(responseData);
     }
 }
+
+export default authenticate(GetNotifications);

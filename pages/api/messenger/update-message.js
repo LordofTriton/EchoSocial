@@ -1,5 +1,6 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import UpdateChat from "./update-chat";
@@ -12,7 +13,7 @@ function ValidateUpdateMessage(data) {
     if (!data.messageID || !ParamValidator.isValidObjectID(data.messageID)) throw new Error("Missing or Invalid: messageID")
 }
 
-export default async function UpdateMessage(request, response) {
+async function UpdateMessage(request, response) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -68,3 +69,5 @@ export default async function UpdateMessage(request, response) {
         response.json(responseData);
     }
 }
+
+export default authenticate(UpdateMessage);

@@ -1,5 +1,6 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 
@@ -9,7 +10,7 @@ function ValidateGetComment(data) {
     if (data.nodes && data.nodes.length < 1) throw new Error("Invalid: nodes.")
 }
 
-export default async function GetComment (request, response) {
+async function GetComment (request, response) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -32,3 +33,5 @@ export default async function GetComment (request, response) {
         response.json(responseData);
     }
 }
+
+export default authenticate(GetComment);

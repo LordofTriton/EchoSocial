@@ -1,5 +1,6 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 
@@ -7,7 +8,7 @@ function ValidateDeleteApplication(data) {
     if (!data.applicationID || !ParamValidator.isValidObjectID(data.applicationID)) throw new Error("Missing or Invalid: applicationID")
 }
 
-export default async function DeleteCommunityApplication (request, response) {
+async function DeleteCommunityApplication (request, response) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -30,3 +31,5 @@ export default async function DeleteCommunityApplication (request, response) {
         response.json(responseData);
     }
 }
+
+export default authenticate(DeleteCommunityApplication);

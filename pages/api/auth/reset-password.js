@@ -1,5 +1,6 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import CreateNotification from "../notifications/create-notification";
@@ -11,7 +12,7 @@ function ValidateResetPassword(data) {
     if (data.newPassword !== data.confirmNewPassword) throw new Error("Passwords do not match!")
 }
 
-export default async function ResetPassword(request, response) {
+async function ResetPassword(request, response) {
     const { db } = await getDB();
     const params = {
         token: request.body.token,
@@ -49,3 +50,5 @@ export default async function ResetPassword(request, response) {
         response.json(responseData)
     }
 }
+
+export default ResetPassword;

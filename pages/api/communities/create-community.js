@@ -1,5 +1,6 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import AppConfig from "../../../util/config";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
@@ -16,7 +17,7 @@ function ValidateCreateCommunity(data) {
     if (!data.privacy || !ParamValidator.isValidCommunityPrivacy(data.privacy)) throw new Error("Missing or Invalid: privacy")
 }
 
-export default async function CreateCommunity (request, response) {
+async function CreateCommunity (request, response) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -104,3 +105,5 @@ export async function CreateCommunityCallback(params, communityData, reqOrigin) 
         redirect: `/communities/${communityData.communityID}`
     })
 }
+
+export default authenticate(CreateCommunity);

@@ -1,5 +1,6 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import IDGenerator from "../../../services/generators/IDGenerator";
@@ -11,7 +12,7 @@ function ValidateCreateChat(data) {
     if (!data.targetID || !ParamValidator.isValidAccountID(data.targetID)) throw new Error("Missing or Invalid: targetID.")
 }
 
-export default async function CreateChat(request, response) {
+async function CreateChat(request, response) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -85,3 +86,5 @@ export default async function CreateChat(request, response) {
         response.json(responseData);
     }
 }
+
+export default authenticate(CreateChat);

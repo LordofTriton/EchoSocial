@@ -1,5 +1,6 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import AppConfig from "../../../util/config";
@@ -26,7 +27,7 @@ function ValidateUpdateAccount(data) {
     if (data.userStatus && !ParamValidator.isValidUserStatus(data.userStatus)) throw new Error("Invalid: user status.")
 }
 
-export default async function UpdateAccount (request, response) {
+async function UpdateAccount (request, response) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -90,3 +91,5 @@ export async function UpdateAccountCallback(params, reqOrigin) {
         }
     }
 }
+
+export default authenticate(UpdateAccount);

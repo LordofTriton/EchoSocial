@@ -1,5 +1,6 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import CreateMember from "../community-members/create-community-member";
@@ -12,7 +13,7 @@ function ValidatePingApplication(data) {
     if (!data.applicationID || !ParamValidator.isValidObjectID(data.applicationID)) throw new Error("Missing or Invalid: applicationID")
 }
 
-export default async function PingCommunityApplications (request, response) {
+async function PingCommunityApplications (request, response) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -60,3 +61,5 @@ export default async function PingCommunityApplications (request, response) {
         response.json(responseData);
     }
 }
+
+export default authenticate(PingCommunityApplications);

@@ -1,5 +1,6 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import IDGenerator from "../../../services/generators/IDGenerator";
@@ -21,7 +22,7 @@ function ValidateCreateMessage(data) {
     }
 }
 
-export default async function CreateMessage(request, response) {
+async function CreateMessage(request, response) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -108,3 +109,5 @@ export async function CreateMessageCallback(params, reqOrigin) {
         })
     }
 }
+
+export default authenticate(CreateMessage);

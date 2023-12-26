@@ -1,5 +1,6 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 
@@ -7,7 +8,7 @@ function ValidateDeleteEcho(data) {
     if (!data.echoID || !ParamValidator.isValidObjectID(data.echoID)) throw new Error("Missing or Invalid: echoID")
 }
 
-export default async function DeleteEcho(request, response) {
+async function DeleteEcho(request, response) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -30,3 +31,5 @@ export default async function DeleteEcho(request, response) {
         response.json(responseData);
     }
 }
+
+export default authenticate(DeleteEcho);

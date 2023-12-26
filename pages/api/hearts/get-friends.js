@@ -1,5 +1,6 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 
@@ -8,7 +9,7 @@ function ValidateGetFriends(data) {
     if (!data.userID || !ParamValidator.isValidAccountID(data.userID)) throw new Error("Missing or Invalid: userID.")
 }
 
-export default async function GetFriends(request, response) {
+async function GetFriends(request, response) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -53,3 +54,5 @@ export default async function GetFriends(request, response) {
         response.json(responseData);
     }
 }
+
+export default authenticate(GetFriends);

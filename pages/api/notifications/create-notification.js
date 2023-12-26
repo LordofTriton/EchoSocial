@@ -1,5 +1,6 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import IDGenerator from "../../../services/generators/IDGenerator";
@@ -12,7 +13,7 @@ function ValidateCreateNotification(data) {
     if (data.redirect && data.redirect.length < 5) throw new Error("Invalid: redirect.")
 }
 
-export default async function CreateNotification(request, response) {
+async function CreateNotification(request, response) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -52,3 +53,5 @@ export default async function CreateNotification(request, response) {
         response.json(responseData);
     }
 }
+
+export default authenticate(CreateNotification);

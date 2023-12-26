@@ -1,5 +1,6 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import IDGenerator from "../../../services/generators/IDGenerator";
@@ -15,7 +16,7 @@ function ValidateCreateEcho(data) {
     }
 }
 
-export default async function CreateEcho(request, response) {
+async function CreateEcho(request, response) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -79,3 +80,5 @@ export async function CreateEchoCallback(params, reqOrigin) {
         await db.collection("communities").updateOne({ communityID: params.communityID }, { $set: { lastUpdated: Date.now() } })
     }
 }
+
+export default authenticate(CreateEcho);

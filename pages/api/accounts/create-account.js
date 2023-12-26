@@ -1,5 +1,6 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import AppConfig from "../../../util/config";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
@@ -22,7 +23,7 @@ function ValidateCreateAccount(data) {
     if (data.password !== data.confirmPassword) throw new Error("Passwords do not match.")
 }
 
-export default async function CreateAccount (request, response) {
+async function CreateAccount (request, response) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "firstName", 
@@ -117,7 +118,7 @@ export default async function CreateAccount (request, response) {
 
         response.once("finish", async () => {
             await SendEmail(params.email, "Welcome", "welcome", { firstName: params.firstName })
-            
+
             await axios.post(AppConfig.HOST + "/api/settings/create-settings", { accountID: accountData.accountID })
             await axios.post(AppConfig.HOST + "/api/notification/create-notification", {
                 accountID: accountData.accountID,
@@ -137,3 +138,5 @@ export default async function CreateAccount (request, response) {
         response.json(responseData)
     }
 }
+
+export default CreateAccount;

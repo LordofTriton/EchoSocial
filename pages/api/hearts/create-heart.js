@@ -1,5 +1,6 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import IDGenerator from "../../../services/generators/IDGenerator";
@@ -15,7 +16,7 @@ function ValidateCreateHeart(data) {
     if (data.commentID && !ParamValidator.isValidObjectID(data.commentID)) throw new Error("Invalid: commentID.")
 }
 
-export default async function CreateHeart(request, response) {
+async function CreateHeart(request, response) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -123,3 +124,5 @@ export async function CreateHeartCallback(params, reqOrigin) {
         }
     }
 }
+
+export default authenticate(CreateHeart);

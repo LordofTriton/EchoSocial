@@ -1,5 +1,6 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 
@@ -9,7 +10,7 @@ function ValidateDeleteBlacklist(data) {
     if (data.blockee && !ParamValidator.isValidObjectID(data.blockee)) throw new Error("Invalid: blockee.")
 }
 
-export default async function DeleteBlacklist (request, response) {
+async function DeleteBlacklist (request, response) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -36,3 +37,5 @@ export default async function DeleteBlacklist (request, response) {
         response.json(responseData);
     }
 }
+
+export default authenticate(DeleteBlacklist);

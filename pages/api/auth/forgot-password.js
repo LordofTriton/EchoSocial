@@ -1,5 +1,6 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import CreateNotification from "../notifications/create-notification";
@@ -11,7 +12,7 @@ function ValidateResetPassword(data) {
     if (!data.email || data.email.length < 2 || !data.email.includes("@")) throw new Error("Invalid email.")
 }
 
-export default async function ForgotPassword (request, response) {
+async function ForgotPassword (request, response) {
     const { db } = await getDB();
     const params = {
         email: request.body.email
@@ -44,3 +45,5 @@ export default async function ForgotPassword (request, response) {
         response.json(responseData)
     }
 }
+
+export default ForgotPassword;

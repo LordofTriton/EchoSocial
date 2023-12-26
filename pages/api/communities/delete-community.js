@@ -1,5 +1,6 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import DeleteNode from "../nodes/delete-node";
@@ -10,7 +11,7 @@ function ValidateDeleteCommunity(data) {
     if (!data.communityID || !ParamValidator.isValidObjectID(data.communityID)) throw new Error("Missing or Invalid: communityID")
 }
 
-export default async function DeleteCommunity (request, response) {
+async function DeleteCommunity (request, response) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -39,3 +40,5 @@ export default async function DeleteCommunity (request, response) {
         response.json(responseData);
     }
 }
+
+export default authenticate(DeleteCommunity);

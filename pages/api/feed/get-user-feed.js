@@ -6,7 +6,7 @@ function ValidateFeed(data) {
     if (!data.accountID || !ParamValidator.isValidAccountID(data.accountID)) throw new Error("Missing or Invalid: accountID.")
 }
 
-export default async function UserFeed(request, response) {
+async function UserFeed(request, response) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -98,3 +98,5 @@ export default async function UserFeed(request, response) {
         response.json(responseData);
     }
 }
+
+export default authenticate(UserFeed);

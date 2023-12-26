@@ -1,5 +1,6 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import IDGenerator from "../../../services/generators/IDGenerator";
@@ -9,7 +10,7 @@ function ValidateLogin(data) {
     if (!data.password || data.password.length < 8) throw new Error("Missing or invalid password!")
 }
 
-export default async function Login (request, response) {
+async function Login (request, response) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "email",
@@ -70,3 +71,5 @@ export default async function Login (request, response) {
         response.json(responseData)
     }
 }
+
+export default Login;

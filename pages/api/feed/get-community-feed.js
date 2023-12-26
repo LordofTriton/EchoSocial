@@ -6,7 +6,7 @@ function ValidateFeed(data) {
     if (!data.accountID || !ParamValidator.isValidAccountID(data.accountID)) throw new Error("Missing or Invalid: accountID.")
 }
 
-export default async function CommunityFeed(request, response) {
+async function CommunityFeed(request, response) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -101,3 +101,5 @@ export default async function CommunityFeed(request, response) {
         response.json(responseData);
     }
 }
+
+export default authenticate(CommunityFeed);

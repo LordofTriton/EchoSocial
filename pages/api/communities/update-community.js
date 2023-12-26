@@ -1,5 +1,6 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 
@@ -20,7 +21,7 @@ function ValidateUpdateCommunity(data) {
     if (data.communityStatus && !ParamValidator.isValidCommunityStatus(data.communityStatus)) throw new Error("Invalid: community status.")
 }
 
-export default async function UpdateCommunity (request, response) {
+async function UpdateCommunity (request, response) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "communityID",
@@ -74,3 +75,5 @@ export async function UpdateCommunityCallback(params, reqOrigin) {
         }
     }
 }
+
+export default authenticate(UpdateCommunity);

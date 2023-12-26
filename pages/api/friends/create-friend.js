@@ -1,5 +1,6 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import IDGenerator from "../../../services/generators/IDGenerator";
@@ -15,7 +16,7 @@ function ValidateCreateFriend(data) {
     if (!data.friendID || !ParamValidator.isValidObjectID(data.friendID)) throw new Error("Missing or Invalid: friendID.")
 }
 
-export default async function CreateFriend(request, response) {
+async function CreateFriend(request, response) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -72,7 +73,6 @@ export async function CreateFriendCallback(params, reqOrigin) {
         clickable: true,
         redirect: `/user/${friend.accountID}`
     })
-    console.log("1")
     await axios.post(reqOrigin + "/api/notifications/create-notification", {
         accountID: friend.accountID,
         content: `${userAccount.firstName} ${userAccount.lastName} liked your page! You are now friends. Click to view their profile.`,
@@ -80,17 +80,14 @@ export async function CreateFriendCallback(params, reqOrigin) {
         clickable: true,
         redirect: `/user/${userAccount.accountID}`
     })
-    console.log("2")
     const userChat = (await axios.post(reqOrigin + "/api/messenger/create-chat", {
         accountID: params.accountID,
         targetID: friend.accountID
     })).data;
-    console.log("3")
     const friendChat = (await axios.post(reqOrigin + "/api/messenger/create-chat", {
         accountID: friend.accountID,
         targetID: params.accountID
     })).data;
-    console.log("4")
 
     await PusherServer.trigger(params.accountID, `NEW_FRIEND`, {
         accountID: friend.accountID,
@@ -104,7 +101,6 @@ export async function CreateFriendCallback(params, reqOrigin) {
         userLikee: true,
         userFriend: true
     })
-    console.log("5")
 
     await PusherServer.trigger(params.friendID, `NEW_FRIEND`, {
         accountID: userAccount.accountID,
@@ -118,5 +114,6 @@ export async function CreateFriendCallback(params, reqOrigin) {
         userLikee: true,
         userFriend: true
     })
-    console.log("6")
 }
+
+export default authenticate(CreateFriend);

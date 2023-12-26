@@ -1,5 +1,6 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import IDGenerator from "../../../services/generators/IDGenerator";
@@ -18,7 +19,7 @@ function ValidateCreateComment(data) {
     }
 }
 
-export default async function CreateComment (request, response) {
+async function CreateComment (request, response) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -110,3 +111,5 @@ export async function CreateCommentCallback(params, commentData, reqOrigin) {
         }
     }
 }
+
+export default authenticate(CreateComment);

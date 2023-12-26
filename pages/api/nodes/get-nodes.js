@@ -1,5 +1,6 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 
@@ -7,7 +8,7 @@ function ValidateGetNodes(data) {
     if (data.filter && data.filter.length < 2) throw new Error("Invalid filter.")
 }
 
-export default async function GetNodes(request, response) {
+async function GetNodes(request, response) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -43,3 +44,5 @@ export default async function GetNodes(request, response) {
         response.json(responseData);
     }
 }
+
+export default authenticate(GetNodes);

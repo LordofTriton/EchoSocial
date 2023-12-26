@@ -1,5 +1,6 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import AppConfig from "../../../util/config";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
@@ -12,7 +13,7 @@ function ValidateCreateSave(data) {
     if (!data.echoID || !ParamValidator.isValidAccountID(data.echoID)) throw new Error("Missing or Invalid: echoID")
 }
 
-export default async function CreateSave(request, response) {
+async function CreateSave(request, response) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -46,3 +47,5 @@ export default async function CreateSave(request, response) {
         response.json(responseData);
     }
 }
+
+export default authenticate(CreateSave);

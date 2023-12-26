@@ -1,5 +1,6 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 
@@ -10,7 +11,7 @@ function ValidatePingComment(data) {
     if (Object.keys(data).length > 2) throw new Error("Invalid number of operations.")
 }
 
-export default async function PingComment (request, response) {
+async function PingComment (request, response) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -50,3 +51,5 @@ export async function PingCommentCallback(params, reqOrigin) {
     if (params.addHeart) await db.collection("accounts").updateOne({ accountID: comment.value.accountID }, { $inc: { hearts: 1 } })
     if (params.removeHeart) await db.collection("accounts").updateOne({ accountID: comment.value.accountID }, { $inc: { hearts: -1 } })
 }
+
+export default authenticate(PingComment);

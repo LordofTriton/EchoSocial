@@ -1,5 +1,6 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import CreateNotification from "../notifications/create-notification";
@@ -18,7 +19,7 @@ function parseParams(data) {
     return { accountID, echoID, content, repliedTo };
 }
 
-export default async function ChangePassword (request, response) {
+async function ChangePassword (request, response) {
     const { db } = await getDB();
     const params = {
         accountID: request.body.accountID,
@@ -55,3 +56,5 @@ export default async function ChangePassword (request, response) {
         response.json(responseData)
     }
 }
+
+export default authenticate(ChangePassword);

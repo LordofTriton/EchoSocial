@@ -1,5 +1,6 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 
@@ -7,7 +8,7 @@ function ValidateDeleteNotification(data) {
     if (!data.notificationID || !ParamValidator.isValidObjectID(data.notificationID)) throw new Error("Missing or Invalid: notificationID.")
 }
 
-export default async function DeleteNotification(request, response) {
+async function DeleteNotification(request, response) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -30,3 +31,5 @@ export default async function DeleteNotification(request, response) {
         response.json(responseData);
     }
 }
+
+export default authenticate(DeleteNotification);

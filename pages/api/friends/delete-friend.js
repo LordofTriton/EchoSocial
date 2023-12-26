@@ -1,5 +1,6 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import DeleteChat from "../messenger/delete-chat";
@@ -9,7 +10,7 @@ function ValidateDeleteFriend(data) {
     if (!data.friendID || !ParamValidator.isValidObjectID(data.friendID)) throw new Error("Missing or Invalid: friendID")
 }
 
-export default async function DeleteFriend(request, response) {
+async function DeleteFriend(request, response) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -44,3 +45,5 @@ export default async function DeleteFriend(request, response) {
         response.json(responseData);
     }
 }
+
+export default authenticate(DeleteFriend);

@@ -1,5 +1,6 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 
@@ -9,7 +10,7 @@ function ValidateDeleteChat(data) {
     if (data.chatID && !ParamValidator.isValidObjectID(data.chatID)) throw new Error("Missing or Invalid: chatID")
 }
 
-export default async function DeleteChat(request, response) {
+async function DeleteChat(request, response) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -33,3 +34,5 @@ export default async function DeleteChat(request, response) {
         response.json(responseData);
     }
 }
+
+export default authenticate(DeleteChat);

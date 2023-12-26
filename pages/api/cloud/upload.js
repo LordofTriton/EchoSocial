@@ -3,6 +3,7 @@ import CloudinaryService from "../../../services/CloudinaryService";
 import multer from 'multer';
 import fs from 'fs';
 import mime from "mime";
+import { authenticate } from "../auth/authenticate";
 
 const upload = multer({ dest: '/tmp/' });
 
@@ -17,7 +18,7 @@ function parseParams(data) {
     return { accountID, echoID, content, repliedTo };
 }
 
-export default async function CreateFile (req, res) {
+async function CreateFile (req, res) {
     const responseData = await new Promise((resolve, reject) => {
         upload.array('media')(req, res, async (err) => {
             if (err) {
@@ -77,3 +78,5 @@ function cleanupTemporaryFiles(files) {
         });
     });
 }
+
+export default authenticate(CreateFile);

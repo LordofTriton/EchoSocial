@@ -1,5 +1,6 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import AppConfig from "../../../util/config";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
@@ -14,7 +15,7 @@ function ValidatePingAccount(data) {
     if (data.unfollow && (data.unfollow === data.accountID)) throw new Error("You can't unfollow yourself :)")
 }
 
-export default async function PingAccounts (request, response) {
+async function PingAccounts (request, response) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -87,3 +88,5 @@ export async function PingAccountCallback(params, reqOrigin) {
     if (params.unfollow) await db.collection("accounts").updateOne({ accountID: params.unfollow }, { $pull: { followers: params.accountID } })
 
 }
+
+export default authenticate(PingAccounts);

@@ -1,5 +1,6 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 
@@ -8,7 +9,7 @@ function ValidateGetBlacklists(data) {
     if (!data.blocker || !ParamValidator.isValidObjectID(data.blocker)) throw new Error("Invalid: blocker.")
 }
 
-export default async function GetBlacklist (request, response) {
+async function GetBlacklist (request, response) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -65,3 +66,5 @@ export default async function GetBlacklist (request, response) {
         response.json(responseData);
     }
 }
+
+export default authenticate(GetBlacklist);

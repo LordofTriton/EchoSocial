@@ -1,5 +1,6 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import DeleteChat from "../messenger/delete-chat";
@@ -14,7 +15,7 @@ function ValidateDeleteHeart(data) {
     if (data.commentID && !ParamValidator.isValidObjectID(data.commentID)) throw new Error("Invalid: commentID.")
 }
 
-export default async function DeleteHeart(request, response) {
+async function DeleteHeart(request, response) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -46,3 +47,5 @@ export default async function DeleteHeart(request, response) {
         response.json(responseData);
     }
 }
+
+export default authenticate(DeleteHeart);

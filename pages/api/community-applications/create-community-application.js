@@ -1,5 +1,6 @@
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import IDGenerator from "../../../services/generators/IDGenerator";
@@ -12,7 +13,7 @@ function ValidateCreateApplication(data) {
     if (!data.communityID || !ParamValidator.isValidObjectID(data.communityID)) throw new Error("Missing or Invalid: communityID.")
 }
 
-export default async function CreateCommunityApplication (request, response) {
+async function CreateCommunityApplication (request, response) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -73,3 +74,5 @@ export async function CreateApplicationCallback(params, reqOrigin) {
         })
     }
 }
+
+export default authenticate(CreateCommunityApplication);

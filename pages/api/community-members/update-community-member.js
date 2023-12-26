@@ -1,6 +1,7 @@
 
 import { getDB } from "../../../util/db/mongodb";
 import axios from "axios";
+import { authenticate } from "../auth/authenticate";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 
@@ -10,7 +11,7 @@ function ValidateUpdateMember(data) {
     if (data.role && !ParamValidator.isValidMemberRole(data.role)) throw new Error("Invalid: role")
 }
 
-export default async function UpdateMember(request, response) {
+async function UpdateMember(request, response) {
     const { db } = await getDB();
     let params = ParamValidator.parseParams([
         "accountID",
@@ -47,3 +48,5 @@ export default async function UpdateMember(request, response) {
         response.json(responseData);
     }
 }
+
+export default authenticate(UpdateMember);
