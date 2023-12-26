@@ -128,7 +128,7 @@ async function CreateAccount (request, response) {
             })
 
             await axios.post(AppConfig.HOST + "/api/settings/create-settings", { accountID: accountData.accountID }, { headers: request.headers })
-            await axios.post(AppConfig.HOST + "/api/notification/create-notification", {
+            await axios.post(AppConfig.HOST + "/api/notifications/create-notification", {
                 accountID: accountData.accountID,
                 content: `Hi, ${accountData.firstName}! Welcome to Echo. Click here to set up your profile.`,
                 image: accountData.profileImage.url,
