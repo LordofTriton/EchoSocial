@@ -81,7 +81,8 @@ async function CreateAccount (request, response) {
             access: {
                 token: TokenGenerator.GenerateAccessToken(),
                 expiration: Date.now()
-            }
+            },
+            emailVToken: TokenGenerator.GenerateAccessToken()
         }
 
         const createAccountResponse = await db.collection("accounts").insertOne(accountData)
@@ -117,7 +118,14 @@ async function CreateAccount (request, response) {
         response.json(responseData)
 
         response.once("finish", async () => {
-            await SendEmail(params.email, "Welcome", "welcome", { firstName: params.firstName })
+            await SendEmail(params.email, "Welcome to Echo!", "welcome", { 
+                firstName: params.firstName,
+                profileUrl: `${AppConfig.HOST}/user/${accountData.accountID}`
+            })
+            await SendEmail(params.email, "Verify Your Email Address", "verify-email", { 
+                firstName: params.firstName,
+                verifyEmailUrl: `${AppConfig.HOST}/verify-email?code=${accountData.emailVToken}`
+            })
 
             await axios.post(AppConfig.HOST + "/api/settings/create-settings", { accountID: accountData.accountID })
             await axios.post(AppConfig.HOST + "/api/notification/create-notification", {

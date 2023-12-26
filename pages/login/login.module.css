@@ -3,8 +3,6 @@
     height: 100%;
     background-color: var(--base);
     position: absolute;
-    /* background-image: url(/images/bckg1.jpg);
-    background-size: cover; */
     overflow: hidden;
     overflow-y: auto;
 }

@@ -27,6 +27,7 @@ function SendEmail(to, subject, template, content) {
     if (html.includes("{{FirstName}}") && content.firstName) html = html.replaceAll("{{FirstName}}", content.firstName)
     if (html.includes("{{ProfileURL}}") && content.profileUrl) html = html.replaceAll("{{ProfileURL}}", content.profileUrl)
     if (html.includes("{{ResetPasswordURL}}") && content.resetPasswordUrl) html = html.replaceAll("{{ResetPasswordURL}}", content.resetPasswordUrl)
+    if (html.includes("{{VerifyEmailURL}}") && content.verifyEmailUrl) html = html.replaceAll("{{VerifyEmailURL}}", content.verifyEmailUrl)
 
     const mailOptions = {
         from: "dev.echosocial@gmail.com",

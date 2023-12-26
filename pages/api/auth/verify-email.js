@@ -5,32 +5,32 @@ import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
 import CreateNotification from "../notifications/create-notification";
 import AppConfig from "../../../util/config";
+import SendEmail from "../../../services/EmailService";
+import IDGenerator from "../../../services/generators/IDGenerator";
 
 function ValidateResetPassword(data) {
-    if (!data.token || !ParamValidator.isValidObjectID(data.token)) throw new Error("Missing or Invalid: token.")
-    if (!data.newPassword || data.newPassword.trim().length < 6) throw new Error("Missing or Invalid: new password!")
-    if (data.newPassword !== data.confirmNewPassword) throw new Error("Passwords do not match!")
+    if (!data.code || !ParamValidator.isValidObjectID(data.code)) throw new Error("Invalid verification code.")
 }
 
-async function ResetPassword(request, response) {
+async function VerifyEmail(request, response) {
     const { db } = await getDB();
     const params = {
-        token: request.body.token,
-        newPassword: request.body.newPassword,
-        confirmNewPassword: request.body.confirmNewPassword
+        code: request.body.code
     }
 
     try {
         ValidateResetPassword(params);
 
-        const userAccount = await db.collection("accounts").findOne({ resetToken: params.token })
-        if (!userAccount) throw new Error("An error occurred please try again.")
+        const userAccount = await db.collection("accounts").findOne({ emailVToken: params.code })
+        if (!userAccount) throw new Error("Invalid verification code.")
 
-        const updatedPassword = await db.collection("accounts").findOneAndUpdate({ resetToken: params.token }, {$set: {password: params.newPassword}})
+        await db.collection("accounts").updateOne({ accountID: userAccount.accountID }, { $set: { 
+            emailConfirmed: true 
+        } })
 
         const responseData = ResponseClient.GenericSuccess({
-            data: updatedPassword,
-            message: "Password reset successfully."
+            data: null,
+            message: "Email verified successfully."
         })
 
         response.json(responseData)
@@ -38,7 +38,7 @@ async function ResetPassword(request, response) {
         response.once("finish", async () => {
             await axios.post(AppConfig.HOST + "/api/notifications/create-notification", {
                 accountID: userAccount.accountID,
-                content: `Your password was reset.`,
+                content: `Your email address has been confirmed.`,
                 image: userAccount.profileImage.url,
                 clickable: false,
                 redirect: ""
@@ -51,4 +51,4 @@ async function ResetPassword(request, response) {
     }
 }
 
-export default ResetPassword;
+export default VerifyEmail;

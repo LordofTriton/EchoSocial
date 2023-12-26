@@ -26,6 +26,7 @@ async function ForgotPassword (request, response) {
         if (!userAccount) throw new Error("No user with this email exists.")
 
         await SendEmail(params.email, "Forgot Password", "forgot-password", {
+            firstName: userAccount.firstName,
             resetPasswordUrl: `${AppConfig.HOST}/reset-password?token=${resetToken}`
         })
 

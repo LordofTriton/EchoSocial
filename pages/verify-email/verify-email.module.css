@@ -1,0 +1,59 @@
+@keyframes strobe {
+    0% { opacity: 1; }
+    50% { opacity: 0.3; }
+    100% { opacity: 1; }
+}
+
+.verifyEmailPage {
+    width: 100%;
+    height: 100%;
+    background-color: var(--base);
+    position: absolute;
+    overflow: hidden;
+    overflow-y: auto;
+}
+
+.verifyLogo {
+    width: 100px;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+.container {
+    width: fit-content;
+    height: fit-content;
+    max-width: 100%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+}
+
+.verifyEmailLoader {
+    display: block;
+    color: var(--primary);
+    font-size: 30px;
+    font-weight: 700;
+    text-align: center;
+    animation: strobe 3s infinite;
+}
+
+.verifyEmailText {
+    display: block;
+    color: var(--primary);
+    font-size: 30px;
+    font-weight: 700;
+    text-align: center;
+    margin: 0px 0px 60px 0px;
+}
+
+@media screen and (min-width: 1125px) {
+    .verifyEmailLoader {
+        font-size: 80px;
+    }
+
+    .verifyEmailText {
+        font-size: 80px;
+    }
+}
