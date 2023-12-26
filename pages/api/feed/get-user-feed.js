@@ -1,6 +1,7 @@
 import { getDB } from "../../../util/db/mongodb";
 import ParamValidator from "../../../services/validation/validator";
 import ResponseClient from "../../../services/validation/ResponseClient";
+import { authenticate } from "../auth/authenticate";
 
 function ValidateFeed(data) {
     if (!data.accountID || !ParamValidator.isValidAccountID(data.accountID)) throw new Error("Missing or Invalid: accountID.")
