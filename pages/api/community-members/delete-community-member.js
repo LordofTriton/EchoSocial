@@ -41,6 +41,8 @@ async function DeleteCommunityMember (request, response) {
 export async function DeleteMemberCallback(params, reqOrigin, request) {
     const community = await db.collection("communities").findOne({ communityID: params.communityID })
     await db.collection("nodes").findOneAndUpdate({ nodeID: community.node.nodeID }, { $inc: { pings: 1 }})
+    const memberCount = await db.collection("members").countDocuments({ communityID: params.communityID })
+    if (memberCount < 1) await db.collection("communities").deleteOne({ communityID: params.communityID })
 }
 
 export default authenticate(DeleteCommunityMember);
