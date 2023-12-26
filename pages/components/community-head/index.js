@@ -102,7 +102,7 @@ export default function CommunityHead({ data, page, title }) {
             userID: page.activeUser.accountID
         })
         page.createAlert("success", "Left community successfully.")
-        page.router.push("/communities/discover")
+        page.router.reload()
     }
 
     const handleJoinGroup = async () => {
@@ -117,7 +117,8 @@ export default function CommunityHead({ data, page, title }) {
                 }, createdApplication)
             } else {
                 const createdMember = (data) => {
-                    setCommunityData({ ...communityData, memberCount: communityData.memberCount + 1 })
+                    setCommunityData({ ...communityData, memberCount: communityData.memberCount + 1, userMember: true })
+                    page.router.reload()
                     page.createAlert("success", "Joined community successfully.")
                 }
                 APIClient.post(APIClient.routes.createCommunityMember, {
