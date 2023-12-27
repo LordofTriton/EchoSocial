@@ -26,6 +26,7 @@ function isValidEmail(email) {
 function isValidPassword(password) {
     if (password.includes(" ")) return false;
     if (password.trim().length < 6) return false;
+    return true;
 }
 
 function isValidGender(gender) {
