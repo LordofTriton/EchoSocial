@@ -153,7 +153,7 @@ export default function EchoCreator({toggle, control, page}) {
     return (
         <>
         <div className="modalOverlay" style={{display: toggle ? "block" : "none"}} onClick={() => closeModal()}></div>
-        <div className={styles.echoCreatorContainer} style={{right: !toggle ? "-100vw" : null}}>
+        <div className={styles.echoCreatorContainer} style={{right: !toggle ? "-150vw" : null}}>
             <div className={styles.echoCreatorContainerHead}>
                 <span className={styles.echoCreatorContainerTitle}>{toggle.echoID ? "Edit" : "Create an"} <span className="titleGradient">Echo</span></span>
                 <span className={styles.echoCreatorContainerClose} onClick={() => closeModal()} style={{ transform: "scale(1.3,1.3)" }}><SVGServer.CloseIcon color="var(--primary)" width="30px" height="30px" /></span>

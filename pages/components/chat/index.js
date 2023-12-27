@@ -349,7 +349,7 @@ export default function Chat({ toggle, data, page }) {
     return (
         <>
             <div className="modalOverlay" style={{ display: toggle ? "block" : "none" }} onClick={() => page.setShowChat(false)}></div>
-            <div className={styles.chat} style={{ right: !toggle ? "-100vw" : null }}>
+            <div className={styles.chat} style={{ right: !toggle ? "-150vw" : null }}>
                 <div className={styles.chatHead}>
                     <span className={styles.chatNavArrow} onClick={() => { page.setShowChat(false); page.setShowMessenger(true); }}><SVGServer.ArrowRight color="var(--primary)" width="30px" height="40px" /></span>
                     <div className={styles.chatUserProfile} style={{backgroundImage: chatData ? `url(${chatData.target.profileImage.url})` : null}} onClick={() => page.router.push(`/user/${chatData.target.accountID}`)}></div>
