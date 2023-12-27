@@ -6,7 +6,6 @@ import SVGServer from "../../../services/svg/svgServer";
 import DateGenerator from "../../../services/generators/DateGenerator";
 import Helpers from "../../../util/Helpers";
 import PusherClient from "../../../services/PusherClient";
-import pusherJs from "pusher-js";
 
 export default function Notifications({toggle, control, page}) {
     const [notifications, setNotifications] = useState([])

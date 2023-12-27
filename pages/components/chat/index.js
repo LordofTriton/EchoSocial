@@ -6,7 +6,6 @@ import SVGServer from "../../../services/svg/svgServer";
 import APIClient from "../../../services/APIClient";
 import Helpers from "../../../util/Helpers";
 import PusherClient from "../../../services/PusherClient";
-import pusherJs from "pusher-js";
 
 function Message({ chatData, messageData, page, key, index, methods }) {
 

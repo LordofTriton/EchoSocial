@@ -1,4 +1,3 @@
-import pusherJs from "pusher-js";
 import React, {useEffect, useState} from "react";
 import APIClient from "../../../services/APIClient";
 import PusherClient from "../../../services/PusherClient";

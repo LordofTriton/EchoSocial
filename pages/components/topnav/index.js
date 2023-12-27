@@ -8,7 +8,6 @@ import AccountNav from "../accountnav";
 import Search from "../search";
 import Helpers from "../../../util/Helpers";
 import PusherClient from "../../../services/PusherClient";
-import pusherJs from "pusher-js";
 
 export default function TopNav({ page }) {
     const [userNotifications, setUserNotifications] = useState([])

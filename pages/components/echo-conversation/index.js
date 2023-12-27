@@ -8,7 +8,6 @@ import APIClient from "../../../services/APIClient";
 import { Form } from "../form";
 import Helpers from "../../../util/Helpers";
 import PusherClient from "../../../services/PusherClient";
-import pusherJs from "pusher-js";
 
 export default function EchoConversation({ data, control, page }) {
     const [echoData, setEchoData] = useState(data)

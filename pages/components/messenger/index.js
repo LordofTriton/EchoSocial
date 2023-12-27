@@ -6,7 +6,6 @@ import SVGServer from "../../../services/svg/svgServer";
 import Helpers from "../../../util/Helpers";
 import APIClient from "../../../services/APIClient";
 import PusherClient from "../../../services/PusherClient";
-import pusherJs from "pusher-js";
 
 export default function Messenger({ toggle, control, page }) {
     const [userChats, setUserChats] = useState([])
