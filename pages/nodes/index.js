@@ -34,7 +34,7 @@ export default function Nodes() {
     }, [])
 
     const handleSubmit = async () => {
-        APIClient.post(APIClient.routes.updateAccount, { 
+        await APIClient.post(APIClient.routes.updateAccount, { 
             accountID: activeUser.accountID,
             nodes: selectedNodes
         })
