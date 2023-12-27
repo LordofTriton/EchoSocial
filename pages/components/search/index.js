@@ -172,7 +172,7 @@ export default function Search({toggle, control, page}) {
     return (
         <>
         <div className="modalOverlay" style={{display: toggle ? "block" : "none"}} onClick={() => control(false)}></div>
-        <div className={styles.searchContainer} style={{right: !toggle ? "-700px" : null}} onScroll={handleScroll}>
+        <div className={styles.searchContainer} style={{right: !toggle ? "-100vw" : null}} onScroll={handleScroll}>
             <div className={styles.searchContainerHead}>
                 <span className={styles.searchContainerTitle}><span className="titleGradient">Search</span></span>
                 <span className={styles.searchContainerClose} onClick={() => control(false)} style={{ transform: "scale(1.3,1.3)" }}><SVGServer.CloseIcon color="var(--primary)" width="30px" height="30px" /></span>

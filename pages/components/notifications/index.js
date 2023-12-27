@@ -99,7 +99,7 @@ export default function Notifications({toggle, control, page}) {
     return (
         <>
         <div className="modalOverlay" style={{display: toggle ? "block" : "none"}} onClick={() => control(false)}></div>
-        <div className={styles.notificationsContainer} style={{right: !toggle ? "-700px" : null}} onScroll={handleScroll}>
+        <div className={styles.notificationsContainer} style={{right: !toggle ? "-100vw" : null}} onScroll={handleScroll}>
             <div className={styles.notificationsContainerHead}>
                 <span className={styles.notificationsContainerTitle}><span className="titleGradient">Notifications</span></span>
                 <span className={styles.notificationsContainerClose} onClick={() => control(false)} style={{ transform: "scale(1.3,1.3)" }}><SVGServer.CloseIcon color="var(--primary)" width="30px" height="30px" /></span>

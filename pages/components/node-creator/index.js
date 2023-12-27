@@ -48,7 +48,7 @@ export default function NodeCreator({toggle, control, page}) {
     return (
         <>
         <div className="modalOverlay" style={{display: toggle ? "block" : "none"}} onClick={() => control(false)}></div>
-        <div className={styles.nodeCreatorContainer} style={{right: !toggle ? "-700px" : null}}>
+        <div className={styles.nodeCreatorContainer} style={{right: !toggle ? "-100vw" : null}}>
             <div className={styles.nodeCreatorContainerHead}>
                 <span className={styles.nodeCreatorContainerTitle}>Create a <span className="titleGradient">Node</span></span>
                 <span className={styles.nodeCreatorContainerClose} onClick={() => control(false)} style={{ transform: "scale(1.3,1.3)" }}><SVGServer.CloseIcon color="var(--primary)" width="30px" height="30px" /></span>

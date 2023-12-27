@@ -91,7 +91,7 @@ export default function Messenger({ toggle, control, page }) {
     return (
         <>
             <div className="modalOverlay" style={{ display: toggle ? "block" : "none" }} onClick={() => control(false)}></div>
-            <div className={styles.messenger} style={{ right: !toggle ? "-700px" : null }} onScroll={handleScroll}>
+            <div className={styles.messenger} style={{ right: !toggle ? "-100vw" : null }} onScroll={handleScroll}>
                 <div className={styles.messengerHead}>
                     <span className={styles.messengerTitle}>
                         <span className="titleGradient">Messages</span>
