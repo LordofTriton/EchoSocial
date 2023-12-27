@@ -37,7 +37,7 @@ export default function CommunitiesFeed() {
         const updateCommunities = (data) => {
             if (data.success) {
                 if (data.data.length > 0) Helpers.setPaginatedState(data.data, searchQuery.length > 0 ? setSearchedCommunities : setCommunities, data.pagination, "communityID")
-                else searchQuery.length > 0 ? searchedCommunities([]) : setCommunities([])
+                else searchQuery.length > 0 ? setSearchedCommunities([]) : setCommunities([])
                 setPagination(data.pagination)
             } else createAlert("error", data.message)
             setCommunityLoader(false)
