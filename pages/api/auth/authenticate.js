@@ -13,6 +13,10 @@ export const authenticate = (handler) => async (req, res) => {
         if (!userAccount) throw new Error("Unauthorised. Are you logged in?")
         if (DateGenerator.hoursBetween(Date.now(), userAccount.lastLogin) > 24) throw new Error("Your login expired. Please re-login.")
 
+        await db.collection("accounts").updateOne({ "access.token": accessToken }, { $set: {
+            lastActive: Date.now()
+        }})
+
         return handler(req, res, accessToken);
     } catch (error) {
         console.log(error)
