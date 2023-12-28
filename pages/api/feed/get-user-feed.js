@@ -43,7 +43,7 @@ async function UserFeed(request, response, authToken) {
         if (params.mediaType) filters["content.media.type"] = params.mediaType;
         if (params.filter) filters.$or.push({ "content.text": { $regex: params.filter, $options: 'i' } })
 
-        if (params.accountID !== params.userID) filters.$and.push({ nodes: { $in: userAccount.nodes.map((node) => node.nodeID) } })
+        if (params.accountID !== params.userID) filters.$and.push({ $or: [{ nodes: { $in: userAccount.nodes.map((node) => node.nodeID) } }, {communityID: { $in: communities.map((obj) => obj.communityID) }}] })
 
         const pagination = {
             page: parseInt(params.page),
