@@ -59,7 +59,7 @@ export default function EchoConversation({ data, control, page }) {
                 echoID: data.echoID,
                 page: commentPage,
                 pageSize: 10
-            }, updateComments)
+            }, updateComments, null, true)
         }
     }, [data, commentPage])
 
