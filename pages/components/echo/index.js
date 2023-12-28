@@ -143,19 +143,22 @@ export default function Echo({ data, page, fullText=false, saved=false }) {
                         </span>
                         </>
                     }
-                    <div className={styles.echoHeadOptionIcon}>
-                        <SVGServer.OptionIcon color="var(--secondary)" width="25px" height="25px" />
-                        <div className={styles.echoHeadOptionBox}>
-                            {
-                                echoData.accountID === page.activeUser.accountID && echoData.nodes.length > 0 ?
-                                <>
-                                { echoData.communityID && !page.community ? null : <span className={styles.echoHeadOption} onClick={() => page.setShowEchoCreator(echoData)}>Edit Post</span> }
-                                <span className={styles.echoHeadOption} onClick={() => handleDeleteEcho()}>Delete Post</span>
-                                </> : null
-                            }
-                            <span className={styles.echoHeadOption} onClick={() => setSHowNodes(!showNodes)}>{showNodes ? "Hide" : "Show"} Nodes</span>
-                        </div>
-                    </div>
+                    {
+                        (echoData.accountID === page.activeUser.accountID && echoData.nodes.length > 0) || getNodeData().length > 0 ?
+                        <div className={styles.echoHeadOptionIcon}>
+                            <SVGServer.OptionIcon color="var(--secondary)" width="25px" height="25px" />
+                            <div className={styles.echoHeadOptionBox}>
+                                {
+                                    echoData.accountID === page.activeUser.accountID && echoData.nodes.length > 0 ?
+                                    <>
+                                    { echoData.communityID && !page.community ? null : <span className={styles.echoHeadOption} onClick={() => page.setShowEchoCreator(echoData)}>Edit Post</span> }
+                                    <span className={styles.echoHeadOption} onClick={() => handleDeleteEcho()}>Delete Post</span>
+                                    </> : null
+                                }
+                                {getNodeData().length > 0 ? <span className={styles.echoHeadOption} onClick={() => setSHowNodes(!showNodes)}>{showNodes ? "Hide" : "Show"} Nodes</span> : null}
+                            </div>
+                        </div> : null
+                    }
                 </div>
                 <div className={styles.echoContent}>
                     { echoData.content.text ? <pre className={styles.echoText} style={{marginBottom: echoData.content.media ? null : "0px"}}>{Helpers.textLimiter(echoData.content.text, 180, fullText)} { echoData.content.text.length > 180 && !fullText ? <span className="titleGradient" onClick={() => page.setShowEchoViewer(echoData)}>See more</span> : null }</pre> : null}

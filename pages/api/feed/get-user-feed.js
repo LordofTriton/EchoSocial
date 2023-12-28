@@ -40,8 +40,10 @@ async function UserFeed(request, response, authToken) {
             
         }
         if (params.hasMedia) filters["content.media"] = { $ne: null }
-        if (params.mediaType) filters["content.media.type"] = params.mediaType
+        if (params.mediaType) filters["content.media.type"] = params.mediaType;
         if (params.filter) filters.$or.push({ "content.text": { $regex: params.filter, $options: 'i' } })
+
+        if (params.accountID !== params.userID) filters.$and.push({ nodes: { $in: userAccount.nodes.map((node) => node.nodeID) } })
 
         const pagination = {
             page: parseInt(params.page),
