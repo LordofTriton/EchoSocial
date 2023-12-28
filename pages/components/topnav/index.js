@@ -30,7 +30,7 @@ export default function TopNav({ page }) {
             accountID: page.activeUser.accountID,
             page: 1,
             pageSize: 10
-        }, updateNotifications)
+        }, updateNotifications, null, true)
     }, [])
 
     return (

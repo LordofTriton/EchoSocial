@@ -64,7 +64,7 @@ async function CreateFriend(request, response, authToken) {
             }, { headers: { Authorization: `Bearer ${authToken}` } })
             await axios.post(AppConfig.HOST + "/api/notifications/create-notification", {
                 accountID: friend.accountID,
-                content: `${userAccount.firstName} ${userAccount.lastName} liked your page! You are now friends. Click to view their profile.`,
+                content: `You are now friends with ${userAccount.firstName} ${userAccount.lastName}. Click to view their profile.`,
                 image: userAccount.profileImage.url,
                 clickable: true,
                 redirect: `/user/${userAccount.accountID}`

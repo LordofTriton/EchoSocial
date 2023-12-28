@@ -377,7 +377,7 @@ export default function Chat({ toggle, data, page }) {
                             }}></div>  : null
                         }
                         {
-                            page.activeChat && chatMessages && chatMessages.length ?
+                            page.activeChat && chatMessages && chatMessages.length > 0 ?
                                 chatMessages.map((message, index) =>
                                     <>
                                         { index === 0 || DateGenerator.hoursBetween(message.datetime, chatMessages[index - 1].datetime) > 2 ? <span className={styles.chatMessagesTimeDivider}>{ DateGenerator.GenerateDateTime(message.datetime) }</span> : null }
@@ -390,6 +390,11 @@ export default function Chat({ toggle, data, page }) {
                                         }} />
                                     </>
                                 ) : null
+                        }
+                        {
+                            chatMessages.length < 1 && !messageLoader ?
+                                <span className={styles.chatBlock} style={{color: "var(--primary)", backgroundColor: "transparent"}}>You have no messages in this chat.<br />Send a message to say Hi.</span>
+                            : null
                         }
                     </div>
                 </div>
