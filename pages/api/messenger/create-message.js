@@ -75,38 +75,34 @@ async function CreateMessage(request, response, authToken) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await CreateMessageCallback(params, AppConfig.HOST, authToken)
+            const { db } = await getDB();
+            const userChat = (await db.collection("chats").findOne({ accountID: params.accountID, chatID: params.chatID }))
+            await axios.post(AppConfig.HOST + "/api/messenger/update-chat", {
+                accountID: params.accountID,
+                chatID: params.chatID,
+                latestMessage: params.content,
+                lastUpdated: Date.now()
+            }, { headers: { Authorization: `Bearer ${authToken}` } })
+            const targetChat = (await db.collection("chats").findOne({ accountID: userChat.targetID, chatID: params.chatID }))
+            if (!targetChat) {
+                await axios.post(AppConfig.HOST + "/api/messenger/create-chat", {
+                    accountID: userChat.targetID,
+                    targetID: params.accountID,
+                    latestMessage: params.content
+                }, { headers: { Authorization: `Bearer ${authToken}` } })
+            } else {
+                await axios.post(AppConfig.HOST + "/api/messenger/update-chat", {
+                    accountID: targetChat.accountID,
+                    chatID: params.chatID,
+                    latestMessage: params.content,
+                    lastUpdated: Date.now()
+                }, { headers: { Authorization: `Bearer ${authToken}` } })
+            }
         })
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
         response.json(responseData);
-    }
-}
-
-export async function CreateMessageCallback(params, reqOrigin, authToken) {
-    const { db } = await getDB();
-    const userChat = (await db.collection("chats").findOne({ accountID: params.accountID, chatID: params.chatID }))
-    await axios.post(reqOrigin + "/api/messenger/update-chat", {
-        accountID: params.accountID,
-        chatID: params.chatID,
-        latestMessage: params.content,
-        lastUpdated: Date.now()
-    }, { headers: { Authorization: `Bearer ${authToken}` } })
-    const targetChat = (await db.collection("chats").findOne({ accountID: userChat.targetID, chatID: params.chatID }))
-    if (!targetChat) {
-        await axios.post(reqOrigin + "/api/messenger/create-chat", {
-            accountID: userChat.targetID,
-            targetID: params.accountID,
-            latestMessage: params.content
-        }, { headers: { Authorization: `Bearer ${authToken}` } })
-    } else {
-        await axios.post(reqOrigin + "/api/messenger/update-chat", {
-            accountID: targetChat.accountID,
-            chatID: params.chatID,
-            latestMessage: params.content,
-            lastUpdated: Date.now()
-        }, { headers: { Authorization: `Bearer ${authToken}` } })
     }
 }
 

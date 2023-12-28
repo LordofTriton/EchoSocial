@@ -42,8 +42,8 @@ async function VerifyEmail(request, response, authToken) {
                 image: userAccount.profileImage.url,
                 clickable: false,
                 redirect: ""
-            })
-        }, { headers: { Authorization: `Bearer ${userAccount.access.token}` } })
+            }, { headers: { Authorization: `Bearer ${userAccount.access.token}` } })
+        })
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })

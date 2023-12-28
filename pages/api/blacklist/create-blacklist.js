@@ -51,8 +51,8 @@ async function CreateBlacklist (request, response, authToken) {
         response.json(responseData);
 
         response.once("finish", async () => {
-            await axios.delete(reqOrigin + `/api/hearts/delete-heart?accountID=${params.blocker}&userID=${params.blockee}`)
-        }, { headers: { Authorization: `Bearer ${authToken}` } })
+            await axios.delete(AppConfig.HOST + `/api/hearts/delete-heart?accountID=${params.blocker}&userID=${params.blockee}`, { headers: { Authorization: `Bearer ${authToken}` } })
+        })
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })

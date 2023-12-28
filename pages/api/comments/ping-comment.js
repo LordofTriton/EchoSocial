@@ -37,19 +37,14 @@ async function PingComment (request, response, authToken) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await PingCommentCallback(params, AppConfig.HOST, authToken)
+            if (params.addHeart) await db.collection("accounts").updateOne({ accountID: comment.value.accountID }, { $inc: { hearts: 1 } })
+            if (params.removeHeart) await db.collection("accounts").updateOne({ accountID: comment.value.accountID }, { $inc: { hearts: -1 } })
         })
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
         response.json(responseData);
     }
-}
-
-export async function PingCommentCallback(params, reqOrigin, authToken) {
-    const { db } = await getDB();
-    if (params.addHeart) await db.collection("accounts").updateOne({ accountID: comment.value.accountID }, { $inc: { hearts: 1 } })
-    if (params.removeHeart) await db.collection("accounts").updateOne({ accountID: comment.value.accountID }, { $inc: { hearts: -1 } })
 }
 
 export default authenticate(PingComment);

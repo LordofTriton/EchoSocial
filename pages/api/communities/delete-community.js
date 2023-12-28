@@ -27,12 +27,13 @@ async function DeleteCommunity (request, response, authToken) {
 
         const deleteCommunityResponse = await db.collection("communities").deleteOne({ communityID: params.communityID })
 
-        await axios.delete(AppConfig.HOST + `/api/nodes/delete-node?accountID=${params.accountID}&nodeID=${community.node.nodeID}`)
+        await axios.delete(AppConfig.HOST + `/api/nodes/delete-node?accountID=${params.accountID}&nodeID=${community.node.nodeID}`, { headers: { Authorization: `Bearer ${authToken}` } })
 
         const responseData = ResponseClient.DBModifySuccess({
             data: deleteCommunityResponse,
             message: "Community deleted successfully."
-        }, { headers: { Authorization: `Bearer ${authToken}` } })
+        })
+        
         response.json(responseData);
     } catch (error) {
         console.log(error)

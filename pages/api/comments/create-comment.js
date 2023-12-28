@@ -68,49 +68,41 @@ async function CreateComment (request, response, authToken) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await CreateCommentCallback(params, commentData, AppConfig.HOST, authToken)
+            await axios.post(AppConfig.HOST + "/api/hearts/create-heart", {
+                accountID: params.accountID,
+                commentID: commentData.commentID
+            }, { headers: { Authorization: `Bearer ${authToken}` } })
+        
+            if (params.accountID !== echo.accountID) {
+                const echoUserSettings = await db.collection("settings").findOne({ accountID: echo.accountID })
+                if (echoUserSettings.commentNotification) {
+                    await axios.post(AppConfig.HOST + "/api/notifications/create-notification", {
+                        accountID: echo.accountID,
+                        content: `${commentUser.firstName} ${commentUser.lastName} commented on your echo.`,
+                        image: commentUser.profileImage.url,
+                        clickable: true,
+                        redirect: echo.url
+                    }, { headers: { Authorization: `Bearer ${authToken}` } })
+                }
+            }
+        
+            if (params.repliedTo && params.accountID !== params.repliedTo.accountID) {
+                const replyUserSettings = await db.collection("settings").findOne({ accountID: params.repliedTo.accountID })
+                if (replyUserSettings.commentReplyNotification) {
+                    await axios.post(AppConfig.HOST + "/api/notifications/create-notification", {
+                        accountID: params.repliedTo.accountID,
+                        content: `${commentUser.firstName} ${commentUser.lastName} replied to your comment on an echo.`,
+                        image: commentUser.profileImage.url,
+                        clickable: true,
+                        redirect: echo.url
+                    }, { headers: { Authorization: `Bearer ${authToken}` } })
+                }
+            }
         })
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
         response.json(responseData);
-    }
-}
-
-export async function CreateCommentCallback(params, commentData, reqOrigin, authToken) {
-    const { db } = await getDB();
-    const echo = (await db.collection("echoes").findOne({ echoID: params.echoID }))
-    const commentUser = (await db.collection("accounts").findOne({ accountID: params.accountID }))
-    
-    await axios.post(reqOrigin + "/api/hearts/create-heart", {
-        accountID: params.accountID,
-        commentID: commentData.commentID
-    }, { headers: { Authorization: `Bearer ${authToken}` } })
-
-    if (params.accountID !== echo.accountID) {
-        const echoUserSettings = await db.collection("settings").findOne({ accountID: echo.accountID })
-        if (echoUserSettings.commentNotification) {
-            await axios.post(reqOrigin + "/api/notifications/create-notification", {
-                accountID: echo.accountID,
-                content: `${commentUser.firstName} ${commentUser.lastName} commented on your echo.`,
-                image: commentUser.profileImage.url,
-                clickable: true,
-                redirect: echo.url
-            }, { headers: { Authorization: `Bearer ${authToken}` } })
-        }
-    }
-
-    if (params.repliedTo && params.accountID !== params.repliedTo.accountID) {
-        const replyUserSettings = await db.collection("settings").findOne({ accountID: params.repliedTo.accountID })
-        if (replyUserSettings.commentReplyNotification) {
-            await axios.post(reqOrigin + "/api/notifications/create-notification", {
-                accountID: params.repliedTo.accountID,
-                content: `${commentUser.firstName} ${commentUser.lastName} replied to your comment on an echo.`,
-                image: commentUser.profileImage.url,
-                clickable: true,
-                redirect: echo.url
-            }, { headers: { Authorization: `Bearer ${authToken}` } })
-        }
     }
 }
 

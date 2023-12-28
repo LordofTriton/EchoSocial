@@ -64,20 +64,14 @@ async function CreateEcho(request, response, authToken) {
                 echoID: echoData.echoID
             }, { headers: { Authorization: `Bearer ${authToken}` } })
 
-            await CreateEchoCallback(params, AppConfig.HOST, authToken)
+            if (params.communityID) {
+                await db.collection("communities").updateOne({ communityID: params.communityID }, { $set: { lastUpdated: Date.now() } })
+            }
         })
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
         response.json(responseData);
-    }
-}
-
-export async function CreateEchoCallback(params, reqOrigin, authToken) {
-    const { db } = await getDB();
-
-    if (params.communityID) {
-        await db.collection("communities").updateOne({ communityID: params.communityID }, { $set: { lastUpdated: Date.now() } })
     }
 }
 

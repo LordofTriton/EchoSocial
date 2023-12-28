@@ -37,20 +37,15 @@ async function PingEcho(request, response, authToken) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await PingEchoCallback(params, AppConfig.HOST, authToken)
+            const echo = await db.collection("echoes").findOne({ echoID: params.echoID })
+            if (params.addHeart) await db.collection("accounts").updateOne({ accountID: echo.accountID }, { $inc: { hearts: 1 } })
+            if (params.removeHeart) await db.collection("accounts").updateOne({ accountID: echo.accountID }, { $inc: { hearts: -1 } })
         })
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
         response.json(responseData);
     }
-}
-
-export async function PingEchoCallback(params, reqOrigin, authToken) {
-    const { db } = await getDB();
-    const echo = await db.collection("echoes").findOne({ echoID: params.echoID })
-    if (params.addHeart) await db.collection("accounts").updateOne({ accountID: echo.accountID }, { $inc: { hearts: 1 } })
-    if (params.removeHeart) await db.collection("accounts").updateOne({ accountID: echo.accountID }, { $inc: { hearts: -1 } })
 }
 
 export default authenticate(PingEcho);

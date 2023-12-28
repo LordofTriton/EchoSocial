@@ -52,68 +52,63 @@ async function CreateFriend(request, response, authToken) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await CreateFriendCallback(params, AppConfig.HOST, authToken)
+            const userAccount = await db.collection("accounts").findOne({ accountID: params.accountID })
+            const friend = await db.collection("accounts").findOne({ accountID: params.friendID })
+            
+            await axios.post(AppConfig.HOST + "/api/notifications/create-notification", {
+                accountID: userAccount.accountID,
+                content: `You are now friends with ${friend.firstName} ${friend.lastName}.`,
+                image: friend.profileImage.url,
+                clickable: true,
+                redirect: `/user/${friend.accountID}`
+            }, { headers: { Authorization: `Bearer ${authToken}` } })
+            await axios.post(AppConfig.HOST + "/api/notifications/create-notification", {
+                accountID: friend.accountID,
+                content: `${userAccount.firstName} ${userAccount.lastName} liked your page! You are now friends. Click to view their profile.`,
+                image: userAccount.profileImage.url,
+                clickable: true,
+                redirect: `/user/${userAccount.accountID}`
+            }, { headers: { Authorization: `Bearer ${authToken}` } })
+            const userChat = (await axios.post(AppConfig.HOST + "/api/messenger/create-chat", {
+                accountID: params.accountID,
+                targetID: friend.accountID
+            }, { headers: { Authorization: `Bearer ${authToken}` } })).data;
+            const friendChat = (await axios.post(AppConfig.HOST + "/api/messenger/create-chat", {
+                accountID: friend.accountID,
+                targetID: params.accountID
+            }, { headers: { Authorization: `Bearer ${authToken}` } })).data;
+        
+            await PusherServer.trigger(params.accountID, `NEW_FRIEND`, {
+                accountID: friend.accountID,
+                firstName: friend.firstName,
+                lastName: friend.lastName,
+                profileImage: friend.profileImage,
+                profileCover: friend.profileCover,
+                nickname: friend.nickname,
+                userChat: friendChat ? friendChat.data : null,
+                userLiked: true,
+                userLikee: true,
+                userFriend: true
+            })
+        
+            await PusherServer.trigger(params.friendID, `NEW_FRIEND`, {
+                accountID: userAccount.accountID,
+                firstName: userAccount.firstName,
+                lastName: userAccount.lastName,
+                profileImage: userAccount.profileImage,
+                profileCover: userAccount.profileCover,
+                nickname: userAccount.nickname,
+                userChat: userChat ? userChat.data : null,
+                userLiked: true,
+                userLikee: true,
+                userFriend: true
+            })
         })
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
         response.json(responseData);
     }
-}
-
-export async function CreateFriendCallback(params, reqOrigin, authToken) {
-    const { db } = await getDB();
-    const userAccount = await db.collection("accounts").findOne({ accountID: params.accountID })
-    const friend = await db.collection("accounts").findOne({ accountID: params.friendID })
-    
-    await axios.post(reqOrigin + "/api/notifications/create-notification", {
-        accountID: userAccount.accountID,
-        content: `You are now friends with ${friend.firstName} ${friend.lastName}.`,
-        image: friend.profileImage.url,
-        clickable: true,
-        redirect: `/user/${friend.accountID}`
-    }, { headers: { Authorization: `Bearer ${authToken}` } })
-    await axios.post(reqOrigin + "/api/notifications/create-notification", {
-        accountID: friend.accountID,
-        content: `${userAccount.firstName} ${userAccount.lastName} liked your page! You are now friends. Click to view their profile.`,
-        image: userAccount.profileImage.url,
-        clickable: true,
-        redirect: `/user/${userAccount.accountID}`
-    }, { headers: { Authorization: `Bearer ${authToken}` } })
-    const userChat = (await axios.post(reqOrigin + "/api/messenger/create-chat", {
-        accountID: params.accountID,
-        targetID: friend.accountID
-    }, { headers: { Authorization: `Bearer ${authToken}` } })).data;
-    const friendChat = (await axios.post(reqOrigin + "/api/messenger/create-chat", {
-        accountID: friend.accountID,
-        targetID: params.accountID
-    }, { headers: { Authorization: `Bearer ${authToken}` } })).data;
-
-    await PusherServer.trigger(params.accountID, `NEW_FRIEND`, {
-        accountID: friend.accountID,
-        firstName: friend.firstName,
-        lastName: friend.lastName,
-        profileImage: friend.profileImage,
-        profileCover: friend.profileCover,
-        nickname: friend.nickname,
-        userChat: friendChat ? friendChat.data : null,
-        userLiked: true,
-        userLikee: true,
-        userFriend: true
-    })
-
-    await PusherServer.trigger(params.friendID, `NEW_FRIEND`, {
-        accountID: userAccount.accountID,
-        firstName: userAccount.firstName,
-        lastName: userAccount.lastName,
-        profileImage: userAccount.profileImage,
-        profileCover: userAccount.profileCover,
-        nickname: userAccount.nickname,
-        userChat: userChat ? userChat.data : null,
-        userLiked: true,
-        userLikee: true,
-        userFriend: true
-    })
 }
 
 export default authenticate(CreateFriend);

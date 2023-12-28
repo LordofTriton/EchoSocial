@@ -29,20 +29,16 @@ async function DeleteCommunityMember (request, response, authToken) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await DeleteMemberCallback(params, AppConfig.HOST, authToken)
+            const community = await db.collection("communities").findOne({ communityID: params.communityID })
+            await db.collection("nodes").findOneAndUpdate({ nodeID: community.node.nodeID }, { $inc: { pings: 1 }})
+            const memberCount = await db.collection("members").countDocuments({ communityID: params.communityID })
+            if (memberCount < 1) await db.collection("communities").deleteOne({ communityID: params.communityID })
         })
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
         response.json(responseData);
     }
-}
-
-export async function DeleteMemberCallback(params, reqOrigin, authToken) {
-    const community = await db.collection("communities").findOne({ communityID: params.communityID })
-    await db.collection("nodes").findOneAndUpdate({ nodeID: community.node.nodeID }, { $inc: { pings: 1 }})
-    const memberCount = await db.collection("members").countDocuments({ communityID: params.communityID })
-    if (memberCount < 1) await db.collection("communities").deleteOne({ communityID: params.communityID })
 }
 
 export default authenticate(DeleteCommunityMember);

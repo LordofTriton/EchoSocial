@@ -48,30 +48,25 @@ async function CreateCommunityApplication (request, response, authToken) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await CreateApplicationCallback(params, AppConfig.HOST, authToken)
+            const user = await db.collection("accounts").findOne({ accountID: params.accountID });
+            const admins = await db.collection("members").find({ 
+                communityID: params.communityID, 
+                $or: [ { role: "admin" }, { role: "moderator" } ] 
+            }).toArray()
+            for (let admin of admins) {
+                await axios.post(AppConfig.HOST + "/api/notifications/create-notification", {
+                    accountID: admin.accountID,
+                    content: `${user.firstName} ${user.lastName} applied to join your community. Click to view.`,
+                    image: user.profileImage.url,
+                    clickable: true,
+                    redirect: `/communities/${params.communityID}/settings/applications`
+                }, { headers: { Authorization: `Bearer ${authToken}` } })
+            }
         })
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
         response.json(responseData);
-    }
-}
-
-export async function CreateApplicationCallback(params, reqOrigin, authToken) {
-    const { db } = await getDB();
-    const user = await db.collection("accounts").findOne({ accountID: params.accountID });
-    const admins = await db.collection("members").find({ 
-        communityID: params.communityID, 
-        $or: [ { role: "admin" }, { role: "moderator" } ] 
-    }).toArray()
-    for (let admin of admins) {
-        await axios.post(reqOrigin + "/api/notifications/create-notification", {
-            accountID: admin.accountID,
-            content: `${user.firstName} ${user.lastName} applied to join your community. Click to view.`,
-            image: user.profileImage.url,
-            clickable: true,
-            redirect: `/communities/${params.communityID}/settings/applications`
-        }, { headers: { Authorization: `Bearer ${authToken}` } })
     }
 }
 

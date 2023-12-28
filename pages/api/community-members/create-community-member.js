@@ -52,27 +52,22 @@ async function CreateCommunityMember (request, response, authToken) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await CreateMemberCallback(params, AppConfig.HOST, authToken)
+            const user = await db.collection("accounts").findOne({ accountID: params.accountID });
+            const community = await db.collection("communities").findOne({ communityID: params.communityID });
+            await axios.post(AppConfig.HOST + "/api/notifications/create-notification", {
+                accountID: user.accountID,
+                content: `You joined a new community: ${community.displayName}. Click to view.`,
+                image: community.profileImage.url,
+                clickable: true,
+                redirect: `/communities/${community.communityID}`
+            }, { headers: { Authorization: `Bearer ${authToken}` } })
+            await db.collection("nodes").findOneAndUpdate({ nodeID: community.node.nodeID }, { $inc: { pings: 1 }})
         })
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
         response.json(responseData);
     }
-}
-
-export async function CreateMemberCallback(params, reqOrigin, authToken) {
-    const { db } = await getDB();
-    const user = await db.collection("accounts").findOne({ accountID: params.accountID });
-    const community = await db.collection("communities").findOne({ communityID: params.communityID });
-    await axios.post(reqOrigin + "/api/notifications/create-notification", {
-        accountID: user.accountID,
-        content: `You joined a new community: ${community.displayName}. Click to view.`,
-        image: community.profileImage.url,
-        clickable: true,
-        redirect: `/communities/${community.communityID}`
-    }, { headers: { Authorization: `Bearer ${authToken}` } })
-    await db.collection("nodes").findOneAndUpdate({ nodeID: community.node.nodeID }, { $inc: { pings: 1 }})
 }
 
 export default authenticate(CreateCommunityMember);

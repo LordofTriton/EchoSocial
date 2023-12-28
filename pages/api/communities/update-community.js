@@ -57,23 +57,18 @@ async function UpdateCommunity (request, response, authToken) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await UpdateCommunityCallback(params, AppConfig.HOST, authToken)
+            if (params.nodes) {
+                for (let node of params.nodes) {
+                    const accountNodeCount = await db.collection("accounts").countDocuments({ nodes: { $elemMatch: { nodeID: node.nodeID } } })
+                    const communityNodeCount = await db.collection("communities").countDocuments({ nodes: { $elemMatch: { nodeID: node.nodeID } } })
+                    await db.collection("nodes").findOneAndUpdate({ nodeID: node.nodeID }, { $set: { ping: accountNodeCount + communityNodeCount }})
+                }
+            }
         })
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
         response.json(responseData);
-    }
-}
-
-export async function UpdateCommunityCallback(params, reqOrigin, authToken) {
-    const { db } = await getDB();
-    if (params.nodes) {
-        for (let node of params.nodes) {
-            const accountNodeCount = await db.collection("accounts").countDocuments({ nodes: { $elemMatch: { nodeID: node.nodeID } } })
-            const communityNodeCount = await db.collection("communities").countDocuments({ nodes: { $elemMatch: { nodeID: node.nodeID } } })
-            await db.collection("nodes").findOneAndUpdate({ nodeID: node.nodeID }, { $set: { ping: accountNodeCount + communityNodeCount }})
-        }
     }
 }
 

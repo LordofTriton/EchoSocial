@@ -42,51 +42,45 @@ async function PingAccounts (request, response, authToken) {
         response.json(responseData);
         
         response.once("finish", async () => {
-            await PingAccountCallback(params, AppConfig.HOST, authToken)
+            const userAccount = await db.collection("accounts").findOne({ accountID: params.accountID })
+            if (params.follow) {
+                await db.collection("accounts").updateOne({ accountID: params.follow }, { $push: { followers: params.accountID } })
+
+                await axios.post(AppConfig.HOST + "/api/notifications/create-notification", {
+                    accountID: params.follow,
+                    content: `${userAccount.firstName} ${userAccount.lastName} followed you! Click here to view their profile.`,
+                    image: userAccount.profileImage.url,
+                    clickable: true,
+                    redirect: `/user/${userAccount.accountID}`
+                }, { headers: { Authorization: `Bearer ${authToken}` } })
+                
+                const follower = await db.collection("accounts").findOne({ accountID: params.accountID })
+                const followee = await db.collection("accounts").findOne({ accountID: params.follow })
+                if (follower.followers.includes(params.follow) && followee.followers.includes(params.accountID)) {
+                    await axios.post(AppConfig.HOST + "/api/notifications/create-notification", {
+                        accountID: follower.accountID,
+                        content: `You are now friends with ${followee.firstName} ${followee.lastName}.`,
+                        image: followee.profileImage.url,
+                        clickable: true,
+                        redirect: `/user/${followee.accountID}`
+                    }, { headers: { Authorization: `Bearer ${authToken}` } })
+                    await axios.post(AppConfig.HOST + "/api/notifications/create-notification", {
+                        accountID: followee.accountID,
+                        content: `${follower.firstName} ${follower.lastName} followed you! You are now friends. Click to view their profile.`,
+                        image: follower.profileImage.url,
+                        clickable: true,
+                        redirect: `/user/${follower.accountID}`
+                    }, { headers: { Authorization: `Bearer ${authToken}` } })
+                }
+
+            }
+            if (params.unfollow) await db.collection("accounts").updateOne({ accountID: params.unfollow }, { $pull: { followers: params.accountID } })
         })
     } catch (error) {
         console.log(error)
         const responseData = ResponseClient.GenericFailure({ error: error.message })
         response.json(responseData);
     }
-}
-
-export async function PingAccountCallback(params, reqOrigin, authToken) {
-    const { db } = await getDB();
-    const userAccount = await db.collection("accounts").findOne({ accountID: params.accountID })
-    if (params.follow) {
-        await db.collection("accounts").updateOne({ accountID: params.follow }, { $push: { followers: params.accountID } })
-
-        await axios.post(reqOrigin + "/api/notifications/create-notification", {
-            accountID: params.follow,
-            content: `${userAccount.firstName} ${userAccount.lastName} followed you! Click here to view their profile.`,
-            image: userAccount.profileImage.url,
-            clickable: true,
-            redirect: `/user/${userAccount.accountID}`
-        }, { headers: { Authorization: `Bearer ${authToken}` } })
-        
-        const follower = await db.collection("accounts").findOne({ accountID: params.accountID })
-        const followee = await db.collection("accounts").findOne({ accountID: params.follow })
-        if (follower.followers.includes(params.follow) && followee.followers.includes(params.accountID)) {
-            await axios.post(reqOrigin + "/api/notifications/create-notification", {
-                accountID: follower.accountID,
-                content: `You are now friends with ${followee.firstName} ${followee.lastName}.`,
-                image: followee.profileImage.url,
-                clickable: true,
-                redirect: `/user/${followee.accountID}`
-            }, { headers: { Authorization: `Bearer ${authToken}` } })
-            await axios.post(reqOrigin + "/api/notifications/create-notification", {
-                accountID: followee.accountID,
-                content: `${follower.firstName} ${follower.lastName} followed you! You are now friends. Click to view their profile.`,
-                image: follower.profileImage.url,
-                clickable: true,
-                redirect: `/user/${follower.accountID}`
-            }, { headers: { Authorization: `Bearer ${authToken}` } })
-        }
-
-    }
-    if (params.unfollow) await db.collection("accounts").updateOne({ accountID: params.unfollow }, { $pull: { followers: params.accountID } })
-
 }
 
 export default authenticate(PingAccounts);
