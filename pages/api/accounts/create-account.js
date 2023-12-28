@@ -18,8 +18,8 @@ function ValidateCreateAccount(data) {
     if (!data.firstName || data.firstName.length < 2) throw new Error("Missing or Invalid: first name.")
     if (!data.lastName || data.lastName.length < 2) throw new Error("Missing or Invalid: last name.")
     if (!data.email || !ParamValidator.isValidEmail(data.email)) throw new Error("Missing or Invalid: email.")
-    if (!data.password || data.password.length < 8) throw new Error("Missing or Invalid: password.")
-    if (!data.confirmPassword || data.confirmPassword.length < 8) throw new Error("Missing or Invalid: confirm password.")
+    if (!data.password || !ParamValidator.isValidPassword(data.password)) throw new Error("Missing or Invalid: password.")
+    if (!data.confirmPassword) throw new Error("Missing or Invalid: confirm password.")
     if (data.password !== data.confirmPassword) throw new Error("Passwords do not match.")
 }
 
