@@ -7,7 +7,7 @@ import IDGenerator from "../../../services/generators/IDGenerator";
 
 function ValidateLogin(data) {
     if (!data.email || !ParamValidator.isValidEmail(data.email)) throw new Error("Missing or Invalid: email.")
-    if (!data.password || data.password.length < 8) throw new Error("Missing or invalid password!")
+    if (!data.password || !ParamValidator.isValidEmail(data.password)) throw new Error("Missing or invalid password!")
 }
 
 async function Login (request, response, authToken) {
