@@ -47,8 +47,8 @@ export default function CommunitySettings() {
   
   useEffect(() => {
       if (countryList.length < 1) setCountryList(Country.getAllCountries())
-      if (updatedData.country) {
-          const countryData = Country.getAllCountries().find((country) => country.name === updatedData.country)
+      if (updatedCommunityData.country) {
+          const countryData = Country.getAllCountries().find((country) => country.name === updatedCommunityData.country)
           if (countryData) setCityList(City.getCitiesOfCountry(countryData.isoCode))
       }
   }, [updatedCommunityData.country, updatedCommunityData.city])
