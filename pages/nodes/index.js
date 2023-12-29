@@ -38,6 +38,7 @@ export default function Nodes() {
             accountID: activeUser.accountID,
             nodes: selectedNodes
         })
+        setAlert({ type: "success", message: "Nodes saved successfully." })
         CacheService.saveData("EchoActiveUser", {...activeUser, nodes: selectedNodes})
         router.push("/")
     }

@@ -30,14 +30,17 @@ export default function ForgotPassword() {
 
             if (response.success) {
                 setAlert({ type: "success", message: response.message })
+                setTimeout(() => setAlert(null), 5000)
                 setSent(true)
             }
             else {
                 setAlert({ type: "error", message: response.message })
+                setTimeout(() => setAlert(null), 5000)
             }
         }
         else {
             setAlert({ type: "error", message: "Invalid email address." })
+            setTimeout(() => setAlert(null), 5000)
         }
 
         setLoader(false)

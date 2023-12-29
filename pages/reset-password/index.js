@@ -37,14 +37,17 @@ export default function ResetPassword() {
 
             if (response.success) {
                 setAlert({ type: "success", message: response.message })
+                setTimeout(() => setAlert(null), 5000)
                 setResetSuccess(true);
             }
             else {
                 setAlert({ type: "error", message: response.message })
+                setTimeout(() => setAlert(null), 5000)
             }
         }
         else {
             setAlert({ type: "error", message: "Invalid values." })
+            setTimeout(() => setAlert(null), 5000)
         }
 
         setLoader(false)

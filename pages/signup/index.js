@@ -42,10 +42,12 @@ export default function Signup() {
             }
             else {
                 setAlert({ type: "error", message: authResult.message })
+                setTimeout(() => setAlert(null), 5000)
             }
         }
         else {
-            setAlert({ type: "warning", message: "Passwords do not match!" })
+            setAlert({ type: "error", message: "Passwords do not match!" })
+            setTimeout(() => setAlert(null), 5000)
         }
 
         setSignupLoader(false)

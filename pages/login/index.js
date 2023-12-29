@@ -11,6 +11,7 @@ import LogoSplash from '../components/logo-splash';
 import CacheService from "../../services/CacheService";
 import APIClient from "../../services/APIClient";
 import { Form } from '../components/form';
+import ParamValidator from '../../services/validation/validator';
 
 export default function Login() {
     const router = useRouter()
@@ -31,7 +32,7 @@ export default function Login() {
         event.preventDefault()
         setLoginLoader(true)
 
-        if (loginDetails.email.trim().length > 2 && loginDetails.password.trim().length >= 8) {
+        if (ParamValidator.isValidEmail(loginDetails.email) && ParamValidator.isValidPassword(loginDetails.password)) {
             const authResult = await APIClient.post(APIClient.routes.login, loginDetails);
 
             if (authResult.success) {
@@ -44,10 +45,12 @@ export default function Login() {
             }
             else {
                 setAlert({ type: "error", message: authResult.message })
+                setTimeout(() => setAlert(null), 5000)
             }
         }
         else {
-            setAlert({ type: "warning", message: "Invalid email or password!" })
+            setAlert({ type: "error", message: "Invalid email or password!" })
+            setTimeout(() => setAlert(null), 5000)
         }
 
         setLoginLoader(false)
